@@ -25,8 +25,8 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSplashHeader(),
-              _buildSplashBody(),
+              _buildHomeHeader(),
+              _buildHomeBody(),
               _buildLoginButton(context),
               _buildRegisterButton(context),
               _buildTermsText(context)
@@ -123,7 +123,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildSplashBody() {
+  Widget _buildHomeBody() {
     return Column(
       children: [
         TextFormField(
@@ -172,7 +172,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildSplashHeader() {
+  Widget _buildHomeHeader() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
