@@ -48,6 +48,7 @@ class RegisterPage extends StatelessWidget {
             children: [
               _buildUnitInformation(context, unitList, unitval),
               _buildStudentInformation(context, genderList, unitval),
+              _buildAdditionalInformation(context),
             ],
           )),
         ));
@@ -191,7 +192,7 @@ class RegisterPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Unit Information',
+              'Student Information',
               style: fBlackTextStyle.copyWith(
                 fontSize: 20,
               ),
@@ -419,6 +420,116 @@ class RegisterPage extends StatelessWidget {
                   borderSide: const BorderSide(color: Color(0XFFE8E8E8)),
                 ),
                 hintText: 'e.x religion',
+                hintStyle: fGreyTextStyle,
+              ),
+            ),
+            const SizedBox(height: 15),
+          ],
+        ));
+  }
+
+  Widget _buildAdditionalInformation(context) {
+    return Container(
+        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 15),
+        width: MediaQuery.of(context).size.width,
+        margin: const EdgeInsets.only(top: 30),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: const Color(0XFFF8F9FA),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Additional Information',
+              style: fBlackTextStyle.copyWith(
+                fontSize: 20,
+              ),
+            ),
+            const Divider(thickness: 1),
+            const SizedBox(height: 15),
+
+            // ! ID Number Field
+            Text('ID Number (KTP)', style: fTextColorStyle),
+            const SizedBox(height: 5),
+            TextFormField(
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Color(0XFFE8E8E8)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Color(0XFFE8E8E8)),
+                ),
+                hintText: 'e.x xxxx',
+                hintStyle: fGreyTextStyle,
+              ),
+            ),
+            const SizedBox(height: 15),
+
+            // ! Nationallity Field
+            Text('Nationallity', style: fTextColorStyle),
+            const SizedBox(height: 5),
+            TextFormField(
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Color(0XFFE8E8E8)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Color(0XFFE8E8E8)),
+                ),
+                hintText: 'e.x region',
+                hintStyle: fGreyTextStyle,
+              ),
+            ),
+            const SizedBox(height: 15),
+
+            // ! Postal Code Field
+            Text('Postal Code', style: fTextColorStyle),
+            const SizedBox(height: 5),
+            TextFormField(
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Color(0XFFE8E8E8)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Color(0XFFE8E8E8)),
+                ),
+                hintText: 'e.x xxxx',
+                hintStyle: fGreyTextStyle,
+              ),
+            ),
+            const SizedBox(height: 15),
+
+            // ! School Name Field
+            Text('School Name', style: fTextColorStyle),
+            const SizedBox(height: 5),
+            TextFormField(
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Color(0XFFE8E8E8)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8),
+                  borderSide: const BorderSide(color: Color(0XFFE8E8E8)),
+                ),
+                hintText: 'e.x school',
                 hintStyle: fGreyTextStyle,
               ),
             ),
