@@ -53,6 +53,7 @@ class RegisterPage extends StatelessWidget {
               _buildAdditionalInformation(context),
               _buildParentInformation(context),
               _buildCourseInformation(context),
+              _buildRegisterButton(),
             ],
           )),
         ));
@@ -639,5 +640,24 @@ class RegisterPage extends StatelessWidget {
                 type: 'Online')
           ],
         ));
+  }
+
+  Widget _buildRegisterButton() {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Text(
+            'Submit',
+            style: fBlackTextStyle.copyWith(
+              fontSize: 20,
+              fontWeight: semiBold,
+            ),
+          ),
+          const Icon(Icons.arrow_forward_ios),
+        ],
+      ),
+    );
   }
 }

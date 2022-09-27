@@ -1,8 +1,5 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first, sized_box_for_whitespace, avoid_unnecessary_containers
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first, sized_box_for_whitespace, avoid_unnecessary_containers, must_be_immutable, file_names
+import 'package:flutter/material.dart'; 
 
 import '../shared/theme.dart';
 
@@ -35,8 +32,8 @@ class _CourseInformationCardState extends State<CourseInformationCard> {
       ),
       child: Row(children: [
         Container(
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
+          decoration: const BoxDecoration(
+            borderRadius:   BorderRadius.only(
               bottomLeft: Radius.circular(12),
               topLeft: Radius.circular(12),
             ),
@@ -46,7 +43,7 @@ class _CourseInformationCardState extends State<CourseInformationCard> {
           width: 100,
           child: Icon(
             _checkIcon(widget.major),
-            color: Color(0xff313131),
+            color:const  Color(0xff313131),
             size: 50,
           ),
         ),
@@ -121,7 +118,7 @@ class _CourseInformationCardState extends State<CourseInformationCard> {
 
                     // ! sect 2
                     Container(
-                      margin: EdgeInsets.only(bottom: 20),
+                      margin: const EdgeInsets.only(bottom: 20),
                       child: Row(
                         children: [
                           const Icon(

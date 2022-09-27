@@ -11,7 +11,7 @@ void main() {
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
   // run app
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -27,8 +27,8 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (context) => RegisterPage(),
-        '/home': (context) => HomePage(),
+        '/': (context) => const RegisterPage(),
+        '/home': (context) => const HomePage(),
       },
     );
   }

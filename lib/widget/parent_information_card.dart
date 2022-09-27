@@ -73,7 +73,7 @@ class _ParentInformationCardState extends State<ParentInformationCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          margin: EdgeInsets.only(bottom : 5),
+                          margin: const EdgeInsets.only(bottom : 5),
                           child: Column(
                             children: [
                               Row(
@@ -124,24 +124,31 @@ class _ParentInformationCardState extends State<ParentInformationCard> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.phone,
-                              size: 20,
-                              color: Color(0XFF8E8E8E),
-                            ),
-                            Container(
-                              width: 90,
-                              child: Container(
-                                child: SizedBox(
-                                  child: Text(widget.mobile,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: fTextColorStyle.copyWith()),
-                                ),
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 5),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(
+                                    Icons.phone,
+                                    size: 20,
+                                    color: Color(0XFF8E8E8E),
+                                  ),
+                                  Container(
+                                    width: 90,
+                                    child: Container(
+                                      child: SizedBox(
+                                        child: Text(widget.mobile,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: fTextColorStyle.copyWith()),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         Row(
                           children: [
