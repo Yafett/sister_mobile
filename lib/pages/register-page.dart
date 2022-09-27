@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:sister_mobile/shared/theme.dart';
+import 'package:sister_mobile/widget/course-information-card.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:sister_mobile/widget/parent_information_card.dart';
 
@@ -51,6 +52,7 @@ class RegisterPage extends StatelessWidget {
               _buildStudentInformation(context, genderList, unitval),
               _buildAdditionalInformation(context),
               _buildParentInformation(context),
+              _buildCourseInformation(context),
             ],
           )),
         ));
@@ -542,7 +544,7 @@ class RegisterPage extends StatelessWidget {
 
   Widget _buildParentInformation(context) {
     return Container(
-        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 15),
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
         width: MediaQuery.of(context).size.width,
         margin: const EdgeInsets.only(top: 30),
         decoration: BoxDecoration(
@@ -591,6 +593,50 @@ class RegisterPage extends StatelessWidget {
                 mobile: '091298018712',
                 job: 'Mechanic',
                 sosmed: 'Jtr')
+          ],
+        ));
+  }
+
+  Widget _buildCourseInformation(context) {
+    return Container(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+        width: MediaQuery.of(context).size.width,
+        margin: const EdgeInsets.only(top: 30),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: const Color(0XFFF8F9FA),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Course Information',
+                  style: fBlackTextStyle.copyWith(
+                    fontSize: 20,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.add),
+                  padding: const EdgeInsets.all(0),
+                )
+              ],
+            ),
+            const Divider(thickness: 1),
+            const SizedBox(height: 15),
+            CourseInformationCard(
+                className: 'FAS',
+                duration: 'Lite, 30 Minutes',
+                major: 'Piano',
+                type: 'SMI'),
+            CourseInformationCard(
+                className: 'FAS',
+                duration: 'Regular, 45 Minutes',
+                major: 'Vocal',
+                type: 'Online')
           ],
         ));
   }
