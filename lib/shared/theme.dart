@@ -11,15 +11,16 @@ import '../widget/fade_page_route.dart';
 part '../pages/splash-page.dart';
 part '../pages/home-page.dart';
 
-Color kBlueColor = Color(0xff1F98A8);
+Color kBlueColor = const Color(0xff1F98A8);
 Color kWhiteColor = Colors.white;
-Color kBlackColor = Color(0xff2C2C2C);
+Color kBlackColor = const Color(0xff2C2C2C);
 
 // ! first Section
 TextStyle fWhiteTextStyle = GoogleFonts.openSans(color: Colors.white);
-TextStyle fBlackTextStyle = GoogleFonts.openSans(color: Colors.black); 
-TextStyle fGreyTextStyle = GoogleFonts.openSans(color: Colors.grey); 
-TextStyle fTextColorStyle = GoogleFonts.openSans(color: Color(0xff8E8E8E)); 
+TextStyle fBlackTextStyle = GoogleFonts.openSans(color: Colors.black);
+TextStyle fGreyTextStyle = GoogleFonts.openSans(color: Colors.grey);
+TextStyle fTextColorStyle =
+    GoogleFonts.openSans(color: const Color(0xff8E8E8E));
 
 BorderRadius radiusNormal = BorderRadius.circular(12);
 

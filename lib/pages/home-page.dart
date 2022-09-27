@@ -74,7 +74,7 @@ class _HomePageState extends State<HomePage> {
           child: InkWell(
             splashColor: Colors.grey,
             onTap: () {
-              Navigator.of(context).push(FadePageRoute(RegisterPage()));
+              Navigator.of(context).push(FadePageRoute(const RegisterPage()));
             },
             child: Container(
               decoration: BoxDecoration(
@@ -103,7 +103,7 @@ class _HomePageState extends State<HomePage> {
       child: InkWell(
         splashColor: Colors.grey,
         onTap: () => Navigator.of(context).push(CustomPageRoute(
-          child: RegisterPage(),
+          child: const RegisterPage(),
           direction: AxisDirection.right,
         )),
         child: SizedBox(

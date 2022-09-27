@@ -1,8 +1,9 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, sized_box_for_whitespace, avoid_unnecessary_containers
 
 import 'package:flutter/material.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
+import 'package:sister_mobile/widget/parent_information_card.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -49,6 +50,7 @@ class RegisterPage extends StatelessWidget {
               _buildUnitInformation(context, unitList, unitval),
               _buildStudentInformation(context, genderList, unitval),
               _buildAdditionalInformation(context),
+              _buildParentInformation(context),
             ],
           )),
         ));
@@ -534,6 +536,61 @@ class RegisterPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 15),
+          ],
+        ));
+  }
+
+  Widget _buildParentInformation(context) {
+    return Container(
+        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 15),
+        width: MediaQuery.of(context).size.width,
+        margin: const EdgeInsets.only(top: 30),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+          color: const Color(0XFFF8F9FA),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Parent Information',
+                  style: fBlackTextStyle.copyWith(
+                    fontSize: 20,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.add),
+                  padding: const EdgeInsets.all(0),
+                )
+              ],
+            ),
+            const Divider(thickness: 1),
+            const SizedBox(height: 15),
+            ParentInformationCard(
+                relation: 'Father',
+                name: 'John Doe',
+                email: 'johndoe@example.com',
+                mobile: '098121098031',
+                job: 'Manager',
+                sosmed: 'johnd'),
+            ParentInformationCard(
+                relation: 'Mother',
+                name: 'Jean Doe',
+                email: 'jeandoe@example.com',
+                mobile: '091829098681',
+                job: 'Housewife',
+                sosmed: 'jeand'),
+            ParentInformationCard(
+                relation: 'Other',
+                name: 'John Tor',
+                email: 'johntor@example.com',
+                mobile: '091298018712',
+                job: 'Mechanic',
+                sosmed: 'Jtr')
           ],
         ));
   }
