@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, unused_local_variable
 
 part of '../shared/theme.dart';
 
@@ -10,9 +10,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final LoginBloc _loginBloc = LoginBloc();
+
   @override
   Widget build(BuildContext context) {
     return _buildHomePage(context);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loginBloc.add(Login('administrator', 'admin'));
   }
 
   Widget _buildHomePage(context) {
@@ -74,7 +84,7 @@ class _HomePageState extends State<HomePage> {
           child: InkWell(
             splashColor: Colors.grey,
             onTap: () {
-              Navigator.of(context).push(FadePageRoute(const RegisterPage()));
+              Navigator.of(context).push(FadePageRoute(RegisterPage()));
             },
             child: Container(
               decoration: BoxDecoration(
@@ -98,26 +108,35 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildLoginButton(context) {
-    return Material(
-      color: const Color(0xffE22426),
-      child: InkWell(
-        splashColor: Colors.grey,
-        onTap: () => Navigator.of(context).push(CustomPageRoute(
-          child: const RegisterPage(),
-          direction: AxisDirection.right,
-        )),
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width,
-          height: 50,
-          child: Center(
-              child: Text(
-            'Login',
-            style: GoogleFonts.openSans(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-            ),
-          )),
+    return BlocListener<LoginBloc, LoginState>(
+      bloc: _loginBloc,
+      listener: (context, state) {},
+      child: Material(
+        color: const Color(0xffE22426),
+        child: InkWell(
+          splashColor: Colors.grey,
+          onTap: () {
+            logout();
+            _loginBloc
+                .add(Login(_usernameController.text, _passwordController.text));
+          },
+          // Navigator.of(context).push(CustomPageRoute(
+          //   child: const RegisterPage(),
+          //   direction: AxisDirection.right,
+          // )),
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: 50,
+            child: Center(
+                child: Text(
+              'Login',
+              style: GoogleFonts.openSans(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
+            )),
+          ),
         ),
       ),
     );
@@ -127,7 +146,8 @@ class _HomePageState extends State<HomePage> {
     return Column(
       children: [
         TextFormField(
-          keyboardType: TextInputType.emailAddress,
+          controller: _usernameController,
+          keyboardType: TextInputType.text,
           decoration: InputDecoration(
             suffixIcon: const Icon(Icons.person_outlined),
             enabledBorder: const UnderlineInputBorder(
@@ -150,6 +170,7 @@ class _HomePageState extends State<HomePage> {
         ),
         const SizedBox(height: 20),
         TextFormField(
+          controller: _passwordController,
           obscureText: true,
           decoration: InputDecoration(
             suffixIcon: const Icon(Icons.lock_outline),
@@ -207,4 +228,5 @@ class _HomePageState extends State<HomePage> {
       ],
     );
   }
+  
 }

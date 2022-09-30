@@ -1,19 +1,33 @@
-// ignore_for_file: file_names, prefer_typing_uninitialized_variables, sized_box_for_whitespace, avoid_unnecessary_containers
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, sized_box_for_whitespace, avoid_unnecessary_containers, unused_local_variable
+
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/course-information-card.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:sister_mobile/widget/parent_information_card.dart';
+import 'package:http/http.dart' as http;
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
 
   @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  var unitList = ['', ''];
+  var genderList = ['Boy', 'Girl', 'Other'];
+  var unitval;
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    var unitList = ['', ''];
-    var genderList = ['Boy', 'Girl', 'Other'];
-    var unitval;
     return _buildRegisterPage(context, unitList, genderList, unitval);
   }
 
@@ -22,7 +36,13 @@ class RegisterPage extends StatelessWidget {
     return Scaffold(
         backgroundColor: const Color(0xffE8E8E8),
         appBar: AppBar(
-            leadingWidth: double.infinity,
+            title: Text(
+              'Register',
+              style: fBlackTextStyle.copyWith(
+                fontSize: 20,
+                fontWeight: semiBold,
+              ),
+            ),
             elevation: 0,
             backgroundColor: const Color(0xffE8E8E8),
             leading: SizedBox(
@@ -33,13 +53,6 @@ class RegisterPage extends StatelessWidget {
                       onPressed: () => Navigator.pop(context),
                       icon: const Icon(Icons.arrow_back_ios,
                           color: Colors.black)),
-                  Text(
-                    'Register',
-                    style: fBlackTextStyle.copyWith(
-                      fontSize: 20,
-                      fontWeight: semiBold,
-                    ),
-                  )
                 ],
               ),
             )),
@@ -157,6 +170,7 @@ class RegisterPage extends StatelessWidget {
 
             // ! QR Field
             Text('QR', style: fTextColorStyle),
+            const SizedBox(height: 5),
             TextFormField(
               readOnly: true,
               decoration: InputDecoration(
@@ -320,6 +334,7 @@ class RegisterPage extends StatelessWidget {
 
             // ! Birth Date Field
             Text('Birth Date', style: fTextColorStyle),
+            const SizedBox(height: 5),
             TextFormField(
               readOnly: true,
               decoration: InputDecoration(

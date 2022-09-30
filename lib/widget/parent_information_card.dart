@@ -136,7 +136,7 @@ class _ParentInformationCardState extends State<ParentInformationCard> {
                                     color: Color(0XFF8E8E8E),
                                   ),
                                   Container(
-                                    width: 90,
+                                    width: 60,
                                     child: Container(
                                       child: SizedBox(
                                         child: Text(widget.mobile,
@@ -158,7 +158,7 @@ class _ParentInformationCardState extends State<ParentInformationCard> {
                               color: Color(0XFF8E8E8E),
                             ),
                             Container(
-                              width: 90,
+                              width: 60,
                               child: Container(
                                 child: SizedBox(
                                   child: Text(widget.sosmed,

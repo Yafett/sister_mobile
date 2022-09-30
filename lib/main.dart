@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sister_mobile/pages/terms-page.dart';
+import 'package:sister_mobile/pages/test.dart';
 
 import '../shared/theme.dart';
 import 'pages/register-page.dart';
@@ -27,7 +29,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (context) => const RegisterPage(),
+        '/': (context) => const TermPage(),
         '/home': (context) => const HomePage(),
       },
     );

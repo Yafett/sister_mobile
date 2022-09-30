@@ -127,7 +127,7 @@ class _CourseInformationCardState extends State<CourseInformationCard> {
                             color: Color(0XFF8E8E8E),
                           ),
                           Container(
-                            width: 90,
+                            width: 50,
                             child: Container(
                               child: SizedBox(
                                 child: Text(widget.major,

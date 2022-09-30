@@ -27,27 +27,27 @@ class _SplashPageState extends State<SplashPage> {
         duration: 2500,
         splash: _buildSplashBackground(context),
         nextScreen: const HomePage(),
-        splashTransition: SplashTransition.fadeTransition,
-        pageTransitionType: PageTransitionType.leftToRight,
+        splashTransition: SplashTransition.fadeTransition, 
       )
     );
   }
 
   Widget _buildSplashBackground(context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 20),
-      padding: const EdgeInsets.all(20),
-      height: MediaQuery.of(context).size.height,
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        color: const Color(0xffE22426),
-        image: DecorationImage(
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(0.2), BlendMode.dstATop),
-            image: const AssetImage('assets/images/splash-background.jpg')),
+    return SafeArea(
+      child: Container( 
+        padding: const EdgeInsets.all(20),
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          color: const Color(0xffE22426),
+          image: DecorationImage(
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(
+                  Colors.black.withOpacity(0.2), BlendMode.dstATop),
+              image: const AssetImage('assets/images/splash-background.jpg')),
+        ),
+        child: _buildSplashText(),
       ),
-      child: _buildSplashText(),
     );
   }
 

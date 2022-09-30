@@ -1,10 +1,16 @@
+import 'dart:convert';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:page_transition/page_transition.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sister_mobile/pages/register-page.dart';
 
+import '../api/logout-api.dart';
+import '../bloc/login-bloc/login_bloc.dart';
 import '../widget/custom_page_route.dart';
 import '../widget/fade_page_route.dart';
 
@@ -21,6 +27,8 @@ TextStyle fBlackTextStyle = GoogleFonts.openSans(color: Colors.black);
 TextStyle fGreyTextStyle = GoogleFonts.openSans(color: Colors.grey);
 TextStyle fTextColorStyle =
     GoogleFonts.openSans(color: const Color(0xff8E8E8E));
+TextStyle fTermsColorStyle =
+    GoogleFonts.openSans(color: const Color(0xff616161));
 
 BorderRadius radiusNormal = BorderRadius.circular(12);
 
