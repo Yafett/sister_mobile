@@ -26,7 +26,7 @@ class _SplashPageState extends State<SplashPage> {
         splashIconSize: 1000,
         duration: 2500,
         splash: _buildSplashBackground(context),
-        nextScreen: const HomePage(),
+        nextScreen: const LoginPage(),
         splashTransition: SplashTransition.fadeTransition, 
       )
     );

@@ -1,0 +1,444 @@
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/src/foundation/key.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:sister_mobile/shared/theme.dart';
+import 'package:sister_mobile/widget/no_scroll_waves.dart';
+import 'package:intl/intl.dart';
+import 'package:slide_digital_clock/slide_digital_clock.dart';
+
+class StudentHomePage extends StatefulWidget {
+  const StudentHomePage({Key? key}) : super(key: key);
+
+  @override
+  State<StudentHomePage> createState() => StudentHomePageState();
+}
+
+class StudentHomePageState extends State<StudentHomePage> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildStudentHomePage();
+  }
+
+  Widget _buildStudentHomePage() {
+    return Scaffold(
+      backgroundColor: const Color(0xff0D1117),
+      appBar: AppBar(
+        elevation: 0,
+        leading: Container(
+          margin: const EdgeInsets.only(left: 10),
+          child: const Icon(Icons.menu, size: 30, color: Color(0xffC9D1D9)),
+        ),
+        actions: const [
+          Icon(Icons.qr_code_scanner, size: 30, color: Color(0xffC9D1D9)),
+          SizedBox(width: 5),
+          Icon(Icons.dark_mode_outlined, size: 30, color: Color(0xffC9D1D9)),
+          SizedBox(width: 5),
+          Icon(Icons.notifications_none, size: 30, color: Color(0xffC9D1D9)),
+          SizedBox(width: 20),
+        ],
+        backgroundColor: const Color(0xff0D1117),
+      ),
+      body: ScrollConfiguration(
+        behavior: NoScrollWaves(),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeaderProfile(),
+              _buildHeaderTitle(),
+              _buildChipStatus(),
+              const SizedBox(height: 30),
+              _buildScheduleSection(),
+              const SizedBox(height: 30),
+              _buildPaymentSection(),
+              const SizedBox(height: 30),
+              _buildHistorySection(),
+              const SizedBox(height: 30),
+              _buildRewardSection(),
+              const SizedBox(height: 30),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeaderProfile() {
+    return Container(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            InkWell(
+              onTap: () {},
+              child: Container(
+                height: 80,
+                width: 80,
+                decoration: BoxDecoration(
+                    color: Colors.red,
+                    image: const DecorationImage(
+                      image: AssetImage('assets/images/lord-shrek.jpg'),
+                      fit: BoxFit.fitHeight,
+                    ),
+                    borderRadius: BorderRadius.circular(8)),
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                DigitalClock(
+                  areaHeight: 0,
+                  areaDecoration: const BoxDecoration(
+                    color: const Color(0xff0D1117),
+                  ),
+                  hourMinuteDigitDecoration: BoxDecoration(
+                      border: Border.all(color: const Color(0xff0D1117))),
+                  areaWidth: 0,
+                  digitAnimationStyle: Curves.elasticOut,
+                  showSecondsDigit: false,
+                  hourMinuteDigitTextStyle: const TextStyle(
+                    color: Color(0xff0D1117),
+                    fontSize: 0,
+                  ),
+                ),
+
+                // ! real clock
+                DigitalClock(
+                    areaDecoration: const BoxDecoration(
+                      color: const Color(0xff0D1117),
+                    ),
+                    areaWidth: 95,
+                    showSecondsDigit: false,
+                    hourMinuteDigitDecoration: BoxDecoration(
+                        border: Border.all(color: const Color(0xff0D1117))),
+                    hourMinuteDigitTextStyle: sWhiteTextStyle.copyWith(
+                      fontSize: 40,
+                    )),
+                Text(_getCurrentDate(), style: sWhiteTextStyle),
+              ],
+            ),
+          ],
+        ));
+  }
+
+  Widget _buildHeaderTitle() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Hello, yafet!',
+            style: sWhiteTextStyle.copyWith(fontSize: 32, fontWeight: semiBold),
+          ),
+          Text(
+            'welcome and happy learning',
+            style: sWhiteTextStyle.copyWith(fontSize: 18, fontWeight: semi),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChipStatus() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      height: 35,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          _buildChip('78 POIN', Icons.favorite),
+          _buildChip('There’s no class today', Icons.star),
+          _buildChip("You didn't pay yet", Icons.attach_money),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChip(String label, IconData icon) {
+    return Container(
+      margin: const EdgeInsets.only(right: 10),
+      child: Chip(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: const BorderSide(color: Color(0xff30363D))),
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+        backgroundColor: const Color(0xff272C33),
+        avatar: Icon(icon, color: sWhiteColor, size: 15),
+        deleteIcon: Icon(
+          Icons.arrow_forward_ios,
+          size: 15,
+          color: sWhiteColor,
+        ),
+        label: Text(
+          label,
+          style: sWhiteTextStyle.copyWith(fontSize: 16),
+        ),
+        deleteButtonTooltipMessage: 'erase',
+        onDeleted: () {},
+      ),
+    );
+  }
+
+  Widget _buildScheduleSection() {
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Schedule',
+              style: sWhiteTextStyle,
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 5),
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: const Color(0xff30363D),
+                  ),
+                  borderRadius: BorderRadius.circular(8)),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Upcoming Class',
+                        style: sWhiteTextStyle.copyWith(
+                            fontSize: 16, fontWeight: semiBold)),
+                    Text('Piano Class - 20 September 2022',
+                        style: sWhiteTextStyle.copyWith(
+                            fontSize: 22, fontWeight: semiBold)),
+                    Text(
+                      'At SMI - 08:00 AM',
+                      style: sGreyTextStyle.copyWith(fontSize: 14),
+                    ),
+                    const Divider(
+                      height: 20,
+                      thickness: 1,
+                      color: Color(0xff272C33),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'See your Schedule',
+                          style: sWhiteTextStyle.copyWith(
+                              fontSize: 14, fontWeight: semiBold),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: sWhiteColor,
+                          size: 20,
+                        )
+                      ],
+                    )
+                  ]),
+            )
+          ],
+        ));
+  }
+
+  Widget _buildPaymentSection() {
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Payment',
+              style: sWhiteTextStyle,
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 5),
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: const Color(0xff30363D),
+                  ),
+                  borderRadius: BorderRadius.circular(8)),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Upcoming Class',
+                        style: sWhiteTextStyle.copyWith(
+                            fontSize: 16, fontWeight: semiBold)),
+                    Text('1 Payment',
+                        style: sRedTextStyle.copyWith(
+                            fontSize: 22, fontWeight: semiBold)),
+                    const Divider(
+                      height: 20,
+                      thickness: 1,
+                      color: Color(0xff272C33),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'See your Schedule',
+                          style: sWhiteTextStyle.copyWith(
+                              fontSize: 14, fontWeight: semiBold),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: sWhiteColor,
+                          size: 20,
+                        )
+                      ],
+                    )
+                  ]),
+            )
+          ],
+        ));
+  }
+
+  Widget _buildHistorySection() {
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'History',
+              style: sWhiteTextStyle,
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 5),
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: const Color(0xff30363D),
+                  ),
+                  borderRadius: BorderRadius.circular(8)),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('You didnt have any Attendance History yet',
+                        style: sGreyTextStyle.copyWith(
+                            fontSize: 16, fontWeight: semiBold)),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'See your History',
+                          style: sWhiteTextStyle.copyWith(
+                              fontSize: 14, fontWeight: semiBold),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: sWhiteColor,
+                          size: 20,
+                        )
+                      ],
+                    ),
+                    const Divider(
+                      color: Color(0xff272C33),
+                      height: 20,
+                      thickness: 1,
+                    ),
+                    Text('You didnt have any Attendance History yet',
+                        style: sGreyTextStyle.copyWith(
+                            fontSize: 16, fontWeight: semiBold)),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'See your History',
+                          style: sWhiteTextStyle.copyWith(
+                              fontSize: 14, fontWeight: semiBold),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: sWhiteColor,
+                          size: 20,
+                        )
+                      ],
+                    ),
+                  ]),
+            )
+          ],
+        ));
+  }
+
+  Widget _buildRewardSection() {
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Reward',
+              style: sWhiteTextStyle,
+            ),
+            Container(
+              margin: const EdgeInsets.only(top: 5),
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: const Color(0xff30363D),
+                  ),
+                  borderRadius: BorderRadius.circular(8)),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Current Point',
+                        style: sWhiteTextStyle.copyWith(
+                            fontSize: 16, fontWeight: semiBold)),
+                    Row(
+                      children: [
+                        const Icon(Icons.favorite, color: Color(0xffD15151)),
+                        const SizedBox(width: 10),
+                        Text('78 POIN',
+                            style: sWhiteTextStyle.copyWith(
+                                fontSize: 22, fontWeight: semiBold)),
+                      ],
+                    ),
+                    const Divider(
+                      height: 20,
+                      thickness: 1,
+                      color: Color(0xff272C33),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'See your reward point',
+                          style: sWhiteTextStyle.copyWith(
+                              fontSize: 14, fontWeight: semiBold),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: sWhiteColor,
+                          size: 20,
+                        )
+                      ],
+                    )
+                  ]),
+            )
+          ],
+        ));
+  }
+
+  _getCurrentDate() {
+    var date = DateTime.now().toString();
+
+    var dateParse = DateTime.parse(date);
+
+    var formattedRawDate =
+        "${dateParse.day}-${dateParse.month}-${dateParse.year}";
+
+    var formattedDate = DateFormat("EEE, d MMMM").format(DateTime.now());
+
+    return formattedDate.toString();
+  }
+}

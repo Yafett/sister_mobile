@@ -2,21 +2,21 @@
 
 part of '../shared/theme.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final LoginBloc _loginBloc = LoginBloc();
 
   @override
   Widget build(BuildContext context) {
-    return _buildHomePage(context);
+    return _buildLoginPage(context);
   }
 
   @override
@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
     _loginBloc.add(Login('administrator', 'admin'));
   }
 
-  Widget _buildHomePage(context) {
+  Widget _buildLoginPage(context) {
     return Scaffold(
       backgroundColor: const Color(0xffE8E8E8),
       body: SingleChildScrollView(

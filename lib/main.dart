@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sister_mobile/pages/students/student-home.dart';
 import 'package:sister_mobile/pages/terms-page.dart';
 import 'package:sister_mobile/pages/test.dart';
 
@@ -29,8 +30,9 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (context) => const TermPage(),
-        '/home': (context) => const HomePage(),
+        '/': (context) => const StudentHomePage(),
+        '/home': (context) => const LoginPage(),
+        '/terms': ((context) => const TermPage()),
       },
     );
   }

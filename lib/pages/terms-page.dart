@@ -589,9 +589,7 @@ class _TermPageState extends State<TermPage> {
         children: [
           Text(
             'Additional Release',
-            style: fBlackTextStyle.copyWith(
-              fontSize: 20,
-            ),
+            style: fBlackTextStyle.copyWith(fontSize: 20, fontWeight: semiBold),
           ),
           const Divider(thickness: 1),
           const SizedBox(height: 10),
@@ -599,12 +597,17 @@ class _TermPageState extends State<TermPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                  "We have read and understand the terms and conditions. and states that they are willing to follow the rules and regulations that apply at the Indonesian Music School. \n"),
+                "We have read and understood the terms and conditions. and states that they are willing to follow the rules and regulations that apply at the Indonesian Music School. \n",
+                style: fBlackTextStyle,
+              ),
               Text(
                 'Please sign or write your name below.',
                 style: fBlackTextStyle.copyWith(),
               ),
               Container(
+                decoration:
+                    BoxDecoration(border: Border.all(color: Colors.grey)),
+                margin: EdgeInsets.only(bottom: 10),
                 child: Signature(
                   controller: controller,
                   backgroundColor: Colors.white,
@@ -623,7 +626,7 @@ class _TermPageState extends State<TermPage> {
                           height: 30,
                           width: 60,
                           decoration: BoxDecoration(
-                            color: Color(0xffE22426),
+                            color: const Color(0xffE22426),
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Center(
