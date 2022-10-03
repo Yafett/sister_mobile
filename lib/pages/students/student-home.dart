@@ -1,9 +1,12 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:intl/intl.dart';
@@ -17,6 +20,11 @@ class StudentHomePage extends StatefulWidget {
 }
 
 class StudentHomePageState extends State<StudentHomePage> {
+  bool isOpened = false;
+
+  final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
+  final GlobalKey<SideMenuState> _endSideMenuKey = GlobalKey<SideMenuState>();
+
   @override
   void initState() {
     super.initState();
@@ -24,47 +32,73 @@ class StudentHomePageState extends State<StudentHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return _buildStudentHomePage();
-  }
-
-  Widget _buildStudentHomePage() {
-    return Scaffold(
-      backgroundColor: const Color(0xff0D1117),
-      appBar: AppBar(
-        elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.only(left: 10),
-          child: const Icon(Icons.menu, size: 30, color: Color(0xffC9D1D9)),
-        ),
-        actions: const [
-          Icon(Icons.qr_code_scanner, size: 30, color: Color(0xffC9D1D9)),
-          SizedBox(width: 5),
-          Icon(Icons.dark_mode_outlined, size: 30, color: Color(0xffC9D1D9)),
-          SizedBox(width: 5),
-          Icon(Icons.notifications_none, size: 30, color: Color(0xffC9D1D9)),
-          SizedBox(width: 20),
-        ],
-        backgroundColor: const Color(0xff0D1117),
+    return SideMenu(
+      key: _endSideMenuKey,
+      inverse: true, // end side menu
+      background: Colors.green[700],
+      type: SideMenuType.slideNRotate,
+      menu: Padding(
+        padding: const EdgeInsets.only(left: 25.0),
+        child: _buildSidebar(),
       ),
-      body: ScrollConfiguration(
-        behavior: NoScrollWaves(),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeaderProfile(),
-              _buildHeaderTitle(),
-              _buildChipStatus(),
-              const SizedBox(height: 30),
-              _buildScheduleSection(),
-              const SizedBox(height: 30),
-              _buildPaymentSection(),
-              const SizedBox(height: 30),
-              _buildHistorySection(),
-              const SizedBox(height: 30),
-              _buildRewardSection(),
-              const SizedBox(height: 30),
-            ],
+      maxMenuWidth: 250,
+      onChange: (_isOpened) {
+        setState(() => isOpened = _isOpened);
+      },
+      child: SideMenu(
+        maxMenuWidth: 250,
+        radius: BorderRadius.circular(12),
+        background: const Color.fromARGB(255, 41, 41, 41),
+        key: _sideMenuKey,
+        menu: _buildSidebar(),
+        type: SideMenuType.slideNRotate,
+        onChange: (_isOpened) {
+          setState(() => isOpened = _isOpened);
+        },
+        child: IgnorePointer(
+          ignoring: isOpened,
+          child: Scaffold(
+            backgroundColor: const Color(0xff0D1117),
+            appBar: AppBar(
+              backgroundColor: const Color(0xff0D1117),
+              centerTitle: true,
+              leading: IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () => _toggleMenu(),
+              ),
+              actions: [
+                Icon(Icons.qr_code_scanner, size: 30, color: Color(0xffC9D1D9)),
+                SizedBox(width: 5),
+                Icon(Icons.dark_mode_outlined,
+                    size: 30, color: Color(0xffC9D1D9)),
+                SizedBox(width: 5),
+                Icon(Icons.notifications_none,
+                    size: 30, color: Color(0xffC9D1D9)),
+                SizedBox(width: 20),
+              ],
+            ),
+            body: ScrollConfiguration(
+              behavior: NoScrollWaves(),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildHeaderProfile(),
+                    _buildHeaderTitle(),
+                    _buildChipStatus(),
+                    const SizedBox(height: 30),
+                    _buildScheduleSection(),
+                    const SizedBox(height: 30),
+                    _buildPaymentSection(),
+                    const SizedBox(height: 30),
+                    _buildHistorySection(),
+                    const SizedBox(height: 30),
+                    _buildRewardSection(),
+                    const SizedBox(height: 30),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -427,6 +461,111 @@ class StudentHomePageState extends State<StudentHomePage> {
             )
           ],
         ));
+  }
+
+  Widget _buildSidebar() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(vertical: 50.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                CircleAvatar(
+                  backgroundColor: Colors.white,
+                  radius: 22.0,
+                ),
+                SizedBox(height: 16.0),
+                Text(
+                  "Hello, John Doe",
+                  style: TextStyle(color: Colors.white),
+                ),
+                SizedBox(height: 20.0),
+              ],
+            ),
+          ),
+          ListTile(
+            onTap: () {},
+            leading: const Icon(Icons.person_outline,
+                size: 20.0, color: Colors.white),
+            title: const Text("Profile"),
+            textColor: Colors.white,
+            dense: true,
+          ),
+          ListTile(
+            onTap: () {},
+            leading:
+                const Icon(Icons.date_range, size: 20.0, color: Colors.white),
+            title: const Text("Schedule"),
+            textColor: Colors.white,
+            dense: true,
+
+            // padding: EdgeInsets.zero,
+          ),
+          ListTile(
+            onTap: () {},
+            leading: const Icon(Icons.payment, size: 20.0, color: Colors.white),
+            title: const Text("Payment"),
+            textColor: Colors.white,
+            dense: true,
+
+            // padding: EdgeInsets.zero,
+          ),
+          ListTile(
+            onTap: () {},
+            leading: const Icon(Icons.watch_later_outlined,
+                size: 20.0, color: Colors.white),
+            title: const Text("History"),
+            textColor: Colors.white,
+            dense: true,
+
+            // padding: EdgeInsets.zero,
+          ),
+          ListTile(
+            onTap: () {},
+            leading: const Icon(Icons.card_giftcard,
+                size: 20.0, color: Colors.white),
+            title: const Text("Reward Points"),
+            textColor: Colors.white,
+            dense: true,
+
+            // padding: EdgeInsets.zero,
+          ),
+          ListTile(
+            onTap: () {},
+            leading:
+                const Icon(Icons.exit_to_app, size: 20.0, color: Colors.white),
+            title: const Text("Logout"),
+            textColor: Colors.white,
+            dense: true,
+
+            // padding: EdgeInsets.zero,
+          ),
+        ],
+      ),
+    );
+  }
+
+  _toggleMenu([bool end = false]) {
+    if (end) {
+      final _state = _endSideMenuKey.currentState!;
+      if (_state.isOpened) {
+        _state.closeSideMenu();
+      } else {
+        _state.openSideMenu();
+      }
+    } else {
+      final _state = _sideMenuKey.currentState!;
+      if (_state.isOpened) {
+        _state.closeSideMenu();
+      } else {
+        _state.openSideMenu();
+      }
+    }
   }
 
   _getCurrentDate() {

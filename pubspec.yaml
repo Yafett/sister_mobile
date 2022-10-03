@@ -43,6 +43,7 @@ dependencies:
   page_transition: ^2.0.9
   permission_handler: ^10.0.2
   shared_preferences: ^2.0.15
+  shrink_sidemenu: ^2.0.0+2-null-safety
   signature: ^5.2.1
   slide_digital_clock: ^1.0.2
 
