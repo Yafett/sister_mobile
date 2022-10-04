@@ -119,7 +119,7 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
                     Text('FEE-2209-S-PA-00193 | Sep 2022',
                         style: sWhiteTextStyle.copyWith(
                             fontSize: 16, fontWeight: semiBold)),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text('Due : 8 Sep 2022',
                         style: sGreyTextStyle.copyWith(
                             fontSize: 12, fontWeight: semiBold)),
@@ -150,7 +150,7 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
                     Text('Fees Details',
                         style: sWhiteTextStyle.copyWith(
                             fontSize: 16, fontWeight: semiBold)),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Text('Summary',
                         style: sWhiteTextStyle.copyWith(
                             fontSize: 14, fontWeight: semiBold)),
@@ -158,7 +158,8 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          margin: const EdgeInsets.only(left: 10, bottom: 5, top: 5),
+                          margin: const EdgeInsets.only(
+                              left: 10, bottom: 5, top: 5),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -180,7 +181,8 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          margin: EdgeInsets.only(left: 10, top: 5, bottom: 5),
+                          margin: const EdgeInsets.only(
+                              left: 10, top: 5, bottom: 5),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -205,11 +207,12 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          margin: EdgeInsets.only(left: 10, top: 5, bottom: 5),
+                          margin: const EdgeInsets.only(
+                              left: 10, top: 5, bottom: 5),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('HC PIANO',
+                              Text('PE-220922-S-PA-00001',
                                   style: sGreyTextStyle.copyWith(
                                       fontSize: 14, fontWeight: semiBold)),
                               Text('\u2022 Transfer',
@@ -227,7 +230,8 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
                         style: sWhiteTextStyle.copyWith(
                             fontSize: 14, fontWeight: semiBold)),
                     Container(
-                      margin: EdgeInsets.only(left: 10, top: 5, bottom: 5),
+                      margin:
+                          const EdgeInsets.only(left: 10, top: 5, bottom: 5),
                       child: Text('Unpaid',
                           style: sGreyTextStyle.copyWith(
                               fontSize: 14, fontWeight: semiBold)),

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sister_mobile/pages/students/payment/student-payment-detail.dart';
 import 'package:sister_mobile/pages/students/payment/student-payment-help.dart';
+import 'package:sister_mobile/pages/students/point/student-point-detail.dart';
+import 'package:sister_mobile/pages/students/point/student-point-help.dart';
+import 'package:sister_mobile/pages/students/point/student-point.dart';
 import 'package:sister_mobile/pages/students/student-home.dart';
 import 'package:sister_mobile/pages/students/payment/student-payment.dart';
 import 'package:sister_mobile/pages/terms-page.dart';
@@ -33,12 +36,16 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (context) => const StudentHomePage(),
+        '/': (context) => const StudentPaymentPage(),
         '/home': (context) => const LoginPage(),
         '/terms': (context) => const TermPage(),
         '/student-payment': (context) => const StudentPaymentPage(),
         '/student-payment-help': (context) => const StudentPaymentHelpPage(),
-        '/student-payment-detail': (context) => const StudentPaymentDetailPage(),
+        '/student-payment-detail': (context) =>
+            const StudentPaymentDetailPage(),
+        '/student-point': (context) => const StudentPointPage(),
+        '/student-point-help': (context) => const StudentPointHelpPage(),
+        '/student-point-detail': (context) => const StudentPointDetailPage(),
       },
     );
   }

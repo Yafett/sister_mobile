@@ -300,7 +300,7 @@ class StudentHomePageState extends State<StudentHomePage> {
                 onTap: () {
                   Navigator.pushNamed(context, '/student-payment');
                 },
-                splashColor: Color(0xff30363D),
+                splashColor: const Color(0xff30363D),
                 child: Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
@@ -425,50 +425,60 @@ class StudentHomePageState extends State<StudentHomePage> {
               'Reward',
               style: sWhiteTextStyle,
             ),
-            Container(
-              margin: const EdgeInsets.only(top: 5),
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                  border: Border.all(
-                    color: const Color(0xff30363D),
-                  ),
-                  borderRadius: BorderRadius.circular(8)),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Current Point',
-                        style: sWhiteTextStyle.copyWith(
-                            fontSize: 16, fontWeight: semiBold)),
-                    Row(
+            Material(
+              color: sBlackColor,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: () {
+                  Navigator.pushNamed(context, '/student-point');
+                },
+                splashColor: const Color(0xff30363D),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                        color: const Color(0xff30363D),
+                      ),
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.favorite, color: Color(0xffD15151)),
-                        const SizedBox(width: 10),
-                        Text('78 POIN',
+                        Text('Current Point',
                             style: sWhiteTextStyle.copyWith(
-                                fontSize: 22, fontWeight: semiBold)),
-                      ],
-                    ),
-                    const Divider(
-                      height: 20,
-                      thickness: 1,
-                      color: Color(0xff272C33),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'See your reward point',
-                          style: sWhiteTextStyle.copyWith(
-                              fontSize: 14, fontWeight: semiBold),
+                                fontSize: 16, fontWeight: semiBold)),
+                        Row(
+                          children: [
+                            const Icon(Icons.favorite,
+                                color: Color(0xffD15151)),
+                            const SizedBox(width: 10),
+                            Text('78 POIN',
+                                style: sWhiteTextStyle.copyWith(
+                                    fontSize: 22, fontWeight: semiBold)),
+                          ],
                         ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          color: sWhiteColor,
-                          size: 20,
+                        const Divider(
+                          height: 20,
+                          thickness: 1,
+                          color: Color(0xff272C33),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'See your reward point',
+                              style: sWhiteTextStyle.copyWith(
+                                  fontSize: 14, fontWeight: semiBold),
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              color: sWhiteColor,
+                              size: 20,
+                            )
+                          ],
                         )
-                      ],
-                    )
-                  ]),
+                      ]),
+                ),
+              ),
             )
           ],
         ));

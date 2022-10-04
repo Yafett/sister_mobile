@@ -68,7 +68,8 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             GestureDetector(
-              onTap: () => Navigator.pushNamed(context, '/student-payment-detail'),
+              onTap: () =>
+                  Navigator.pushNamed(context, '/student-payment-detail'),
               child: Container(
                 margin: const EdgeInsets.only(top: 10),
                 decoration: BoxDecoration(
@@ -88,14 +89,36 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
                             Text('ICPR3113DR',
                                 style: sWhiteTextStyle.copyWith(
                                     fontSize: 20, fontWeight: semiBold)),
-                            Container(
-                              height: 20,
-                              width: 5,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                color: sGreenColor,
+                            Material(
+                              color: sBlackColor,
+                              child: InkWell(
+                                splashColor: sGreyColor,
+                                borderRadius: BorderRadius.circular(4),
+                                onTap: () {},
+                                child: Container(
+                                  height: 20,
+                                  width: 70,
+                                  decoration: BoxDecoration(
+                                    color: sGreenColor,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Center(
+                                      child: Text(
+                                    'Paid',
+                                    style: sWhiteTextStyle.copyWith(
+                                        fontWeight: semiBold),
+                                  )),
+                                ),
                               ),
-                            )
+                            ),
+                            // Container(
+                            //   height: 20,
+                            //   width: 5,
+                            //   decoration: BoxDecoration(
+                            //     borderRadius: BorderRadius.circular(12),
+                            //     color: sGreenColor,
+                            //   ),
+                            // )
                           ],
                         ),
                       ),

@@ -26,6 +26,7 @@ Color sBlackColor = Color(0xff0D1117);
 Color sRedColor = Color(0xffD15151);
 Color sGreenColor = Color(0xff347D39);
 Color sYellowColor = Color(0xffE7A100);
+Color sCardColor = Color(0xff181B1E);
 
 // ! first Section
 TextStyle fWhiteTextStyle = GoogleFonts.openSans(color: Colors.white);
