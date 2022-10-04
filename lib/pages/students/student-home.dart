@@ -1,11 +1,6 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
-import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
@@ -32,6 +27,10 @@ class StudentHomePageState extends State<StudentHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    return _buildHomePage();
+  }
+
+  Widget _buildHomePage() {
     return SideMenu(
       key: _endSideMenuKey,
       inverse: true, // end side menu
@@ -66,7 +65,7 @@ class StudentHomePageState extends State<StudentHomePage> {
                 icon: const Icon(Icons.menu),
                 onPressed: () => _toggleMenu(),
               ),
-              actions: [
+              actions: const [
                 Icon(Icons.qr_code_scanner, size: 30, color: Color(0xffC9D1D9)),
                 SizedBox(width: 5),
                 Icon(Icons.dark_mode_outlined,
@@ -287,48 +286,60 @@ class StudentHomePageState extends State<StudentHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Payment',
-              style: sWhiteTextStyle,
-            ),
             Container(
-              margin: EdgeInsets.only(top: 5),
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                  border: Border.all(
-                    color: const Color(0xff30363D),
-                  ),
-                  borderRadius: BorderRadius.circular(8)),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Upcoming Class',
-                        style: sWhiteTextStyle.copyWith(
-                            fontSize: 16, fontWeight: semiBold)),
-                    Text('1 Payment',
-                        style: sRedTextStyle.copyWith(
-                            fontSize: 22, fontWeight: semiBold)),
-                    const Divider(
-                      height: 20,
-                      thickness: 1,
-                      color: Color(0xff272C33),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              margin: const EdgeInsets.only(bottom: 5),
+              child: Text(
+                'Payment',
+                style: sWhiteTextStyle,
+              ),
+            ),
+            Material(
+              color: sBlackColor,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: () {
+                  Navigator.pushNamed(context, '/student-payment');
+                },
+                splashColor: Color(0xff30363D),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                        color: const Color(0xff30363D),
+                      ),
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'See your Schedule',
-                          style: sWhiteTextStyle.copyWith(
-                              fontSize: 14, fontWeight: semiBold),
+                        Text('Upcoming Class',
+                            style: sWhiteTextStyle.copyWith(
+                                fontSize: 16, fontWeight: semiBold)),
+                        Text('1 Payment',
+                            style: sRedTextStyle.copyWith(
+                                fontSize: 22, fontWeight: semiBold)),
+                        const Divider(
+                          height: 20,
+                          thickness: 1,
+                          color: Color(0xff272C33),
                         ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          color: sWhiteColor,
-                          size: 20,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'See your Schedule',
+                              style: sWhiteTextStyle.copyWith(
+                                  fontSize: 14, fontWeight: semiBold),
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              color: sWhiteColor,
+                              size: 20,
+                            )
+                          ],
                         )
-                      ],
-                    )
-                  ]),
+                      ]),
+                ),
+              ),
             )
           ],
         ));

@@ -22,6 +22,11 @@ Color kWhiteColor = Colors.white;
 Color kBlackColor = const Color(0xff2C2C2C);
 Color sWhiteColor = Color(0xffC9D1D9);
 Color sGreyColor = Color(0xff272C33);
+Color sBlackColor = Color(0xff0D1117);
+Color sRedColor = Color(0xffD15151);
+Color sGreenColor = Color(0xff347D39);
+Color sYellowColor = Color(0xffE7A100);
+
 // ! first Section
 TextStyle fWhiteTextStyle = GoogleFonts.openSans(color: Colors.white);
 TextStyle fBlackTextStyle = GoogleFonts.openSans(color: Colors.black);

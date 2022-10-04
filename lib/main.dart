@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sister_mobile/pages/students/payment/student-payment-detail.dart';
+import 'package:sister_mobile/pages/students/payment/student-payment-help.dart';
 import 'package:sister_mobile/pages/students/student-home.dart';
+import 'package:sister_mobile/pages/students/payment/student-payment.dart';
 import 'package:sister_mobile/pages/terms-page.dart';
 import 'package:sister_mobile/pages/test.dart';
 
@@ -32,7 +35,10 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/': (context) => const StudentHomePage(),
         '/home': (context) => const LoginPage(),
-        '/terms': ((context) => const TermPage()),
+        '/terms': (context) => const TermPage(),
+        '/student-payment': (context) => const StudentPaymentPage(),
+        '/student-payment-help': (context) => const StudentPaymentHelpPage(),
+        '/student-payment-detail': (context) => const StudentPaymentDetailPage(),
       },
     );
   }
