@@ -1,6 +1,7 @@
+// ignore_for_file: file_names, avoid_unnecessary_containers
+
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+ 
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 
@@ -160,7 +161,7 @@ class _StudentPointDetailPageState extends State<StudentPointDetailPage> {
   Widget _buildDetailPrivacy() {
     return Container(
       width: MediaQuery.of(context).size.width,
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
           color: sCardColor, borderRadius: BorderRadius.circular(4)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -175,7 +176,7 @@ class _StudentPointDetailPageState extends State<StudentPointDetailPage> {
         ),
         const SizedBox(height: 5),
         Container(
-          margin: EdgeInsets.only(left: 10),
+          margin: const EdgeInsets.only(left: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -201,7 +202,7 @@ class _StudentPointDetailPageState extends State<StudentPointDetailPage> {
         ),
         const SizedBox(height: 5),
         Container(
-          margin: EdgeInsets.only(left: 10),
+          margin: const EdgeInsets.only(left: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

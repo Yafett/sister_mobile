@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sister_mobile/pages/students/auth/login-page.dart';
+import 'package:sister_mobile/pages/students/auth/terms-page.dart';
+import 'package:sister_mobile/pages/students/history/student-attendance-detail.dart';
+import 'package:sister_mobile/pages/students/history/student-attendance-history.dart';
+import 'package:sister_mobile/pages/students/history/student-enrollment-history.dart';
 import 'package:sister_mobile/pages/students/payment/student-payment-detail.dart';
 import 'package:sister_mobile/pages/students/payment/student-payment-help.dart';
 import 'package:sister_mobile/pages/students/point/student-point-detail.dart';
@@ -9,11 +14,6 @@ import 'package:sister_mobile/pages/students/schedule/student-schedule-help.dart
 import 'package:sister_mobile/pages/students/schedule/student-schedule.dart';
 import 'package:sister_mobile/pages/students/student-home.dart';
 import 'package:sister_mobile/pages/students/payment/student-payment.dart';
-import 'package:sister_mobile/pages/terms-page.dart';
-import 'package:sister_mobile/pages/test.dart';
-
-import '../shared/theme.dart';
-import 'pages/register-page.dart';
 
 void main() {
   // add these lines
@@ -50,6 +50,12 @@ class _MyAppState extends State<MyApp> {
         '/student-point-detail': (context) => const StudentPointDetailPage(),
         '/student-schedule': (context) => const StudentSchedulePage(),
         '/student-schedule-help': (context) => const StudentScheduleHelpPage(),
+        '/student-history-attendance': (context) =>
+            const StudentAttendanceHistoryPage(),
+        '/student-history-enrollment': (context) =>
+            const StudentEnrollmentHistoryPage(),
+        '/student-history-attendance-detail': (context) =>
+            const StudentAttendanceDetailPage(),
       },
     );
   }

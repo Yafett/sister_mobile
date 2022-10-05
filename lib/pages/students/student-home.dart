@@ -1,4 +1,4 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers
+// ignore_for_file: no_leading_underscores_for_local_identifiers, file_names, unnecessary_const, prefer_const_constructors, unused_local_variable
 
 import 'package:flutter/material.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
@@ -377,48 +377,86 @@ class StudentHomePageState extends State<StudentHomePage> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('You didnt have any Attendance History yet',
-                        style: sGreyTextStyle.copyWith(
-                            fontSize: 16, fontWeight: semiBold)),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'See your History',
-                          style: sWhiteTextStyle.copyWith(
-                              fontSize: 14, fontWeight: semiBold),
+                    Material(
+                      color: sBlackColor,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, '/student-history-attendance');
+                        },
+                        splashColor: sGreyColor,
+                        child: SizedBox(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('You didnt have any Attendance History yet',
+                                  style: sGreyTextStyle.copyWith(
+                                      fontSize: 16, fontWeight: semiBold)),
+                              const SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'See your History',
+                                    style: sWhiteTextStyle.copyWith(
+                                        fontSize: 14, fontWeight: semiBold),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: sWhiteColor,
+                                    size: 20,
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          color: sWhiteColor,
-                          size: 20,
-                        )
-                      ],
+                      ),
                     ),
                     const Divider(
                       color: Color(0xff272C33),
                       height: 20,
                       thickness: 1,
                     ),
-                    Text('You didnt have any Attendance History yet',
-                        style: sGreyTextStyle.copyWith(
-                            fontSize: 16, fontWeight: semiBold)),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'See your History',
-                          style: sWhiteTextStyle.copyWith(
-                              fontSize: 14, fontWeight: semiBold),
+                    Material(
+                      color: sBlackColor,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(8),
+                        onTap: () {
+                          Navigator.pushNamed(
+                              context, '/student-history-enrollment');
+                        },
+                        splashColor: sGreyColor,
+                        child: SizedBox(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('You didnt have any Enrollment History yet',
+                                  style: sGreyTextStyle.copyWith(
+                                      fontSize: 16, fontWeight: semiBold)),
+                              const SizedBox(height: 20),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'See your History',
+                                    style: sWhiteTextStyle.copyWith(
+                                        fontSize: 14, fontWeight: semiBold),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: sWhiteColor,
+                                    size: 20,
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          color: sWhiteColor,
-                          size: 20,
-                        )
-                      ],
+                      ),
                     ),
                   ]),
             )
@@ -434,8 +472,9 @@ class StudentHomePageState extends State<StudentHomePage> {
           children: [
             Text(
               'Reward',
-              style: sWhiteTextStyle,
+              style: sWhiteTextStyle, 
             ),
+            const SizedBox(height : 5),
             Material(
               color: sBlackColor,
               child: InkWell(

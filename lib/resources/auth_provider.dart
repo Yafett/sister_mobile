@@ -1,8 +1,9 @@
+// ignore_for_file: unused_local_variable
+
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:http/http.dart' as http; 
 
 class AuthProvider {
   final String urlLogin = 'https://sister.sekolahmusik.co.id/api/method/login';

@@ -1,14 +1,10 @@
 // ignore_for_file: file_names, prefer_typing_uninitialized_variables, sized_box_for_whitespace, avoid_unnecessary_containers, unused_local_variable
-
-import 'dart:convert';
-
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+ 
+import 'package:flutter/material.dart'; 
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/course-information-card.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
-import 'package:sister_mobile/widget/parent_information_card.dart';
-import 'package:http/http.dart' as http;
+import 'package:sister_mobile/widget/parent_information_card.dart'; 
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);

@@ -1,6 +1,12 @@
-// ignore_for_file: file_names, unused_local_variable
+ 
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:sister_mobile/pages/students/auth/register-page.dart';
 
-part of '../shared/theme.dart';
+import '../../../api/logout-api.dart';
+import '../../../bloc/login-bloc/login_bloc.dart';
+import '../../../widget/fade_page_route.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -84,7 +90,7 @@ class _LoginPageState extends State<LoginPage> {
           child: InkWell(
             splashColor: Colors.grey,
             onTap: () {
-              Navigator.of(context).push(FadePageRoute(RegisterPage()));
+              Navigator.of(context).push(FadePageRoute(const RegisterPage()));
             },
             child: Container(
               decoration: BoxDecoration(
@@ -228,5 +234,4 @@ class _LoginPageState extends State<LoginPage> {
       ],
     );
   }
-  
 }

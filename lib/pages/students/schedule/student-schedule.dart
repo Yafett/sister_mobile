@@ -1,10 +1,8 @@
+// ignore_for_file: file_names
+
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:sister_mobile/pages/students/payment/student-payment.dart';
-import 'package:sister_mobile/pages/students/student-home.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 
 import '../../../shared/theme.dart';
 
@@ -31,7 +29,8 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
               style: sWhiteTextStyle.copyWith(fontWeight: semiBold)),
           actions: [
             GestureDetector(
-              onTap: () => Navigator.pushNamed(context, '/student-schedule-help'),
+              onTap: () =>
+                  Navigator.pushNamed(context, '/student-schedule-help'),
               child: Container(
                   margin: const EdgeInsets.only(right: 20),
                   child: const Icon(Icons.help_outline,

@@ -1,16 +1,12 @@
-import 'dart:typed_data';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, sized_box_for_whitespace, avoid_unnecessary_containers, unused_local_variable, avoid_print
+ 
+import 'package:flutter/material.dart'; 
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:signature/signature.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
-
-import 'dart:ui' as ui;
-import '../shared/theme.dart';
+ 
+import '../../../shared/theme.dart'; 
 
 class TermPage extends StatefulWidget {
   const TermPage({Key? key}) : super(key: key);
@@ -127,7 +123,7 @@ class _TermPageState extends State<TermPage> {
                     fontWeight: semiBold),
               ),
               Container(
-                margin: EdgeInsets.only(left: 10, top: 5),
+                margin: const EdgeInsets.only(left: 10, top: 5),
                 child: Row(
                   children: [
                     SizedBox(
@@ -221,7 +217,7 @@ class _TermPageState extends State<TermPage> {
                     fontWeight: semiBold),
               ),
               Container(
-                margin: EdgeInsets.only(left: 10, top: 5),
+                margin:const EdgeInsets.only(left: 10, top: 5),
                 child: Row(
                   children: [
                     SizedBox(
@@ -607,7 +603,7 @@ class _TermPageState extends State<TermPage> {
               Container(
                 decoration:
                     BoxDecoration(border: Border.all(color: Colors.grey)),
-                margin: EdgeInsets.only(bottom: 10),
+                margin: const EdgeInsets.only(bottom: 10),
                 child: Signature(
                   controller: controller,
                   backgroundColor: Colors.white,
@@ -648,11 +644,11 @@ class _TermPageState extends State<TermPage> {
                     splashColor: Colors.white,
                     child: Material(
                       child: Container(
-                        margin: EdgeInsets.only(left: 5),
+                        margin: const EdgeInsets.only(left: 5),
                         height: 30,
                         width: 60,
                         decoration: BoxDecoration(
-                          color: Color(0xffE22426),
+                          color: const Color(0xffE22426),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Center(

@@ -1,6 +1,11 @@
 // ignore_for_file: file_names
+ 
 
-part of '../shared/theme.dart';
+import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+import 'login-page.dart';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({Key? key}) : super(key: key);
