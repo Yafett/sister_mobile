@@ -233,48 +233,59 @@ class StudentHomePageState extends State<StudentHomePage> {
               'Schedule',
               style: sWhiteTextStyle,
             ),
-            Container(
-              margin: EdgeInsets.only(top: 5),
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                  border: Border.all(
-                    color: const Color(0xff30363D),
-                  ),
-                  borderRadius: BorderRadius.circular(8)),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Upcoming Class',
-                        style: sWhiteTextStyle.copyWith(
-                            fontSize: 16, fontWeight: semiBold)),
-                    Text('Piano Class - 20 September 2022',
-                        style: sWhiteTextStyle.copyWith(
-                            fontSize: 22, fontWeight: semiBold)),
-                    Text(
-                      'At SMI - 08:00 AM',
-                      style: sGreyTextStyle.copyWith(fontSize: 14),
-                    ),
-                    const Divider(
-                      height: 20,
-                      thickness: 1,
-                      color: Color(0xff272C33),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            const SizedBox(height: 5),
+            Material(
+              color: sBlackColor,
+              borderRadius: BorderRadius.circular(8),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(8),
+                splashColor: sGreyColor,
+                onTap: () {
+                  Navigator.pushNamed(context, '/student-schedule');
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                        color: const Color(0xff30363D),
+                      ),
+                      borderRadius: BorderRadius.circular(8)),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        Text('Upcoming Class',
+                            style: sWhiteTextStyle.copyWith(
+                                fontSize: 16, fontWeight: semiBold)),
+                        Text('Piano Class - 20 September 2022',
+                            style: sWhiteTextStyle.copyWith(
+                                fontSize: 22, fontWeight: semiBold)),
                         Text(
-                          'See your Schedule',
-                          style: sWhiteTextStyle.copyWith(
-                              fontSize: 14, fontWeight: semiBold),
+                          'At SMI - 08:00 AM',
+                          style: sGreyTextStyle.copyWith(fontSize: 14),
                         ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          color: sWhiteColor,
-                          size: 20,
+                        const Divider(
+                          height: 20,
+                          thickness: 1,
+                          color: Color(0xff272C33),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'See your Schedule',
+                              style: sWhiteTextStyle.copyWith(
+                                  fontSize: 14, fontWeight: semiBold),
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              color: sWhiteColor,
+                              size: 20,
+                            )
+                          ],
                         )
-                      ],
-                    )
-                  ]),
+                      ]),
+                ),
+              ),
             )
           ],
         ));

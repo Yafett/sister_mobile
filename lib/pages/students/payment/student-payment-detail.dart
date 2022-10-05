@@ -232,9 +232,28 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
                     Container(
                       margin:
                           const EdgeInsets.only(left: 10, top: 5, bottom: 5),
-                      child: Text('Unpaid',
-                          style: sGreyTextStyle.copyWith(
-                              fontSize: 14, fontWeight: semiBold)),
+                      child: Material(
+                        color: sBlackColor,
+                        child: InkWell(
+                          splashColor: sGreyColor,
+                          borderRadius: BorderRadius.circular(4),
+                          onTap: () {},
+                          child: Container(
+                            height: 20,
+                            width: 70,
+                            decoration: BoxDecoration(
+                              color: sGreenColor,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Center(
+                                child: Text(
+                              'Paid',
+                              style: sWhiteTextStyle.copyWith(
+                                  fontWeight: semiBold),
+                            )),
+                          ),
+                        ),
+                      ),
                     ),
                     const Divider(
                       thickness: 1,
