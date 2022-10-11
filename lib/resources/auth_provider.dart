@@ -3,7 +3,7 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http; 
+import 'package:http/http.dart' as http;
 
 class AuthProvider {
   final String urlLogin = 'https://sister.sekolahmusik.co.id/api/method/login';
@@ -24,6 +24,12 @@ class AuthProvider {
     return data;
   }
 
+  register(Map body) async {
+    final response = await http.post(
+        Uri.parse(
+            'https://sister.sekolahmusik.co.id/api/method/smi.api.registrasi_student'),
+        body: body);
+  }
 }
 
 class NetworkError extends Error {}

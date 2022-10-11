@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:sister_mobile/pages/students/auth/login-page.dart';
+import 'package:sister_mobile/pages/students/auth/splash-page.dart';
 import 'package:sister_mobile/pages/students/auth/terms-page.dart';
 import 'package:sister_mobile/pages/students/history/student-attendance-detail.dart';
 import 'package:sister_mobile/pages/students/history/student-attendance-history.dart';
@@ -10,10 +11,12 @@ import 'package:sister_mobile/pages/students/payment/student-payment-help.dart';
 import 'package:sister_mobile/pages/students/point/student-point-detail.dart';
 import 'package:sister_mobile/pages/students/point/student-point-help.dart';
 import 'package:sister_mobile/pages/students/point/student-point.dart';
+import 'package:sister_mobile/pages/students/profile/student-profile.dart';
 import 'package:sister_mobile/pages/students/schedule/student-schedule-help.dart';
 import 'package:sister_mobile/pages/students/schedule/student-schedule.dart';
 import 'package:sister_mobile/pages/students/student-home.dart';
 import 'package:sister_mobile/pages/students/payment/student-payment.dart';
+import 'package:sister_mobile/pages/test.dart';
 
 void main() {
   // add these lines
@@ -38,9 +41,10 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (context) => const StudentHomePage(),
+        '/': (context) => const SplashPage(),
         '/home': (context) => const LoginPage(),
         '/terms': (context) => const TermPage(),
+        '/student-profile': (context) => const StudentProfilePage(),
         '/student-payment': (context) => const StudentPaymentPage(),
         '/student-payment-help': (context) => const StudentPaymentHelpPage(),
         '/student-payment-detail': (context) =>

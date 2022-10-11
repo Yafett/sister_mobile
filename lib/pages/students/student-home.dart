@@ -105,80 +105,93 @@ class StudentHomePageState extends State<StudentHomePage> {
   }
 
   Widget _buildHeaderProfile() {
-    return Container(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            InkWell(
-              onTap: () {},
-              child: Container(
-                height: 80,
-                width: 80,
-                decoration: BoxDecoration(
-                    color: Colors.red,
-                    image: const DecorationImage(
-                      image: AssetImage('assets/images/lord-shrek.jpg'),
-                      fit: BoxFit.fitHeight,
-                    ),
-                    borderRadius: BorderRadius.circular(8)),
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                DigitalClock(
-                  areaHeight: 0,
-                  areaDecoration: const BoxDecoration(
-                    color: const Color(0xff0D1117),
-                  ),
-                  hourMinuteDigitDecoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xff0D1117))),
-                  areaWidth: 0,
-                  digitAnimationStyle: Curves.elasticOut,
-                  showSecondsDigit: false,
-                  hourMinuteDigitTextStyle: const TextStyle(
-                    color: Color(0xff0D1117),
-                    fontSize: 0,
-                  ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, '/student-profile');
+      },
+      child: Container(
+          padding: const EdgeInsets.all(20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, '/student-profile');
+                },
+                child: Container(
+                  height: 80,
+                  width: 80,
+                  decoration: BoxDecoration(
+                      color: Colors.red,
+                      image: const DecorationImage(
+                        image: AssetImage('assets/images/lord-shrek.jpg'),
+                        fit: BoxFit.fitHeight,
+                      ),
+                      borderRadius: BorderRadius.circular(8)),
                 ),
-
-                // ! real clock
-                DigitalClock(
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  DigitalClock(
+                    areaHeight: 0,
                     areaDecoration: const BoxDecoration(
                       color: const Color(0xff0D1117),
                     ),
-                    areaWidth: 95,
-                    showSecondsDigit: false,
                     hourMinuteDigitDecoration: BoxDecoration(
                         border: Border.all(color: const Color(0xff0D1117))),
-                    hourMinuteDigitTextStyle: sWhiteTextStyle.copyWith(
-                      fontSize: 40,
-                    )),
-                Text(_getCurrentDate(), style: sWhiteTextStyle),
-              ],
-            ),
-          ],
-        ));
+                    areaWidth: 0,
+                    digitAnimationStyle: Curves.elasticOut,
+                    showSecondsDigit: false,
+                    hourMinuteDigitTextStyle: const TextStyle(
+                      color: Color(0xff0D1117),
+                      fontSize: 0,
+                    ),
+                  ),
+
+                  // ! real clock
+                  DigitalClock(
+                      areaDecoration: const BoxDecoration(
+                        color: const Color(0xff0D1117),
+                      ),
+                      areaWidth: 95,
+                      showSecondsDigit: false,
+                      hourMinuteDigitDecoration: BoxDecoration(
+                          border: Border.all(color: const Color(0xff0D1117))),
+                      hourMinuteDigitTextStyle: sWhiteTextStyle.copyWith(
+                        fontSize: 40,
+                      )),
+                  Text(_getCurrentDate(), style: sWhiteTextStyle),
+                ],
+              ),
+            ],
+          )),
+    );
   }
 
   Widget _buildHeaderTitle() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      margin: const EdgeInsets.only(bottom: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Hello, yafet!',
-            style: sWhiteTextStyle.copyWith(fontSize: 32, fontWeight: semiBold),
-          ),
-          Text(
-            'welcome and happy learning',
-            style: sWhiteTextStyle.copyWith(fontSize: 18, fontWeight: semi),
-          ),
-        ],
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, '/student-profile');
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        margin: const EdgeInsets.only(bottom: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Hello, yafet!',
+              style:
+                  sWhiteTextStyle.copyWith(fontSize: 32, fontWeight: semiBold),
+            ),
+            Text(
+              'welcome and happy learning',
+              style: sWhiteTextStyle.copyWith(fontSize: 18, fontWeight: semi),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -472,9 +485,9 @@ class StudentHomePageState extends State<StudentHomePage> {
           children: [
             Text(
               'Reward',
-              style: sWhiteTextStyle, 
+              style: sWhiteTextStyle,
             ),
-            const SizedBox(height : 5),
+            const SizedBox(height: 5),
             Material(
               color: sBlackColor,
               child: InkWell(

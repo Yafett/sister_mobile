@@ -41,6 +41,7 @@ dependencies:
   google_fonts: ^3.0.1
   http: ^0.13.5
   image_gallery_saver: ^1.7.1
+  image_picker: ^0.8.6
   intl: ^0.17.0
   page_transition: ^2.0.9
   permission_handler: ^10.0.2

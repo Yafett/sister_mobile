@@ -11,6 +11,7 @@ Color sRedColor = const Color(0xffD15151);
 Color sGreenColor = const Color(0xff347D39);
 Color sYellowColor = const Color(0xffE7A100);
 Color sCardColor = const Color(0xff181B1E);
+Color sBlueColor = const Color(0xff005EBC);
 
 // ! first Section
 TextStyle fWhiteTextStyle = GoogleFonts.openSans(color: Colors.white);
