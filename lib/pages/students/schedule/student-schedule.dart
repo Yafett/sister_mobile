@@ -54,7 +54,8 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
           headerTextStyle:
               sWhiteTextStyle.copyWith(fontSize: 20, fontWeight: semiBold),
           activeDatesBackgroundColor: sBlackColor,
-          selectionBorderColor: sBlackColor,
+          selectionBorderColor: sGreyColor,
+          
           viewHeaderDayTextStyle: sWhiteTextStyle.copyWith(
             fontWeight: semiBold,
           ),
@@ -69,21 +70,22 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
           showNavigationArrow: true,
           view: CalendarView.month,
           monthViewSettings: MonthViewSettings(
-              agendaViewHeight: 300,
-              agendaItemHeight: 50,
-              agendaStyle: AgendaStyle(
-                backgroundColor: sBlackColor,
-                appointmentTextStyle: sWhiteTextStyle,
-                dateTextStyle: sWhiteTextStyle,
-                dayTextStyle: sWhiteTextStyle,
-              ),
-              monthCellStyle: MonthCellStyle(
-                textStyle: sWhiteTextStyle,
-                leadingDatesTextStyle: sGreyTextStyle,
-                trailingDatesTextStyle: sGreyTextStyle,
-              ),
-              showAgenda: true,
-              navigationDirection: MonthNavigationDirection.horizontal),
+            agendaViewHeight: 300,
+            agendaItemHeight: 50,
+            agendaStyle: AgendaStyle(
+              backgroundColor: sBlackColor,
+              appointmentTextStyle: sWhiteTextStyle,
+              dateTextStyle: sWhiteTextStyle,
+              dayTextStyle: sWhiteTextStyle,
+            ),
+            monthCellStyle: MonthCellStyle(
+              textStyle: sWhiteTextStyle,
+              leadingDatesTextStyle: sGreyTextStyle,
+              trailingDatesTextStyle: sGreyTextStyle,
+            ),
+            showAgenda: true,
+            navigationDirection: MonthNavigationDirection.horizontal,
+          ),
           appointmentTimeTextFormat: 'hh:mm a',
         ),
       ),

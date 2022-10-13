@@ -2,15 +2,22 @@
 
 import 'dart:convert';
 
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:sister_mobile/model/KnowFrom-model.dart';
 import 'package:sister_mobile/resources/auth_provider.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/course-information-card.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:sister_mobile/widget/parent_information_card.dart';
 import 'package:http/http.dart' as http;
+
+import '../../../model/Unit-model.dart';
+import '../../../resources/data_provider.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -20,6 +27,9 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  var dio = Dio();
+  var cookieJar = CookieJar();
+
   var knowFromVal;
   var joiningVal;
   var genderVal;
@@ -121,6 +131,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _guardSosmedController = TextEditingController();
 
   final authProvider = AuthProvider();
+  final dataProvider = DataProvider();
 
   @override
   void initState() {
@@ -128,7 +139,6 @@ class _RegisterPageState extends State<RegisterPage> {
     _fetchKnowFrom();
     _fetchGender();
     _fetchUnit();
-    _fetchClassCode();
     super.initState();
   }
 
@@ -871,95 +881,6 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  // nama pakai huruf besar
-  register() async {
-    var test = json.encode(<String, dynamic>{
-      "data": {
-        "unit": unitVal,
-        "search": "",
-        "qr": _qrController.text,
-        "guardian": listParents,
-        "know": knowFromVal,
-        "reason": joiningVal,
-        "school": _schoolController.text,
-        "sosmed": _sosmedController.text,
-        "mobile": _whatsappController.text,
-        "email": _emailController.text,
-        "nik": _nikController.text,
-        "daftar_ulang": true,
-        "follow_up": "",
-        "mgm": "",
-        "full_name": _fullnameController.text,
-        "nick_name": _nicknameController.text,
-        "place": _birthplaceController.text,
-        "religion": _religionController.text,
-        "gender": genderVal,
-        "national": _nationController.text,
-        "city": _cityController.text,
-        "postal_code": _postalController.text,
-        "date_of_birth": _birthdateController.text,
-        "address": _addressController.text,
-        "course": listCourse,
-        "sign": true
-      }
-    });
-
-    final response = await http.post(
-        Uri.parse(
-            'https://sister.sekolahmusik.co.id/api/method/smi.api.registrasi_student'),
-        headers: {
-          'content-type': 'application/json',
-          'Authorization': "token ee4b62270c9f599:3611d01143a5d46",
-        },
-        body: test);
-
-    if (response.statusCode == 200) {
-      Navigator.pushNamed(context, '/home');
-    }
-  }
-
-  addParentsToList(name, relation, email, wa, occupation, sosmed) {
-    listParents.add({
-      "name": name,
-      "relation": relation,
-      "email": email,
-      "mobile": wa,
-      "job": occupation,
-      "sosmed": sosmed,
-    });
-
-    relationVal = null;
-    _guardNameController.text = '';
-    _guardEmailController.text = '';
-    _guardWhatsappController.text = '';
-    _guardOccupationController.text = '';
-    _guardSosmedController.text = '';
-
-    print(listParents);
-  }
-
-  addCourseToList() {
-    listCourse.add({
-      "format": classFormatVal,
-      "major": classMajorVal,
-      "duration": classDurationVal,
-      "type": classTypeVal
-    });
-
-    classFormatVal = null;
-    classMajorVal = null;
-    classDurationVal = null;
-    classTypeVal = null;
-    print(listCourse);
-  }
-
-  removeCourseOnList(index) {
-    setState(() {
-      listCourse.removeAt(index);
-    });
-    print(listCourse);
-  }
-
   Widget _buildAddParents() {
     if (addParents == true) {
       return Column(
@@ -1699,73 +1620,171 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  _fetchJoiningReason() async {
-    http.Response response = await http.get(
-      Uri.parse(
-          'https://sister.sekolahmusik.co.id/api/resource/Reason For Joining'),
-      headers: {
-        'Authorization': "token ee4b62270c9f599:3611d01143a5d46",
-      },
-    );
+  // ! auth function
 
-    var data = json.decode(response.body)['data'];
+  register() async {
+    var test = json.encode(<String, dynamic>{
+      "data": {
+        "unit": unitVal,
+        "search": "",
+        "qr": _qrController.text,
+        "guardian": listParents,
+        "know": knowFromVal,
+        "reason": joiningVal,
+        "school": _schoolController.text,
+        "sosmed": _sosmedController.text,
+        "mobile": _whatsappController.text,
+        "email": _emailController.text,
+        "nik": _nikController.text,
+        "daftar_ulang": true,
+        "follow_up": "",
+        "mgm": "",
+        "full_name": _fullnameController.text.toUpperCase(),
+        "nick_name": _nicknameController.text,
+        "place": _birthplaceController.text,
+        "religion": _religionController.text,
+        "gender": genderVal,
+        "national": _nationController.text,
+        "city": _cityController.text,
+        "postal_code": _postalController.text,
+        "date_of_birth": _birthdateController.text,
+        "address": _addressController.text,
+        "course": listCourse,
+        "sign": true
+      }
+    });
+
+    final response = await http.post(
+        Uri.parse(
+            'https://sister.sekolahmusik.co.id/api/method/smi.api.registrasi_student'),
+        headers: {
+          'content-type': 'application/json',
+          'Authorization': "token ee4b62270c9f599:88a96322d318005",
+        },
+        body: test);
+
+    if (response.statusCode == 200) {
+      Navigator.pushNamed(context, '/home');
+    }
+  }
+
+  addParentsToList(name, relation, email, wa, occupation, sosmed) {
+    listParents.add({
+      "name": name.toString().toUpperCase(),
+      "relation": relation,
+      "email": email,
+      "mobile": wa,
+      "job": occupation,
+      "sosmed": sosmed,
+    });
+
+    relationVal = null;
+    _guardNameController.text = '';
+    _guardEmailController.text = '';
+    _guardWhatsappController.text = '';
+    _guardOccupationController.text = '';
+    _guardSosmedController.text = '';
+
+    print(listParents);
+  }
+
+  addCourseToList() {
+    listCourse.add({
+      "format": classFormatVal,
+      "major": classMajorVal,
+      "duration": classDurationVal,
+      "type": classTypeVal
+    });
+
+    classFormatVal = null;
+    classMajorVal = null;
+    classDurationVal = null;
+    classTypeVal = null;
+    print(listCourse);
+  }
+
+  removeCourseOnList(index) {
+    setState(() {
+      listCourse.removeAt(index);
+    });
+    print(listCourse);
+  }
+
+  // ! fetch data
+
+  _fetchJoiningReason() async {
+    dio.interceptors.add(CookieManager(cookieJar));
+    final response = await dio
+        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+      'usr': 'administrator',
+      'pwd': 'admin',
+    });
+    final request = await dio.get(
+        "https://sister.sekolahmusik.co.id/api/resource/Reason For Joining");
+    var data = request.data['data'];
 
     for (var a = 0; a < data.length; a++) {
       setState(() {
-        listJoiningReason.add(data[a]['name']);
+        listJoiningReason.add(request.data['data'][a]['name']);
       });
     }
   }
 
   _fetchKnowFrom() async {
-    http.Response response = await http.get(
-      Uri.parse('https://sister.sekolahmusik.co.id/api/resource/Know From'),
-      headers: {
-        'Authorization': "token ee4b62270c9f599:3611d01143a5d46",
-      },
-    );
-
-    var data = json.decode(response.body)['data'];
+    dio.interceptors.add(CookieManager(cookieJar));
+    final response = await dio
+        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+      'usr': 'administrator',
+      'pwd': 'admin',
+    });
+    final request = await dio
+        .get("https://sister.sekolahmusik.co.id/api/resource/Know From");
+    var data = request.data['data'];
 
     for (var a = 0; a < data.length; a++) {
-      listKnowFrom.add(data[a]['name']);
+      setState(() {
+        listKnowFrom.add(request.data['data'][a]['name']);
+      });
     }
   }
 
   _fetchUnit() async {
-    http.Response response = await http.get(
-      Uri.parse('https://sister.sekolahmusik.co.id/api/resource/Company'),
-      headers: {
-        'Authorization': "token ee4b62270c9f599:3611d01143a5d46",
-      },
-    );
-
-    var data = json.decode(response.body)['data'];
+    dio.interceptors.add(CookieManager(cookieJar));
+    final response = await dio
+        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+      'usr': 'administrator',
+      'pwd': 'admin',
+    });
+    final request =
+        await dio.get("https://sister.sekolahmusik.co.id/api/resource/Company");
+    var data = request.data['data'];
 
     for (var a = 0; a < data.length; a++) {
-      listUnit.add(data[a]['name']);
+      setState(() {
+        listUnit.add(request.data['data'][a]['name']);
+      });
     }
   }
 
-  _fetchClassCode() async {
-    http.Response response = await http.get(
-      Uri.parse('https://sister.sekolahmusik.co.id/api/resource/Program'),
-      headers: {
-        'Authorization': "token ee4b62270c9f599:3611d01143a5d46",
-      },
-    );
-
-    var data = json.decode(response.body)['data'];
+  _fetchGender() async {
+    dio.interceptors.add(CookieManager(cookieJar));
+    final response = await dio
+        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+      'usr': 'administrator',
+      'pwd': 'admin',
+    });
+    final request =
+        await dio.get("https://sister.sekolahmusik.co.id/api/resource/Gender");
+    var data = request.data['data'];
 
     for (var a = 0; a < data.length; a++) {
-      // listClassCode.add(data[a]['name']);
-
-      // listClassFormat.add(data[a]['name'].substring(2, 4));
-      // listClassGrading.add(data[a]['name'].substring(4, 6));
-      // listClassType.add(data[a]['name'][7]);
-
+      setState(() {
+        listGender.add(request.data['data'][a]['name']);
+      });
     }
   }
+
+  // ! set value
 
   _setClassFormat(cf) {
     if (cf == 'PR') {
@@ -1867,33 +1886,6 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  _fetchGender() async {
-    http.Response response = await http.get(
-      Uri.parse('https://sister.sekolahmusik.co.id/api/resource/Gender'),
-      headers: {
-        'Authorization': "token ee4b62270c9f599:3611d01143a5d46",
-      },
-    );
-
-    var data = json.decode(response.body)['data'];
-
-    for (var a = 0; a < data.length; a++) {
-      listGender.add(data[a]['name']);
-    }
-  }
-
-  _getDataFromCamera() async {
-    final ImagePicker _picker = ImagePicker();
-
-    final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
-
-    if (photo?.name != null) {
-      setState(() {
-        photoName = photo!.name;
-      });
-    }
-  }
-
   _checkIconCourse(major) {
     if (major == 'Piano') {
       return Icons.piano;
@@ -1921,6 +1913,18 @@ class _RegisterPageState extends State<RegisterPage> {
       return const Color(0xffC8239A);
     } else {
       return const Color(0xff616161);
+    }
+  }
+
+  _getDataFromCamera() async {
+    final ImagePicker _picker = ImagePicker();
+
+    final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+
+    if (photo?.name != null) {
+      setState(() {
+        photoName = photo!.name;
+      });
     }
   }
 }

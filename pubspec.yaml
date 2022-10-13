@@ -30,7 +30,11 @@ dependencies:
   animated_splash_screen: ^1.3.0
   bloc: ^8.1.0
   complex: ^0.7.2
+  cookie_jar: ^3.0.1
   cupertino_icons: ^1.0.2
+  dio: ^4.0.6
+  dio_cookie_manager: ^2.0.0
+  dotted_border: ^2.0.0+2
   equatable: ^2.0.5
   flushbar: ^1.10.4
   flutter:
@@ -43,8 +47,11 @@ dependencies:
   image_gallery_saver: ^1.7.1
   image_picker: ^0.8.6
   intl: ^0.17.0
+  motion_toast: ^2.4.3
   page_transition: ^2.0.9
   permission_handler: ^10.0.2
+  qr_code_scanner: ^1.0.1
+  qr_flutter: ^4.0.0
   shared_preferences: ^2.0.15
   shrink_sidemenu: ^2.0.0+2-null-safety
   signature: ^5.2.1

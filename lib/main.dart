@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sister_mobile/pages/guardians/guardian-home.dart';
+import 'package:sister_mobile/pages/guardians/guardian-kids.dart';
 import 'package:sister_mobile/pages/students/auth/login-page.dart';
+import 'package:sister_mobile/pages/students/auth/register-page.dart';
 import 'package:sister_mobile/pages/students/auth/splash-page.dart';
 import 'package:sister_mobile/pages/students/auth/terms-page.dart';
 import 'package:sister_mobile/pages/students/history/student-attendance-detail.dart';
@@ -44,6 +47,9 @@ class _MyAppState extends State<MyApp> {
         '/': (context) => const SplashPage(),
         '/home': (context) => const LoginPage(),
         '/terms': (context) => const TermPage(),
+
+        // ! Student Section
+        '/student-home': (context) => const StudentHomePage(),
         '/student-profile': (context) => const StudentProfilePage(),
         '/student-payment': (context) => const StudentPaymentPage(),
         '/student-payment-help': (context) => const StudentPaymentHelpPage(),
@@ -60,6 +66,10 @@ class _MyAppState extends State<MyApp> {
             const StudentEnrollmentHistoryPage(),
         '/student-history-attendance-detail': (context) =>
             const StudentAttendanceDetailPage(),
+
+        // ! Guardian Section
+        '/guardian-home': (context) => const GuardianHomePage(),
+        '/guardian-kids': (context) => const GuardianKidsPage(),
       },
     );
   }

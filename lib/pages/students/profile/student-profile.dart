@@ -51,7 +51,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                   const SizedBox(height: 20),
                   _buildMoreInfo(),
                   const SizedBox(height: 20),
-                  _buildRole(),
+                  _buildGuardian(),
                 ],
               )),
         ),
@@ -365,13 +365,13 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     );
   }
 
-  Widget _buildRole() {
+  Widget _buildGuardian() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // ! title
         Text(
-          'Role',
+          'Guardian',
           style: sWhiteTextStyle.copyWith(fontWeight: semiBold, fontSize: 20),
         ),
         const Divider(
@@ -398,7 +398,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               ),
             ),
             Text(
-              'HR Manager',
+              'Galielo Galieli',
               style: sWhiteTextStyle.copyWith(fontWeight: semiBold),
             ),
           ],
@@ -423,56 +423,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               ),
             ),
             Text(
-              'Project User ',
-              style: sWhiteTextStyle.copyWith(fontWeight: semiBold),
-            ),
-          ],
-        ),
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              margin: EdgeInsets.only(right: 5),
-              height: 30,
-              width: 20,
-              child: Checkbox(
-                checkColor: sBlackColor,
-                activeColor: sBlueColor,
-                value: true,
-                onChanged: (value) {
-                  setState(() {
-                    value;
-                  });
-                },
-              ),
-            ),
-            Text(
-              'Instructor',
-              style: sWhiteTextStyle.copyWith(fontWeight: semiBold),
-            ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-              margin: EdgeInsets.only(right: 5),
-              height: 30,
-              width: 20,
-              child: Checkbox(
-                checkColor: sBlackColor,
-                activeColor: sBlueColor,
-                value: true,
-                onChanged: (value) {
-                  setState(() {
-                    value;
-                  });
-                },
-              ),
-            ),
-            Text(
-              'Leave Approver',
+              'Sena Enka',
               style: sWhiteTextStyle.copyWith(fontWeight: semiBold),
             ),
           ],

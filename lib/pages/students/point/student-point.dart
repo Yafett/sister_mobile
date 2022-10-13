@@ -1,6 +1,7 @@
 // ignore_for_file: file_names, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 
 import '../../../shared/theme.dart';
@@ -15,6 +16,10 @@ class StudentPointPage extends StatefulWidget {
 class _StudentPointPageState extends State<StudentPointPage> {
   var itemList = ['', ''];
 
+  Barcode? result;
+  QRViewController? controller;
+  final qrKey = GlobalKey();
+
   @override
   Widget build(BuildContext context) {
     return _buildPointRewardPage();
@@ -26,9 +31,18 @@ class _StudentPointPageState extends State<StudentPointPage> {
       appBar: AppBar(
         backgroundColor: sBlackColor,
         leading: const BackButton(color: Color(0xffC9D1D9)),
-        title: Text('Point Reward',
-            style: sWhiteTextStyle.copyWith(fontWeight: semiBold)),
+        title: Text(
+          'Point Reward',
+          style: sWhiteTextStyle.copyWith(fontWeight: semiBold),
+        ),
         actions: [
+          GestureDetector(
+            onTap: () => Navigator.pushNamed(context, '/student-point-help'),
+            child: Container(
+                margin: const EdgeInsets.only(right: 5),
+                child: const Icon(Icons.shopify,
+                    size: 30, color: Color(0xffC9D1D9))),
+          ),
           GestureDetector(
             onTap: () => Navigator.pushNamed(context, '/student-point-help'),
             child: Container(
@@ -56,9 +70,10 @@ class _StudentPointPageState extends State<StudentPointPage> {
                   const SizedBox(height: 10),
                   _buildRewardTile(),
                   const SizedBox(height: 30),
-                  _buildClaimTitle(),
-                  const SizedBox(height: 10),
-                  _buildClaimList(),
+                 
+                  // _buildClaimTitle(),
+                  // const SizedBox(height: 10),
+                  // _buildClaimList(),
                 ],
               )),
         ),

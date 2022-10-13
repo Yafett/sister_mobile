@@ -19,7 +19,13 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       try {
         emit(LoginLoading());
         final result = await _authRepository.login(event.email, event.password);
-        print(result);
+        if (result['message'] == "Logged In") {
+          print(result['message']);
+          emit(LoginSuccess());
+        } else {
+          print(result['message']);
+          emit(LoginError(result['message']));
+        }
         // if (result['message'] == 'Logged In' ||
         //     result['message'] == 'Invalid login credentials') {
         //   emit(LoginError(result));
@@ -32,4 +38,3 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     });
   }
 }
- 

@@ -1,10 +1,10 @@
- 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:motion_toast/motion_toast.dart';
 import 'package:sister_mobile/pages/students/auth/register-page.dart';
+import 'package:sister_mobile/shared/theme.dart';
 
-import '../../../api/logout-api.dart';
 import '../../../bloc/login-bloc/login_bloc.dart';
 import '../../../widget/fade_page_route.dart';
 
@@ -28,7 +28,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _loginBloc.add(Login('administrator', 'admin'));
   }
 
   Widget _buildLoginPage(context) {
@@ -116,20 +115,36 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildLoginButton(context) {
     return BlocListener<LoginBloc, LoginState>(
       bloc: _loginBloc,
-      listener: (context, state) {},
+      listener: (context, state) {
+        if (state is LoginSuccess) {
+          Navigator.pushNamedAndRemoveUntil(
+              context, '/student-home', (route) => false);
+        } else if (state is LoginError) {
+          MotionToast(
+            height: 50,
+            width: 300,
+            primaryColor: sRedColor,
+            description: Text(
+              state.message.toString(),
+              style: sRedTextStyle.copyWith(fontWeight: semiBold),
+            ),
+            icon: Icons.warning_amber,
+            animationCurve: Curves.bounceIn,
+          ).show(context);
+        }
+      },
       child: Material(
         color: const Color(0xffE22426),
         child: InkWell(
           splashColor: Colors.grey,
           onTap: () {
-            logout();
-            _loginBloc
-                .add(Login(_usernameController.text, _passwordController.text));
+            _loginBloc.add(
+              Login(
+                _usernameController.text,
+                _passwordController.text,
+              ),
+            );
           },
-          // Navigator.of(context).push(CustomPageRoute(
-          //   child: const RegisterPage(),
-          //   direction: AxisDirection.right,
-          // )),
           child: SizedBox(
             width: MediaQuery.of(context).size.width,
             height: 50,
@@ -158,21 +173,16 @@ class _LoginPageState extends State<LoginPage> {
             suffixIcon: const Icon(Icons.person_outlined),
             enabledBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.black),
-              //  when the TextFormField in unfocused
             ),
             focusedBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.black),
-              //  when the TextFormField in focused
             ),
             border: const UnderlineInputBorder(),
             focusColor: Colors.black,
             hintText: 'Email',
             hintStyle: GoogleFonts.openSans(),
           ),
-          onSaved: (String? value) {
-            // This optional block of code can be used to run
-            // code when the user saves the form.
-          },
+          onSaved: (String? value) {},
         ),
         const SizedBox(height: 20),
         TextFormField(
@@ -182,11 +192,9 @@ class _LoginPageState extends State<LoginPage> {
             suffixIcon: const Icon(Icons.lock_outline),
             enabledBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.black),
-              //  when the TextFormField in unfocused
             ),
             focusedBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Colors.black),
-              //  when the TextFormField in focused
             ),
             border: const UnderlineInputBorder(),
             focusColor: Colors.black,

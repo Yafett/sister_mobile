@@ -1,15 +1,13 @@
-// ignore_for_file: file_names
+class Unit {
+  List<CompanyData>? data;
 
-class KnowFrom {
-  List<Data>? data;
+  Unit({this.data});
 
-  KnowFrom({this.data});
-
-  KnowFrom.fromJson(Map<String, dynamic> json) {
+  Unit.fromJson(Map<String, dynamic> json) {
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <CompanyData>[];
       json['data'].forEach((v) {
-        data!.add(new Data.fromJson(v));
+        data!.add(new CompanyData.fromJson(v));
       });
     }
   }
@@ -17,18 +15,18 @@ class KnowFrom {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     if (this.data != null) {
-      data['data']['name'] = this.data!.map((v) => v.toJson()).toList();
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
     }
     return data;
   }
 }
 
-class Data {
+class CompanyData {
   String? name;
 
-  Data({this.name});
+  CompanyData({this.name});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  CompanyData.fromJson(Map<String, dynamic> json) {
     name = json['name'];
   }
 

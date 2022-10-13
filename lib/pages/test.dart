@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:sister_mobile/model/KnowFrom-model.dart';
 import 'package:sister_mobile/shared/theme.dart';
-import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 import 'package:http/http.dart' as http;
 
@@ -47,7 +49,18 @@ class _TestPageState extends State<TestPage> {
                       },
                       child: Text('Get Data'),
                     ),
-                    Text(tess)
+                    ElevatedButton(
+                      onPressed: () {
+                        test();
+                      },
+                      child: Text('test '),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        logout();
+                      },
+                      child: Text('logout '),
+                    ),
                   ]),
             ),
           )),
@@ -88,6 +101,30 @@ class _TestPageState extends State<TestPage> {
 
     setState(() {
       tess = response.body;
-    }); 
+    });
+  }
+
+  test() async {
+    var dio = Dio();
+    var cookieJar = CookieJar();
+    dio.interceptors.add(CookieManager(cookieJar));
+    final response = await dio
+        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+      'usr': 'administrator',
+      'pwd': 'admin',
+    });
+    final request =
+        await dio.get("https://sister.sekolahmusik.co.id/api/resource/Fees");
+    print(request.data);
+  }
+
+  logout() async {
+    var dio = Dio();
+
+    var cookieJar = CookieJar();
+    dio.interceptors.add(CookieManager(cookieJar));
+    final request =
+        await dio.get("https://sister.sekolahmusik.co.id/api/resource/Fees");
+    print(request.data);
   }
 }
