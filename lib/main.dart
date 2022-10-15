@@ -44,7 +44,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (context) => const SplashPage(),
+        '/': (context) => const StudentHomePage(),
         '/home': (context) => const LoginPage(),
         '/terms': (context) => const TermPage(),
 

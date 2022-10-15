@@ -36,6 +36,7 @@ dependencies:
   dio_cookie_manager: ^2.0.0
   dotted_border: ^2.0.0+2
   equatable: ^2.0.5
+  expandable: ^5.0.1
   flushbar: ^1.10.4
   flutter:
     sdk: flutter
@@ -55,6 +56,7 @@ dependencies:
   shared_preferences: ^2.0.15
   shrink_sidemenu: ^2.0.0+2-null-safety
   signature: ^5.2.1
+  skeletons: ^0.0.3
   slide_digital_clock: ^1.0.2
   syncfusion_flutter_calendar: ^20.3.47
   syncfusion_flutter_core: ^20.3.47

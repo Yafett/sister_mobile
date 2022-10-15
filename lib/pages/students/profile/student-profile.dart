@@ -1,7 +1,13 @@
+// ignore_for_file: unused_field
+
+import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sister_mobile/bloc/get-profile-bloc/get_profile_bloc.dart';
 
+import '../../../model/Profile-model.dart';
 import '../../../shared/theme.dart';
 import '../../../widget/no_scroll_waves.dart';
 
@@ -13,6 +19,35 @@ class StudentProfilePage extends StatefulWidget {
 }
 
 class _StudentProfilePageState extends State<StudentProfilePage> {
+  final _profileBloc = GetProfileBloc();
+
+  final _usernameStudentController = TextEditingController();
+  final _mobileStudentController = TextEditingController();
+  final _firstNameStudentController = TextEditingController();
+  final _lastNameStudentController = TextEditingController();
+  final _emailStudentController = TextEditingController();
+  final _nikStudentController = TextEditingController();
+  final _companyStudentController = TextEditingController();
+
+  final _joiningStudentController = TextEditingController();
+  final _knowStudentController = TextEditingController();
+  final _joiningDateStudentController = TextEditingController();
+
+  final _dateBirthStudentController = TextEditingController();
+  final _placeBirthStudentController = TextEditingController();
+  final _genderStudentController = TextEditingController();
+  final _nationallityStudentController = TextEditingController();
+  final _religionStudentController = TextEditingController();
+  final _addressStudentController = TextEditingController();
+  final _pincodeStudentController = TextEditingController();
+  final _cityStudentController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _profileBloc.add(GetProfileList());
+  }
+
   @override
   Widget build(BuildContext context) {
     return _buildProfilePage();
@@ -36,30 +71,64 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
           )
         ],
       ),
-      body: ScrollConfiguration(
-        behavior: NoScrollWaves(),
-        child: SingleChildScrollView(
-          child: Container(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildProfileName(),
-                  _buildProfilePicture(),
-                  const SizedBox(height: 50),
-                  _buildBasicInfo(),
-                  const SizedBox(height: 20),
-                  _buildMoreInfo(),
-                  const SizedBox(height: 20),
-                  _buildGuardian(),
-                ],
-              )),
-        ),
-      ),
+      body: _buildProfile(),
     );
   }
 
-  Widget _buildProfileName() {
+  Widget _buildProfile() {
+    return BlocBuilder<GetProfileBloc, GetProfileState>(
+      bloc: _profileBloc,
+      builder: (context, state) {
+        if (state is GetProfileLoaded) {
+          Profile profile = state.profileModel;
+          _setControllerStudent(profile.data);
+          return ScrollConfiguration(
+            behavior: NoScrollWaves(),
+            child: SingleChildScrollView(
+              child: Container(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildProfileName(profile.data),
+                      _buildProfilePicture(),
+                      const SizedBox(height: 30),
+                      // ! Student Sect
+                      ExpandablePanel(
+                        theme: ExpandableThemeData(
+                          iconColor: sWhiteColor,
+                          iconPadding: const EdgeInsets.all(0),
+                        ),
+                        header: Text(
+                          'Student',
+                          style: sWhiteTextStyle.copyWith(
+                              fontWeight: semiBold, fontSize: 20),
+                        ),
+                        collapsed: Container(),
+                        expanded: Column(
+                          children: [
+                            _buildBasicInfo(),
+                            const SizedBox(height: 20),
+                            _buildPersonalInfo(),
+                            const SizedBox(height: 20),
+                            _buildMoreInfo(),
+                            const SizedBox(height: 20),
+                            _buildGuardian(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  )),
+            ),
+          );
+        } else {
+          return Container();
+        }
+      },
+    );
+  }
+
+  Widget _buildProfileName(profile) {
     return Row(
       children: [
         Container(
@@ -72,7 +141,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
           ),
         ),
         Text(
-          'Beatrice',
+          profile.firstName,
           style: sWhiteTextStyle.copyWith(
             fontWeight: semiBold,
             fontSize: 20,
@@ -114,10 +183,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
           color: Color(0xff272C33),
         ),
 
-        // ! Gender Field
-        Text('Gender', style: fTextColorStyle),
+        // ! Joining Reason Field
+        Text('Joining Reason', style: fTextColorStyle),
         const SizedBox(height: 5),
         TextFormField(
+          style: fWhiteTextStyle,
+          controller: _joiningStudentController,
           decoration: InputDecoration(
             filled: true,
             fillColor: sBlackColor,
@@ -135,10 +206,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
         ),
         const SizedBox(height: 15),
 
-        // ! Mobile Field
-        Text('Mobile', style: fTextColorStyle),
+        // ! Joining Reason Date Field
+        Text('Joining Reason Date', style: fTextColorStyle),
         const SizedBox(height: 5),
         TextFormField(
+          style: fWhiteTextStyle,
+          controller: _joiningDateStudentController,
           decoration: InputDecoration(
             filled: true,
             fillColor: sBlackColor,
@@ -150,16 +223,18 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0XFF444C56)),
             ),
-            hintText: 'e.x john',
+            hintText: 'e.x john doe',
             hintStyle: fGreyTextStyle,
           ),
         ),
         const SizedBox(height: 15),
 
-        // ! Birth Field
-        Text('Birth (optional)', style: fTextColorStyle),
+        // ! Know From Field
+        Text('Know From', style: fTextColorStyle),
         const SizedBox(height: 5),
         TextFormField(
+          style: fWhiteTextStyle,
+          controller: _knowStudentController,
           decoration: InputDecoration(
             filled: true,
             fillColor: sBlackColor,
@@ -171,16 +246,58 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0XFF444C56)),
             ),
-            hintText: 'e.x midname',
+            hintText: 'e.x john doe',
+            hintStyle: fGreyTextStyle,
+          ),
+        ),
+        const SizedBox(height: 15),
+      ],
+    );
+  }
+
+  Widget _buildPersonalInfo() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ! title
+        Text(
+          'Personal Information',
+          style: sWhiteTextStyle.copyWith(fontWeight: semiBold, fontSize: 20),
+        ),
+        const Divider(
+          thickness: 1,
+          color: Color(0xff272C33),
+        ),
+
+        // ! Date of Birth Field
+        Text('Date of Birth', style: fTextColorStyle),
+        const SizedBox(height: 5),
+        TextFormField(
+          style: sWhiteTextStyle,
+          controller: _dateBirthStudentController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: sBlackColor,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            hintText: 'e.x john doe',
             hintStyle: fGreyTextStyle,
           ),
         ),
         const SizedBox(height: 15),
 
-        // ! Location Field
-        Text('Location', style: fTextColorStyle),
+        // ! Date of Place Field
+        Text('Date of Place', style: fTextColorStyle),
         const SizedBox(height: 5),
         TextFormField(
+          style: sWhiteTextStyle,
+          controller: _placeBirthStudentController,
           decoration: InputDecoration(
             filled: true,
             fillColor: sBlackColor,
@@ -192,16 +309,18 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0XFF444C56)),
             ),
-            hintText: 'e.x doe',
+            hintText: 'e.x john doe',
             hintStyle: fGreyTextStyle,
           ),
         ),
         const SizedBox(height: 15),
 
-        // ! Bio Field
-        Text('Bio', style: fTextColorStyle),
+        // ! Gender Field
+        Text('Gender', style: fTextColorStyle),
         const SizedBox(height: 5),
         TextFormField(
+          style: sWhiteTextStyle,
+          controller: _genderStudentController,
           decoration: InputDecoration(
             filled: true,
             fillColor: sBlackColor,
@@ -213,7 +332,122 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0XFF444C56)),
             ),
-            hintText: 'e.x john@example.com',
+            hintText: 'e.x john doe',
+            hintStyle: fGreyTextStyle,
+          ),
+        ),
+        const SizedBox(height: 15),
+
+        // ! Nationallity Field
+        Text('Nationallity', style: fTextColorStyle),
+        const SizedBox(height: 5),
+        TextFormField(
+          style: sWhiteTextStyle,
+          controller: _nationallityStudentController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: sBlackColor,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            hintText: 'e.x john doe',
+            hintStyle: fGreyTextStyle,
+          ),
+        ),
+        const SizedBox(height: 15),
+
+        // ! Religion Field
+        Text('Religion', style: fTextColorStyle),
+        const SizedBox(height: 5),
+        TextFormField(
+          style: sWhiteTextStyle,
+          controller: _religionStudentController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: sBlackColor,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            hintText: 'e.x john doe',
+            hintStyle: fGreyTextStyle,
+          ),
+        ),
+        const SizedBox(height: 15),
+
+        // ! Address Field
+        Text('Address', style: fTextColorStyle),
+        const SizedBox(height: 5),
+        TextFormField(
+          style: sWhiteTextStyle,
+          controller: _addressStudentController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: sBlackColor,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            hintText: 'e.x john doe',
+            hintStyle: fGreyTextStyle,
+          ),
+        ),
+        const SizedBox(height: 15),
+
+        // ! Pin Code Field
+        Text('Pin Code', style: fTextColorStyle),
+        const SizedBox(height: 5),
+        TextFormField(
+          style: sWhiteTextStyle,
+          controller: _pincodeStudentController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: sBlackColor,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            hintText: 'e.x john doe',
+            hintStyle: fGreyTextStyle,
+          ),
+        ),
+        const SizedBox(height: 15),
+
+        // ! City Field
+        Text('City', style: fTextColorStyle),
+        const SizedBox(height: 5),
+        TextFormField(
+          style: sWhiteTextStyle,
+          controller: _cityStudentController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: sBlackColor,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            hintText: 'e.x john doe',
             hintStyle: fGreyTextStyle,
           ),
         ),
@@ -226,6 +460,8 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        const SizedBox(height: 20),
+
         // ! title
         Text(
           'Basic Information',
@@ -236,10 +472,35 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
           color: Color(0xff272C33),
         ),
 
-        // ! username Field
-        Text('Username', style: fTextColorStyle),
+        // ! First Name Field
+        Text('First Name', style: fTextColorStyle),
         const SizedBox(height: 5),
         TextFormField(
+          style: sWhiteTextStyle,
+          controller: _firstNameStudentController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: sBlackColor,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            hintText: 'e.x john doe',
+            hintStyle: fGreyTextStyle,
+          ),
+        ),
+        const SizedBox(height: 15),
+
+        // ! Last Name Field
+        Text('Last Name', style: fTextColorStyle),
+        const SizedBox(height: 5),
+        TextFormField(
+          style: sWhiteTextStyle,
+          controller: _lastNameStudentController,
           decoration: InputDecoration(
             filled: true,
             fillColor: sBlackColor,
@@ -261,6 +522,8 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
         Text('Mobile', style: fTextColorStyle),
         const SizedBox(height: 5),
         TextFormField(
+          style: sWhiteTextStyle,
+          controller: _mobileStudentController,
           decoration: InputDecoration(
             filled: true,
             fillColor: sBlackColor,
@@ -278,52 +541,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
         ),
         const SizedBox(height: 15),
 
-        // ! Middle name Field
-        Text('Middle Name (optional)', style: fTextColorStyle),
-        const SizedBox(height: 5),
-        TextFormField(
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: sBlackColor,
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0XFF444C56)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0XFF444C56)),
-            ),
-            hintText: 'e.x midname',
-            hintStyle: fGreyTextStyle,
-          ),
-        ),
-        const SizedBox(height: 15),
-
-        // ! Last Name Field
-        Text('Last Name', style: fTextColorStyle),
-        const SizedBox(height: 5),
-        TextFormField(
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: sBlackColor,
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0XFF444C56)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0XFF444C56)),
-            ),
-            hintText: 'e.x doe',
-            hintStyle: fGreyTextStyle,
-          ),
-        ),
-        const SizedBox(height: 15),
-
         // ! Email Field
         Text('Email', style: fTextColorStyle),
         const SizedBox(height: 5),
         TextFormField(
+          style: sWhiteTextStyle,
+          controller: _emailStudentController,
           decoration: InputDecoration(
             filled: true,
             fillColor: sBlackColor,
@@ -345,6 +568,32 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
         Text('NIK', style: fTextColorStyle),
         const SizedBox(height: 5),
         TextFormField(
+          style: sWhiteTextStyle,
+          controller: _nikStudentController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: sBlackColor,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            hintText: 'e.x nik',
+            hintStyle: fGreyTextStyle,
+          ),
+        ),
+        const SizedBox(height: 15),
+
+        // ! Company Field
+        Text('Company', style: fTextColorStyle),
+        const SizedBox(height: 5),
+        TextFormField(
+          readOnly: true,
+          style: sWhiteTextStyle,
+          controller: _companyStudentController,
           decoration: InputDecoration(
             filled: true,
             fillColor: sBlackColor,
@@ -430,5 +679,29 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
         ),
       ],
     );
+  }
+
+  // ! set controller
+  _setControllerStudent(profile) {
+    _usernameStudentController.text = profile.firstName;
+    _mobileStudentController.text = profile.studentMobileNumber;
+    _firstNameStudentController.text = profile.firstName;
+    _lastNameStudentController.text = profile.lastName;
+    _emailStudentController.text = profile.studentEmailId;
+    _nikStudentController.text = profile.nis;
+    _companyStudentController.text = profile.company;
+
+    _dateBirthStudentController.text = profile.dateOfBirth;
+    _placeBirthStudentController.text = profile.placeOfBirth;
+    _genderStudentController.text = profile.gender;
+    _nationallityStudentController.text = profile.nationality;
+    _religionStudentController.text = profile.religion;
+    _addressStudentController.text = profile.addressLine1;
+    _pincodeStudentController.text = profile.pincode;
+    _cityStudentController.text = profile.city;
+
+    _joiningStudentController.text = profile.reasonJoining;
+    _joiningDateStudentController.text = profile.joiningDate;
+    _knowStudentController.text = profile.knowFrom;
   }
 }

@@ -1,11 +1,21 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers, file_names, unnecessary_const, prefer_const_constructors, unused_local_variable
+// ignore_for_file: no_leading_underscores_for_local_identifiers, file_names, unnecessary_const, prefer_const_constructors, unused_local_variable, unused_field, prefer_typing_uninitialized_variables
 
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
+import 'package:sister_mobile/resources/profile_provider.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:intl/intl.dart';
+import 'package:skeletons/skeletons.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
+
+import '../../bloc/get-profile-bloc/get_profile_bloc.dart';
+import '../../model/Profile-model.dart';
 
 class StudentHomePage extends StatefulWidget {
   const StudentHomePage({Key? key}) : super(key: key);
@@ -15,7 +25,17 @@ class StudentHomePage extends StatefulWidget {
 }
 
 class StudentHomePageState extends State<StudentHomePage> {
+  var dio = Dio();
+  var cookieJar = CookieJar();
+
   bool isOpened = false;
+
+  final _profileBloc = GetProfileBloc();
+
+  var user;
+  var pass;
+
+  final _profileAuth = ProfileProvider();
 
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
   final GlobalKey<SideMenuState> _endSideMenuKey = GlobalKey<SideMenuState>();
@@ -23,6 +43,9 @@ class StudentHomePageState extends State<StudentHomePage> {
   @override
   void initState() {
     super.initState();
+    _getUserAndPass();
+    _profileBloc.add(GetProfileList());
+    _fetchProfileData();
   }
 
   @override
@@ -31,74 +54,222 @@ class StudentHomePageState extends State<StudentHomePage> {
   }
 
   Widget _buildHomePage() {
-    return SideMenu(
-      key: _endSideMenuKey,
-      inverse: true, // end side menu
-      background: Colors.green[700],
-      type: SideMenuType.slideNRotate,
-      menu: Padding(
-        padding: const EdgeInsets.only(left: 25.0),
-        child: _buildSidebar(),
-      ),
-      maxMenuWidth: 250,
-      onChange: (_isOpened) {
-        setState(() => isOpened = _isOpened);
+    return BlocConsumer<GetProfileBloc, GetProfileState>(
+      bloc: _profileBloc,
+      listener: (context, state) {
+        print(state);
+        if (state is GetProfileLoaded) {
+          print('success');
+        }
       },
-      child: SideMenu(
-        maxMenuWidth: 250,
-        radius: BorderRadius.circular(12),
-        background: const Color.fromARGB(255, 41, 41, 41),
-        key: _sideMenuKey,
-        menu: _buildSidebar(),
-        type: SideMenuType.slideNRotate,
-        onChange: (_isOpened) {
-          setState(() => isOpened = _isOpened);
-        },
-        child: IgnorePointer(
-          ignoring: isOpened,
-          child: Scaffold(
-            backgroundColor: const Color(0xff0D1117),
-            appBar: AppBar(
-              backgroundColor: const Color(0xff0D1117),
-              centerTitle: true,
-              leading: IconButton(
-                icon: const Icon(Icons.menu),
-                onPressed: () => _toggleMenu(),
-              ),
-              actions: const [
-                Icon(Icons.qr_code_scanner, size: 30, color: Color(0xffC9D1D9)),
-                SizedBox(width: 5),
-                Icon(Icons.dark_mode_outlined,
-                    size: 30, color: Color(0xffC9D1D9)),
-                SizedBox(width: 5),
-                Icon(Icons.notifications_none,
-                    size: 30, color: Color(0xffC9D1D9)),
-                SizedBox(width: 20),
-              ],
+      builder: (context, state) {
+        if (state is GetProfileLoaded) {
+          Profile profile = state.profileModel;
+          return SideMenu(
+            key: _endSideMenuKey,
+            inverse: true, // end side menu
+            background: Colors.green[700],
+            type: SideMenuType.slideNRotate,
+            menu: Padding(
+              padding: const EdgeInsets.only(left: 25.0),
+              child: _buildSidebar(),
             ),
-            body: ScrollConfiguration(
-              behavior: NoScrollWaves(),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildHeaderProfile(),
-                    _buildHeaderTitle(),
-                    _buildChipStatus(),
-                    const SizedBox(height: 30),
-                    _buildScheduleSection(),
-                    const SizedBox(height: 30),
-                    _buildPaymentSection(),
-                    const SizedBox(height: 30),
-                    _buildHistorySection(),
-                    const SizedBox(height: 30),
-                    _buildRewardSection(),
-                    const SizedBox(height: 30),
-                  ],
+            maxMenuWidth: 250,
+            onChange: (_isOpened) {
+              setState(() => isOpened = _isOpened);
+            },
+            child: SideMenu(
+              maxMenuWidth: 250,
+              radius: BorderRadius.circular(12),
+              background: const Color.fromARGB(255, 41, 41, 41),
+              key: _sideMenuKey,
+              menu: _buildSidebar(),
+              type: SideMenuType.slideNRotate,
+              onChange: (_isOpened) {
+                setState(() => isOpened = _isOpened);
+              },
+              child: IgnorePointer(
+                ignoring: isOpened,
+                child: Scaffold(
+                  backgroundColor: const Color(0xff0D1117),
+                  appBar: AppBar(
+                    backgroundColor: const Color(0xff0D1117),
+                    centerTitle: true,
+                    leading: IconButton(
+                      icon: const Icon(Icons.menu),
+                      onPressed: () => _toggleMenu(),
+                    ),
+                    actions: const [
+                      Icon(Icons.qr_code_scanner,
+                          size: 30, color: Color(0xffC9D1D9)),
+                      SizedBox(width: 5),
+                      Icon(Icons.dark_mode_outlined,
+                          size: 30, color: Color(0xffC9D1D9)),
+                      SizedBox(width: 5),
+                      Icon(Icons.notifications_none,
+                          size: 30, color: Color(0xffC9D1D9)),
+                      SizedBox(width: 20),
+                    ],
+                  ),
+                  body: ScrollConfiguration(
+                    behavior: NoScrollWaves(),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildHeaderProfile(),
+                          _buildHeaderTitle(state.profileModel.data),
+                          _buildChipStatus(),
+                          const SizedBox(height: 30),
+                          _buildScheduleSection(),
+                          const SizedBox(height: 30),
+                          _buildPaymentSection(),
+                          const SizedBox(height: 30),
+                          _buildHistorySection(),
+                          const SizedBox(height: 30),
+                          _buildRewardSection(),
+                          const SizedBox(height: 30),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
+          );
+        } else {
+          return _buildSkeleton();
+        }
+      },
+    );
+  }
+
+  Widget _buildSkeleton() {
+    return SafeArea(
+      child: Container(
+        margin: const EdgeInsets.only(top: 40),
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SkeletonAvatar(
+              style: SkeletonAvatarStyle(
+                shape: BoxShape.rectangle,
+                width: 80,
+                height: 80,
+              ),
+            ),
+            SkeletonParagraph(
+              style: SkeletonParagraphStyle(
+                  lines: 2,
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  spacing: 6,
+                  lineStyle: SkeletonLineStyle(
+                    randomLength: true,
+                    height: 10,
+                    borderRadius: BorderRadius.circular(8),
+                    minLength: MediaQuery.of(context).size.width / 6,
+                    maxLength: MediaQuery.of(context).size.width / 3,
+                  )),
+            ),
+            Row(
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(right: 5),
+                  child: SkeletonLine(
+                    style: SkeletonLineStyle(
+                      randomLength: true,
+                      maxLength: 100,
+                      minLength: 60,
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(right: 5),
+                  child: SkeletonLine(
+                    style: SkeletonLineStyle(
+                      randomLength: true,
+                      maxLength: 100,
+                      minLength: 60,
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(right: 5),
+                  child: SkeletonLine(
+                    style: SkeletonLineStyle(
+                      randomLength: true,
+                      maxLength: 100,
+                      minLength: 60,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            SkeletonParagraph(
+              style: SkeletonParagraphStyle(
+                  lines: 1,
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  spacing: 6,
+                  lineStyle: SkeletonLineStyle(
+                    randomLength: true,
+                    height: 10,
+                    borderRadius: BorderRadius.circular(8),
+                    minLength: MediaQuery.of(context).size.width / 6,
+                    maxLength: MediaQuery.of(context).size.width / 3,
+                  )),
+            ),
+            SkeletonAvatar(
+              style: SkeletonAvatarStyle(
+                width: double.infinity,
+                minHeight: MediaQuery.of(context).size.height / 8,
+                maxHeight: MediaQuery.of(context).size.height / 6,
+              ),
+            ),
+            const SizedBox(height: 20),
+            SkeletonParagraph(
+              style: SkeletonParagraphStyle(
+                  lines: 1,
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  spacing: 6,
+                  lineStyle: SkeletonLineStyle(
+                    randomLength: true,
+                    height: 10,
+                    borderRadius: BorderRadius.circular(8),
+                    minLength: MediaQuery.of(context).size.width / 6,
+                    maxLength: MediaQuery.of(context).size.width / 3,
+                  )),
+            ),
+            SkeletonAvatar(
+              style: SkeletonAvatarStyle(
+                width: double.infinity,
+                minHeight: MediaQuery.of(context).size.height / 8,
+                maxHeight: MediaQuery.of(context).size.height / 6,
+              ),
+            ),
+            const SizedBox(height: 20),
+            SkeletonParagraph(
+              style: SkeletonParagraphStyle(
+                  lines: 1,
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  spacing: 6,
+                  lineStyle: SkeletonLineStyle(
+                    randomLength: true,
+                    height: 10,
+                    borderRadius: BorderRadius.circular(8),
+                    minLength: MediaQuery.of(context).size.width / 6,
+                    maxLength: MediaQuery.of(context).size.width / 3,
+                  )),
+            ),
+            SkeletonAvatar(
+              style: SkeletonAvatarStyle(
+                width: double.infinity,
+                minHeight: MediaQuery.of(context).size.height / 8,
+                maxHeight: MediaQuery.of(context).size.height / 6,
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -170,7 +341,7 @@ class StudentHomePageState extends State<StudentHomePage> {
     );
   }
 
-  Widget _buildHeaderTitle() {
+  Widget _buildHeaderTitle(profile) {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, '/student-profile');
@@ -182,7 +353,7 @@ class StudentHomePageState extends State<StudentHomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Hello, yafet!',
+              'Hello, ${profile.firstName.toString().toLowerCase()} !',
               style:
                   sWhiteTextStyle.copyWith(fontSize: 32, fontWeight: semiBold),
             ),
@@ -663,5 +834,29 @@ class StudentHomePageState extends State<StudentHomePage> {
     var formattedDate = DateFormat("EEE, d MMMM").format(DateTime.now());
 
     return formattedDate.toString();
+  }
+
+  _getUserAndPass() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      user = prefs.getString('username');
+      pass = prefs.getString('password');
+    });
+  }
+
+  _fetchProfileData() async {
+    dio.interceptors.add(CookieManager(cookieJar));
+    final response = await dio
+        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+      'usr': 'yafhet_rama',
+      'pwd': 'yafhet',
+    });
+    final getCode =
+        await dio.get("https://sister.sekolahmusik.co.id/api/resource/Student");
+    var code = getCode.data['data'][0]['name'];
+
+    final request = await dio
+        .get('https://sister.sekolahmusik.co.id/api/resource/Student/' + code);
   }
 }

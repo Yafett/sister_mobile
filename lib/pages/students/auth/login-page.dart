@@ -140,8 +140,9 @@ class _LoginPageState extends State<LoginPage> {
           onTap: () {
             _loginBloc.add(
               Login(
-                _usernameController.text,
-                _passwordController.text,
+                'yafhet_rama', 'yafhet',
+                // _usernameController.text,
+                // _passwordController.text,
               ),
             );
           },
