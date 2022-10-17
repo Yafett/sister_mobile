@@ -6,10 +6,13 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sister_mobile/model/ProfileGuardian-model.dart';
+import 'package:skeletons/skeletons.dart';
 
 import '../../../bloc/get-profile-guardian-bloc/get_profile_guardian_bloc.dart';
 import '../../../bloc/get-profile-student-bloc/get_profile_student_bloc.dart';
+import '../../../bloc/get-profile-user-bloc/get_profile_user_bloc.dart';
 import '../../../model/ProfileStudent-model.dart';
+import '../../../model/ProfileUser.dart';
 import '../../../shared/theme.dart';
 import '../../../widget/no_scroll_waves.dart';
 
@@ -23,6 +26,13 @@ class StudentProfilePage extends StatefulWidget {
 class _StudentProfilePageState extends State<StudentProfilePage> {
   final _profileBloc = GetProfileStudentBloc();
   final _guardianBloc = GetProfileGuardianBloc();
+  final _userBloc = GetProfileUserBloc();
+
+  // ! User profile
+
+  final _userEmailController = TextEditingController();
+  final _userUserNameController = TextEditingController();
+  final _userReferralController = TextEditingController();
 
   // ! Student profile
 
@@ -61,6 +71,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   @override
   void initState() {
     super.initState();
+    _userBloc.add(GetProfileUserList());
     _profileBloc.add(GetProfileList());
     _guardianBloc.add(GetProfileGuardianList());
   }
@@ -92,6 +103,8 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     );
   }
 
+  // ! user dets
+
   Widget _buildProfile() {
     return ScrollConfiguration(
       behavior: NoScrollWaves(),
@@ -101,16 +114,66 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // ! User Sect
+                BlocBuilder<GetProfileUserBloc, GetProfileUserState>(
+                  bloc: _userBloc,
+                  builder: (context, state) {
+                    if (state is GetProfileUserLoaded) {
+                      ProfileUser profile = state.modelUser;
+                      _setControllerUser(profile.data);
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildProfileName(profile.data!),
+                          _buildProfilePicture(),
+                          _buildBasicUserInfo(),
+                        ],
+                      );
+                    } else if (state is GetProfileUserLoading) {
+                      return _studentSkeleton();
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
+                const SizedBox(height: 5),
+                // ! Student Sect
                 BlocBuilder<GetProfileStudentBloc, GetProfileStudentState>(
                   bloc: _profileBloc,
                   builder: (context, state) {
                     if (state is GetProfileLoaded) {
                       Profile profile = state.profileModel;
-
+                      _setControllerStudent(profile.data);
                       return Column(
                         children: [
-                          _buildProfileName(profile.data),
-                          _buildProfilePicture(),
+                          const Divider(
+                            thickness: 1,
+                            color: Color(0xff272C33),
+                          ),
+                          const SizedBox(height: 10),
+                          ExpandablePanel(
+                            theme: ExpandableThemeData(
+                              iconColor: sWhiteColor,
+                              iconPadding: const EdgeInsets.all(0),
+                            ),
+                            header: Text(
+                              'Student',
+                              style: sWhiteTextStyle.copyWith(
+                                  fontWeight: semiBold, fontSize: 20),
+                            ),
+                            collapsed: Container(),
+                            expanded: Column(
+                              children: [
+                                _buildBasicInfo(),
+                                const SizedBox(height: 20),
+                                _buildPersonalInfo(),
+                                const SizedBox(height: 20),
+                                _buildMoreInfo(),
+                                const SizedBox(height: 20),
+                                _buildGuardian(),
+                              ],
+                            ),
+                          ),
                         ],
                       );
                     } else {
@@ -118,69 +181,40 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                     }
                   },
                 ),
-                const SizedBox(height: 30),
-                // ! Student Sect
-                BlocBuilder<GetProfileStudentBloc, GetProfileStudentState>(
-                  bloc: _profileBloc,
-                  builder: (context, state) {
-                    if (state is GetProfileLoaded) {
-                      print('1');
-                      Profile profile = state.profileModel;
-                      _setControllerStudent(profile.data);
-                      return ExpandablePanel(
-                        theme: ExpandableThemeData(
-                          iconColor: sWhiteColor,
-                          iconPadding: const EdgeInsets.all(0),
-                        ),
-                        header: Text(
-                          'Student',
-                          style: sWhiteTextStyle.copyWith(
-                              fontWeight: semiBold, fontSize: 20),
-                        ),
-                        collapsed: Container(),
-                        expanded: Column(
-                          children: [
-                            _buildBasicInfo(),
-                            const SizedBox(height: 20),
-                            _buildPersonalInfo(),
-                            const SizedBox(height: 20),
-                            _buildMoreInfo(),
-                            const SizedBox(height: 20),
-                            _buildGuardian(),
-                          ],
-                        ),
-                      );
-                    } else {
-                      return Container();
-                    }
-                  },
-                ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 5),
 
                 // ! Guardian Sect
                 BlocBuilder<GetProfileGuardianBloc, GetProfileGuardianState>(
                   bloc: _guardianBloc,
                   builder: (context, state) {
                     if (state is GetProfileGuardianLoaded) {
-                      print(state);
                       ProfileGuardian profile = state.guardianModel;
                       _setControllerGuardian(profile.data);
-                      return ExpandablePanel(
-                        theme: ExpandableThemeData(
-                          iconColor: sWhiteColor,
-                          iconPadding: const EdgeInsets.all(0),
-                        ),
-                        header: Text(
-                          'Guardian',
-                          style: sWhiteTextStyle.copyWith(
-                              fontWeight: semiBold, fontSize: 20),
-                        ),
-                        collapsed: Container(),
-                        expanded: Column(
-                          children: [
-                            _buildBasicGuardianInfo(),
-                          ],
-                        ),
+                      return Column(
+                        children: [
+                          const Divider(
+                            thickness: 1,
+                            color: Color(0xff272C33),
+                          ),
+                          const SizedBox(height: 10),
+                          ExpandablePanel(
+                            theme: ExpandableThemeData(
+                              iconColor: sWhiteColor,
+                              iconPadding: const EdgeInsets.all(0),
+                            ),
+                            header: Text(
+                              'Guardian',
+                              style: sWhiteTextStyle.copyWith(
+                                  fontWeight: semiBold, fontSize: 20),
+                            ),
+                            collapsed: Container(),
+                            expanded: Column(
+                              children: [
+                                _buildBasicGuardianInfo(),
+                              ],
+                            ),
+                          ),
+                        ],
                       );
                     } else {
                       return Container();
@@ -192,6 +226,8 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
       ),
     );
   }
+
+  // ! User Dets
 
   Widget _buildProfileName(profile) {
     return Row(
@@ -232,6 +268,190 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
             borderRadius: BorderRadius.circular(8)),
       ),
     );
+  }
+
+  Widget _buildBasicUserInfo() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 20),
+
+        // ! Username Field
+        Text('Username', style: fTextColorStyle),
+        const SizedBox(height: 5),
+        TextFormField(
+          style: fWhiteTextStyle,
+          controller: _userUserNameController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: sBlackColor,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            hintText: 'e.x john doe',
+            hintStyle: fGreyTextStyle,
+          ),
+        ),
+        const SizedBox(height: 15),
+
+        // ! Email Field
+        Text('Email', style: fTextColorStyle),
+        const SizedBox(height: 5),
+        TextFormField(
+          style: fWhiteTextStyle,
+          controller: _userEmailController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: sBlackColor,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            hintText: 'e.x john doe',
+            hintStyle: fGreyTextStyle,
+          ),
+        ),
+        const SizedBox(height: 15),
+
+        // ! Referral Code Field
+        Text('Referral Code', style: fTextColorStyle),
+        const SizedBox(height: 5),
+        TextFormField(
+          style: fWhiteTextStyle,
+          controller: _userReferralController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: sBlackColor,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            hintText: 'e.x john doe',
+            hintStyle: fGreyTextStyle,
+          ),
+        ),
+        const SizedBox(height: 15),
+      ],
+    );
+  }
+
+  // ! skeleton
+
+  Widget _studentSkeleton() {
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      SkeletonLine(
+          style: SkeletonLineStyle(
+        height: 20,
+        minLength: 120,
+        maxLength: 150,
+      )),
+      const SizedBox(height: 10),
+      SkeletonAvatar(
+        style: SkeletonAvatarStyle(
+          shape: BoxShape.rectangle,
+          width: 100,
+          height: 100,
+        ),
+      ),
+      const SizedBox(height: 20),
+      SkeletonParagraph(
+        style: SkeletonParagraphStyle(
+            lines: 1,
+            padding: EdgeInsets.symmetric(vertical: 10),
+            spacing: 6,
+            lineStyle: SkeletonLineStyle(
+              randomLength: true,
+              height: 10,
+              borderRadius: BorderRadius.circular(8),
+              minLength: MediaQuery.of(context).size.width / 6,
+              maxLength: MediaQuery.of(context).size.width / 3,
+            )),
+      ),
+      SkeletonAvatar(
+        style: SkeletonAvatarStyle(
+          shape: BoxShape.rectangle,
+          width: MediaQuery.of(context).size.width,
+          height: 50,
+        ),
+      ),
+      const SizedBox(height: 20),
+      SkeletonParagraph(
+        style: SkeletonParagraphStyle(
+            lines: 1,
+            padding: EdgeInsets.symmetric(vertical: 10),
+            spacing: 6,
+            lineStyle: SkeletonLineStyle(
+              randomLength: true,
+              height: 10,
+              borderRadius: BorderRadius.circular(8),
+              minLength: MediaQuery.of(context).size.width / 6,
+              maxLength: MediaQuery.of(context).size.width / 3,
+            )),
+      ),
+      SkeletonAvatar(
+        style: SkeletonAvatarStyle(
+          shape: BoxShape.rectangle,
+          width: MediaQuery.of(context).size.width,
+          height: 50,
+        ),
+      ),
+      const SizedBox(height: 20),
+      SkeletonParagraph(
+        style: SkeletonParagraphStyle(
+            lines: 1,
+            padding: EdgeInsets.symmetric(vertical: 10),
+            spacing: 6,
+            lineStyle: SkeletonLineStyle(
+              randomLength: true,
+              height: 10,
+              borderRadius: BorderRadius.circular(8),
+              minLength: MediaQuery.of(context).size.width / 6,
+              maxLength: MediaQuery.of(context).size.width / 3,
+            )),
+      ),
+      SkeletonAvatar(
+        style: SkeletonAvatarStyle(
+          shape: BoxShape.rectangle,
+          width: MediaQuery.of(context).size.width,
+          height: 50,
+        ),
+      ),
+      const SizedBox(height: 20),
+      SkeletonParagraph(
+        style: SkeletonParagraphStyle(
+            lines: 1,
+            padding: EdgeInsets.symmetric(vertical: 10),
+            spacing: 6,
+            lineStyle: SkeletonLineStyle(
+              randomLength: true,
+              height: 10,
+              borderRadius: BorderRadius.circular(8),
+              minLength: MediaQuery.of(context).size.width / 6,
+              maxLength: MediaQuery.of(context).size.width / 3,
+            )),
+      ),
+      SkeletonAvatar(
+        style: SkeletonAvatarStyle(
+          shape: BoxShape.rectangle,
+          width: MediaQuery.of(context).size.width,
+          height: 50,
+        ),
+      ),
+      const SizedBox(height: 20)
+    ]);
   }
 
   // ! student dets
@@ -914,5 +1134,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     _guardianEmailController.text = profile.emailAddress;
     _guardianOccupationController.text = profile.occupation;
     _guardianSosmedController.text = profile.igUser;
+  }
+
+  _setControllerUser(profile) {
+    _userEmailController.text = profile.email;
+    _userUserNameController.text = profile.username;
+    _userReferralController.text =
+        (profile.referralCode == null) ? '' : profile.referralCode;
   }
 }
