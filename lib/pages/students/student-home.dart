@@ -14,8 +14,8 @@ import 'package:intl/intl.dart';
 import 'package:skeletons/skeletons.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
 
-import '../../bloc/get-profile-bloc/get_profile_bloc.dart';
-import '../../model/Profile-model.dart';
+import '../../bloc/get-profile-student-bloc/get_profile_student_bloc.dart';
+import '../../model/ProfileStudent-model.dart';
 
 class StudentHomePage extends StatefulWidget {
   const StudentHomePage({Key? key}) : super(key: key);
@@ -30,7 +30,7 @@ class StudentHomePageState extends State<StudentHomePage> {
 
   bool isOpened = false;
 
-  final _profileBloc = GetProfileBloc();
+  final _profileBloc = GetProfileStudentBloc();
 
   var user;
   var pass;
@@ -43,9 +43,7 @@ class StudentHomePageState extends State<StudentHomePage> {
   @override
   void initState() {
     super.initState();
-    _getUserAndPass();
     _profileBloc.add(GetProfileList());
-    _fetchProfileData();
   }
 
   @override
@@ -54,7 +52,7 @@ class StudentHomePageState extends State<StudentHomePage> {
   }
 
   Widget _buildHomePage() {
-    return BlocConsumer<GetProfileBloc, GetProfileState>(
+    return BlocConsumer<GetProfileStudentBloc, GetProfileStudentState>(
       bloc: _profileBloc,
       listener: (context, state) {
         print(state);
@@ -834,29 +832,5 @@ class StudentHomePageState extends State<StudentHomePage> {
     var formattedDate = DateFormat("EEE, d MMMM").format(DateTime.now());
 
     return formattedDate.toString();
-  }
-
-  _getUserAndPass() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    setState(() {
-      user = prefs.getString('username');
-      pass = prefs.getString('password');
-    });
-  }
-
-  _fetchProfileData() async {
-    dio.interceptors.add(CookieManager(cookieJar));
-    final response = await dio
-        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
-      'usr': 'yafhet_rama',
-      'pwd': 'yafhet',
-    });
-    final getCode =
-        await dio.get("https://sister.sekolahmusik.co.id/api/resource/Student");
-    var code = getCode.data['data'][0]['name'];
-
-    final request = await dio
-        .get('https://sister.sekolahmusik.co.id/api/resource/Student/' + code);
   }
 }

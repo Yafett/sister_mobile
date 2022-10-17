@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sister_mobile/bloc/get-profile-bloc/get_profile_bloc.dart';
+import 'package:sister_mobile/model/ProfileGuardian-model.dart';
 
-import '../../../model/Profile-model.dart';
+import '../../../bloc/get-profile-guardian-bloc/get_profile_guardian_bloc.dart';
+import '../../../bloc/get-profile-student-bloc/get_profile_student_bloc.dart';
+import '../../../model/ProfileStudent-model.dart';
 import '../../../shared/theme.dart';
 import '../../../widget/no_scroll_waves.dart';
 
@@ -19,7 +21,10 @@ class StudentProfilePage extends StatefulWidget {
 }
 
 class _StudentProfilePageState extends State<StudentProfilePage> {
-  final _profileBloc = GetProfileBloc();
+  final _profileBloc = GetProfileStudentBloc();
+  final _guardianBloc = GetProfileGuardianBloc();
+
+  // ! Student profile
 
   final _usernameStudentController = TextEditingController();
   final _mobileStudentController = TextEditingController();
@@ -42,10 +47,22 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   final _pincodeStudentController = TextEditingController();
   final _cityStudentController = TextEditingController();
 
+  // ! Guardian profile
+
+  final _guardianNameController = TextEditingController();
+  final _guardianMobileNumberController = TextEditingController();
+  final _guardianEmailController = TextEditingController();
+  final _guardianOccupationController = TextEditingController();
+
+  final _guardianSosmedController = TextEditingController();
+  final _guardianDateBirthController = TextEditingController();
+  final _guardianWorkController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     _profileBloc.add(GetProfileList());
+    _guardianBloc.add(GetProfileGuardianList());
   }
 
   @override
@@ -76,25 +93,41 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   }
 
   Widget _buildProfile() {
-    return BlocBuilder<GetProfileBloc, GetProfileState>(
-      bloc: _profileBloc,
-      builder: (context, state) {
-        if (state is GetProfileLoaded) {
-          Profile profile = state.profileModel;
-          _setControllerStudent(profile.data);
-          return ScrollConfiguration(
-            behavior: NoScrollWaves(),
-            child: SingleChildScrollView(
-              child: Container(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildProfileName(profile.data),
-                      _buildProfilePicture(),
-                      const SizedBox(height: 30),
-                      // ! Student Sect
-                      ExpandablePanel(
+    return ScrollConfiguration(
+      behavior: NoScrollWaves(),
+      child: SingleChildScrollView(
+        child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                BlocBuilder<GetProfileStudentBloc, GetProfileStudentState>(
+                  bloc: _profileBloc,
+                  builder: (context, state) {
+                    if (state is GetProfileLoaded) {
+                      Profile profile = state.profileModel;
+
+                      return Column(
+                        children: [
+                          _buildProfileName(profile.data),
+                          _buildProfilePicture(),
+                        ],
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
+                const SizedBox(height: 30),
+                // ! Student Sect
+                BlocBuilder<GetProfileStudentBloc, GetProfileStudentState>(
+                  bloc: _profileBloc,
+                  builder: (context, state) {
+                    if (state is GetProfileLoaded) {
+                      print('1');
+                      Profile profile = state.profileModel;
+                      _setControllerStudent(profile.data);
+                      return ExpandablePanel(
                         theme: ExpandableThemeData(
                           iconColor: sWhiteColor,
                           iconPadding: const EdgeInsets.all(0),
@@ -116,15 +149,47 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                             _buildGuardian(),
                           ],
                         ),
-                      ),
-                    ],
-                  )),
-            ),
-          );
-        } else {
-          return Container();
-        }
-      },
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
+                const SizedBox(height: 30),
+
+                // ! Guardian Sect
+                BlocBuilder<GetProfileGuardianBloc, GetProfileGuardianState>(
+                  bloc: _guardianBloc,
+                  builder: (context, state) {
+                    if (state is GetProfileGuardianLoaded) {
+                      print(state);
+                      ProfileGuardian profile = state.guardianModel;
+                      _setControllerGuardian(profile.data);
+                      return ExpandablePanel(
+                        theme: ExpandableThemeData(
+                          iconColor: sWhiteColor,
+                          iconPadding: const EdgeInsets.all(0),
+                        ),
+                        header: Text(
+                          'Guardian',
+                          style: sWhiteTextStyle.copyWith(
+                              fontWeight: semiBold, fontSize: 20),
+                        ),
+                        collapsed: Container(),
+                        expanded: Column(
+                          children: [
+                            _buildBasicGuardianInfo(),
+                          ],
+                        ),
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
+              ],
+            )),
+      ),
     );
   }
 
@@ -169,6 +234,8 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     );
   }
 
+  // ! student dets
+
   Widget _buildMoreInfo() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,7 +274,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
         const SizedBox(height: 15),
 
         // ! Joining Reason Date Field
-        Text('Joining Reason Date', style: fTextColorStyle),
+        Text('Joining Date', style: fTextColorStyle),
         const SizedBox(height: 5),
         TextFormField(
           style: fWhiteTextStyle,
@@ -269,8 +336,8 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
           color: Color(0xff272C33),
         ),
 
-        // ! Date of Birth Field
-        Text('Date of Birth', style: fTextColorStyle),
+        // ! Birth Date Field
+        Text('Birth Date', style: fTextColorStyle),
         const SizedBox(height: 5),
         TextFormField(
           style: sWhiteTextStyle,
@@ -292,8 +359,8 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
         ),
         const SizedBox(height: 15),
 
-        // ! Date of Place Field
-        Text('Date of Place', style: fTextColorStyle),
+        // ! Birth Place Field
+        Text('Birth Place', style: fTextColorStyle),
         const SizedBox(height: 5),
         TextFormField(
           style: sWhiteTextStyle,
@@ -681,6 +748,142 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     );
   }
 
+  // ! guardian det
+
+  Widget _buildBasicGuardianInfo() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 20),
+
+        // ! title
+        Text(
+          'Basic Information',
+          style: sWhiteTextStyle.copyWith(fontWeight: semiBold, fontSize: 20),
+        ),
+        const Divider(
+          thickness: 1,
+          color: Color(0xff272C33),
+        ),
+
+        // ! Guardian Name Field
+        Text('Guardian Name', style: fTextColorStyle),
+        const SizedBox(height: 5),
+        TextFormField(
+          style: sWhiteTextStyle,
+          controller: _guardianNameController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: sBlackColor,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            hintText: 'e.x john doe',
+            hintStyle: fGreyTextStyle,
+          ),
+        ),
+        const SizedBox(height: 15),
+
+        // ! Guardian Mobile Field
+        Text('Guardian Mobile', style: fTextColorStyle),
+        const SizedBox(height: 5),
+        TextFormField(
+          style: sWhiteTextStyle,
+          controller: _guardianMobileNumberController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: sBlackColor,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            hintText: 'e.x john doe',
+            hintStyle: fGreyTextStyle,
+          ),
+        ),
+        const SizedBox(height: 15),
+
+        // ! Guardian Email Field
+        Text('Guardian Email', style: fTextColorStyle),
+        const SizedBox(height: 5),
+        TextFormField(
+          style: sWhiteTextStyle,
+          controller: _guardianEmailController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: sBlackColor,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            hintText: 'e.x john',
+            hintStyle: fGreyTextStyle,
+          ),
+        ),
+        const SizedBox(height: 15),
+
+        // ! Guardian Occupation Field
+        Text('Guardian Occupation', style: fTextColorStyle),
+        const SizedBox(height: 5),
+        TextFormField(
+          style: sWhiteTextStyle,
+          controller: _guardianOccupationController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: sBlackColor,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            hintText: 'e.x john@example.com',
+            hintStyle: fGreyTextStyle,
+          ),
+        ),
+        const SizedBox(height: 15),
+
+        // ! Sosmed Field
+        Text('Guardian Sosmed', style: fTextColorStyle),
+        const SizedBox(height: 5),
+        TextFormField(
+          style: sWhiteTextStyle,
+          controller: _guardianSosmedController,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: sBlackColor,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: const BorderSide(color: Color(0XFF444C56)),
+            ),
+            hintText: 'e.x nik',
+            hintStyle: fGreyTextStyle,
+          ),
+        ),
+        const SizedBox(height: 15),
+      ],
+    );
+  }
+
   // ! set controller
   _setControllerStudent(profile) {
     _usernameStudentController.text = profile.firstName;
@@ -703,5 +906,13 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     _joiningStudentController.text = profile.reasonJoining;
     _joiningDateStudentController.text = profile.joiningDate;
     _knowStudentController.text = profile.knowFrom;
+  }
+
+  _setControllerGuardian(profile) {
+    _guardianNameController.text = profile.guardianName;
+    _guardianMobileNumberController.text = profile.mobileNumber;
+    _guardianEmailController.text = profile.emailAddress;
+    _guardianOccupationController.text = profile.occupation;
+    _guardianSosmedController.text = profile.igUser;
   }
 }
