@@ -103,8 +103,6 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     );
   }
 
-  // ! user dets
-
   Widget _buildProfile() {
     return ScrollConfiguration(
       behavior: NoScrollWaves(),
@@ -214,12 +212,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                               ],
                             ),
                           ),
-                        ],
+                        ], 
                       );
                     } else {
                       return Container();
                     }
-                  },
+                  }, 
                 ),
               ],
             )),
@@ -227,7 +225,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     );
   }
 
-  // ! User Dets
+  // ! User dets
 
   Widget _buildProfileName(profile) {
     return Row(
@@ -364,27 +362,6 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
           shape: BoxShape.rectangle,
           width: 100,
           height: 100,
-        ),
-      ),
-      const SizedBox(height: 20),
-      SkeletonParagraph(
-        style: SkeletonParagraphStyle(
-            lines: 1,
-            padding: EdgeInsets.symmetric(vertical: 10),
-            spacing: 6,
-            lineStyle: SkeletonLineStyle(
-              randomLength: true,
-              height: 10,
-              borderRadius: BorderRadius.circular(8),
-              minLength: MediaQuery.of(context).size.width / 6,
-              maxLength: MediaQuery.of(context).size.width / 3,
-            )),
-      ),
-      SkeletonAvatar(
-        style: SkeletonAvatarStyle(
-          shape: BoxShape.rectangle,
-          width: MediaQuery.of(context).size.width,
-          height: 50,
         ),
       ),
       const SizedBox(height: 20),

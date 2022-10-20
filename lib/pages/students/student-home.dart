@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
+import 'package:sister_mobile/bloc/get-point-reward-bloc/point_reward_bloc.dart';
+import 'package:sister_mobile/bloc/get-student-schedule/student_schedule_bloc.dart';
 import 'package:sister_mobile/resources/profile_provider.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
@@ -15,7 +17,9 @@ import 'package:skeletons/skeletons.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
 
 import '../../bloc/get-profile-student-bloc/get_profile_student_bloc.dart';
+import '../../model/PointReward-model.dart';
 import '../../model/ProfileStudent-model.dart';
+import '../../model/Schedule-model.dart';
 
 class StudentHomePage extends StatefulWidget {
   const StudentHomePage({Key? key}) : super(key: key);
@@ -31,6 +35,8 @@ class StudentHomePageState extends State<StudentHomePage> {
   bool isOpened = false;
 
   final _profileBloc = GetProfileStudentBloc();
+  final _scheduleBloc = StudentScheduleBloc();
+  final _pointBloc = PointRewardBloc();
 
   var user;
   var pass;
@@ -43,7 +49,9 @@ class StudentHomePageState extends State<StudentHomePage> {
   @override
   void initState() {
     super.initState();
+    _pointBloc.add(GetPointRewardList());
     _profileBloc.add(GetProfileList());
+    _scheduleBloc.add(GetScheduleList());
   }
 
   @override
@@ -55,10 +63,7 @@ class StudentHomePageState extends State<StudentHomePage> {
     return BlocConsumer<GetProfileStudentBloc, GetProfileStudentState>(
       bloc: _profileBloc,
       listener: (context, state) {
-        print(state);
-        if (state is GetProfileLoaded) {
-          print('success');
-        }
+        if (state is GetProfileLoaded) {}
       },
       builder: (context, state) {
         if (state is GetProfileLoaded) {
@@ -115,10 +120,7 @@ class StudentHomePageState extends State<StudentHomePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildHeaderProfile(),
-                          _buildHeaderTitle(state.profileModel.data),
-                          _buildChipStatus(),
-                          const SizedBox(height: 30),
+                          _buildHeaderSection(state.profileModel.data),
                           _buildScheduleSection(),
                           const SizedBox(height: 30),
                           _buildPaymentSection(),
@@ -142,132 +144,149 @@ class StudentHomePageState extends State<StudentHomePage> {
     );
   }
 
+  Widget _buildHeaderSection(profile) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildHeaderProfile(),
+        _buildHeaderTitle(profile),
+        _buildChipStatus(),
+        const SizedBox(height: 30),
+      ],
+    );
+  }
+
   Widget _buildSkeleton() {
     return SafeArea(
-      child: Container(
-        margin: const EdgeInsets.only(top: 40),
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SkeletonAvatar(
-              style: SkeletonAvatarStyle(
-                shape: BoxShape.rectangle,
-                width: 80,
-                height: 80,
-              ),
-            ),
-            SkeletonParagraph(
-              style: SkeletonParagraphStyle(
-                  lines: 2,
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  spacing: 6,
-                  lineStyle: SkeletonLineStyle(
-                    randomLength: true,
-                    height: 10,
-                    borderRadius: BorderRadius.circular(8),
-                    minLength: MediaQuery.of(context).size.width / 6,
-                    maxLength: MediaQuery.of(context).size.width / 3,
-                  )),
-            ),
-            Row(
+      child: ScrollConfiguration(
+        behavior: NoScrollWaves(),
+        child: SingleChildScrollView(
+          child: Container(
+            margin: const EdgeInsets.only(top: 40),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  margin: const EdgeInsets.only(right: 5),
-                  child: SkeletonLine(
-                    style: SkeletonLineStyle(
-                      randomLength: true,
-                      maxLength: 100,
-                      minLength: 60,
-                    ),
+                SkeletonAvatar(
+                  style: SkeletonAvatarStyle(
+                    shape: BoxShape.rectangle,
+                    width: 80,
+                    height: 80,
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.only(right: 5),
-                  child: SkeletonLine(
-                    style: SkeletonLineStyle(
-                      randomLength: true,
-                      maxLength: 100,
-                      minLength: 60,
+                SkeletonParagraph(
+                  style: SkeletonParagraphStyle(
+                      lines: 2,
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      spacing: 6,
+                      lineStyle: SkeletonLineStyle(
+                        randomLength: true,
+                        height: 10,
+                        borderRadius: BorderRadius.circular(8),
+                        minLength: MediaQuery.of(context).size.width / 6,
+                        maxLength: MediaQuery.of(context).size.width / 3,
+                      )),
+                ),
+                Row(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(right: 5),
+                      child: SkeletonLine(
+                        style: SkeletonLineStyle(
+                          randomLength: true,
+                          maxLength: 100,
+                          minLength: 60,
+                        ),
+                      ),
                     ),
+                    Container(
+                      margin: const EdgeInsets.only(right: 5),
+                      child: SkeletonLine(
+                        style: SkeletonLineStyle(
+                          randomLength: true,
+                          maxLength: 100,
+                          minLength: 60,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(right: 5),
+                      child: SkeletonLine(
+                        style: SkeletonLineStyle(
+                          randomLength: true,
+                          maxLength: 100,
+                          minLength: 60,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                SkeletonParagraph(
+                  style: SkeletonParagraphStyle(
+                      lines: 1,
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      spacing: 6,
+                      lineStyle: SkeletonLineStyle(
+                        randomLength: true,
+                        height: 10,
+                        borderRadius: BorderRadius.circular(8),
+                        minLength: MediaQuery.of(context).size.width / 6,
+                        maxLength: MediaQuery.of(context).size.width / 3,
+                      )),
+                ),
+                SkeletonAvatar(
+                  style: SkeletonAvatarStyle(
+                    width: double.infinity,
+                    minHeight: MediaQuery.of(context).size.height / 8,
+                    maxHeight: MediaQuery.of(context).size.height / 6,
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.only(right: 5),
-                  child: SkeletonLine(
-                    style: SkeletonLineStyle(
-                      randomLength: true,
-                      maxLength: 100,
-                      minLength: 60,
-                    ),
+                const SizedBox(height: 20),
+                SkeletonParagraph(
+                  style: SkeletonParagraphStyle(
+                      lines: 1,
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      spacing: 6,
+                      lineStyle: SkeletonLineStyle(
+                        randomLength: true,
+                        height: 10,
+                        borderRadius: BorderRadius.circular(8),
+                        minLength: MediaQuery.of(context).size.width / 6,
+                        maxLength: MediaQuery.of(context).size.width / 3,
+                      )),
+                ),
+                SkeletonAvatar(
+                  style: SkeletonAvatarStyle(
+                    width: double.infinity,
+                    minHeight: MediaQuery.of(context).size.height / 8,
+                    maxHeight: MediaQuery.of(context).size.height / 6,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SkeletonParagraph(
+                  style: SkeletonParagraphStyle(
+                      lines: 1,
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      spacing: 6,
+                      lineStyle: SkeletonLineStyle(
+                        randomLength: true,
+                        height: 10,
+                        borderRadius: BorderRadius.circular(8),
+                        minLength: MediaQuery.of(context).size.width / 6,
+                        maxLength: MediaQuery.of(context).size.width / 3,
+                      )),
+                ),
+                SkeletonAvatar(
+                  style: SkeletonAvatarStyle(
+                    width: double.infinity,
+                    minHeight: MediaQuery.of(context).size.height / 8,
+                    maxHeight: MediaQuery.of(context).size.height / 6,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            SkeletonParagraph(
-              style: SkeletonParagraphStyle(
-                  lines: 1,
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  spacing: 6,
-                  lineStyle: SkeletonLineStyle(
-                    randomLength: true,
-                    height: 10,
-                    borderRadius: BorderRadius.circular(8),
-                    minLength: MediaQuery.of(context).size.width / 6,
-                    maxLength: MediaQuery.of(context).size.width / 3,
-                  )),
-            ),
-            SkeletonAvatar(
-              style: SkeletonAvatarStyle(
-                width: double.infinity,
-                minHeight: MediaQuery.of(context).size.height / 8,
-                maxHeight: MediaQuery.of(context).size.height / 6,
-              ),
-            ),
-            const SizedBox(height: 20),
-            SkeletonParagraph(
-              style: SkeletonParagraphStyle(
-                  lines: 1,
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  spacing: 6,
-                  lineStyle: SkeletonLineStyle(
-                    randomLength: true,
-                    height: 10,
-                    borderRadius: BorderRadius.circular(8),
-                    minLength: MediaQuery.of(context).size.width / 6,
-                    maxLength: MediaQuery.of(context).size.width / 3,
-                  )),
-            ),
-            SkeletonAvatar(
-              style: SkeletonAvatarStyle(
-                width: double.infinity,
-                minHeight: MediaQuery.of(context).size.height / 8,
-                maxHeight: MediaQuery.of(context).size.height / 6,
-              ),
-            ),
-            const SizedBox(height: 20),
-            SkeletonParagraph(
-              style: SkeletonParagraphStyle(
-                  lines: 1,
-                  padding: EdgeInsets.symmetric(vertical: 10),
-                  spacing: 6,
-                  lineStyle: SkeletonLineStyle(
-                    randomLength: true,
-                    height: 10,
-                    borderRadius: BorderRadius.circular(8),
-                    minLength: MediaQuery.of(context).size.width / 6,
-                    maxLength: MediaQuery.of(context).size.width / 3,
-                  )),
-            ),
-            SkeletonAvatar(
-              style: SkeletonAvatarStyle(
-                width: double.infinity,
-                minHeight: MediaQuery.of(context).size.height / 8,
-                maxHeight: MediaQuery.of(context).size.height / 6,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -406,71 +425,109 @@ class StudentHomePageState extends State<StudentHomePage> {
   }
 
   Widget _buildScheduleSection() {
-    return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Schedule',
-              style: sWhiteTextStyle,
-            ),
-            const SizedBox(height: 5),
-            Material(
-              color: sBlackColor,
-              borderRadius: BorderRadius.circular(8),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(8),
-                splashColor: sGreyColor,
-                onTap: () {
-                  Navigator.pushNamed(context, '/student-schedule');
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(0xff30363D),
-                      ),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Upcoming Class',
-                            style: sWhiteTextStyle.copyWith(
-                                fontSize: 16, fontWeight: semiBold)),
-                        Text('Piano Class - 20 September 2022',
-                            style: sWhiteTextStyle.copyWith(
-                                fontSize: 22, fontWeight: semiBold)),
-                        Text(
-                          'At SMI - 08:00 AM',
-                          style: sGreyTextStyle.copyWith(fontSize: 14),
-                        ),
-                        const Divider(
-                          height: 20,
-                          thickness: 1,
-                          color: Color(0xff272C33),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'See your Schedule',
-                              style: sWhiteTextStyle.copyWith(
-                                  fontSize: 14, fontWeight: semiBold),
+    return BlocBuilder<StudentScheduleBloc, StudentScheduleState>(
+      bloc: _scheduleBloc,
+      builder: (context, state) {
+        if (state is StudentScheduleLoaded) {
+          Schedule schedule = state.scheduleModel;
+          return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Schedule',
+                    style: sWhiteTextStyle,
+                  ),
+                  const SizedBox(height: 5),
+                  Material(
+                    color: sBlackColor,
+                    borderRadius: BorderRadius.circular(8),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(8),
+                      splashColor: sGreyColor,
+                      onTap: () {
+                        // Navigator.pushNamed(context, '/student-schedule');
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                              color: const Color(0xff30363D),
                             ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: sWhiteColor,
-                              size: 20,
-                            )
-                          ],
-                        )
-                      ]),
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Upcoming Class',
+                                  style: sWhiteTextStyle.copyWith(
+                                      fontSize: 16, fontWeight: semiBold)),
+                              Text(
+                                  '${_setCourseSchedule(schedule.data!.course.toString())} - ${_setDatetimeSchedule(schedule.data!.scheduleDate.toString())}',
+                                  style: sWhiteTextStyle.copyWith(
+                                      fontSize: 22, fontWeight: semiBold)),
+                              Text(
+                                '${schedule.data!.company.toString()} - ${schedule.data!.fromTime.toString()}',
+                                style: sGreyTextStyle.copyWith(fontSize: 14),
+                              ),
+                              const Divider(
+                                height: 20,
+                                thickness: 1,
+                                color: Color(0xff272C33),
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'See your Schedule',
+                                    style: sWhiteTextStyle.copyWith(
+                                        fontSize: 14, fontWeight: semiBold),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: sWhiteColor,
+                                    size: 20,
+                                  )
+                                ],
+                              )
+                            ]),
+                      ),
+                    ),
+                  )
+                ],
+              ));
+        } else if (state is StudentScheduleLoading) {
+          return Column(
+            children: [
+              SkeletonParagraph(
+                style: SkeletonParagraphStyle(
+                    lines: 1,
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    spacing: 6,
+                    lineStyle: SkeletonLineStyle(
+                      randomLength: true,
+                      height: 10,
+                      borderRadius: BorderRadius.circular(8),
+                      minLength: MediaQuery.of(context).size.width / 6,
+                      maxLength: MediaQuery.of(context).size.width / 3,
+                    )),
+              ),
+              SkeletonAvatar(
+                style: SkeletonAvatarStyle(
+                  width: double.infinity,
+                  minHeight: MediaQuery.of(context).size.height / 8,
+                  maxHeight: MediaQuery.of(context).size.height / 6,
                 ),
               ),
-            )
-          ],
-        ));
+              const SizedBox(height: 20),
+            ],
+          );
+        } else {
+          return Container();
+        }
+      },
+    );
   }
 
   Widget _buildPaymentSection() {
@@ -647,73 +704,84 @@ class StudentHomePageState extends State<StudentHomePage> {
   }
 
   Widget _buildRewardSection() {
-    return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Reward',
-              style: sWhiteTextStyle,
-            ),
-            const SizedBox(height: 5),
-            Material(
-              color: sBlackColor,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(8),
-                onTap: () {
-                  Navigator.pushNamed(context, '/student-point');
-                },
-                splashColor: const Color(0xff30363D),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(0xff30363D),
-                      ),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Current Point',
-                            style: sWhiteTextStyle.copyWith(
-                                fontSize: 16, fontWeight: semiBold)),
-                        Row(
-                          children: [
-                            const Icon(Icons.favorite,
-                                color: Color(0xffD15151)),
-                            const SizedBox(width: 10),
-                            Text('78 POIN',
-                                style: sWhiteTextStyle.copyWith(
-                                    fontSize: 22, fontWeight: semiBold)),
-                          ],
-                        ),
-                        const Divider(
-                          height: 20,
-                          thickness: 1,
-                          color: Color(0xff272C33),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'See your reward point',
-                              style: sWhiteTextStyle.copyWith(
-                                  fontSize: 14, fontWeight: semiBold),
+    return BlocBuilder<PointRewardBloc, PointRewardState>(
+      bloc: _pointBloc,
+      builder: (context, state) {
+        if (state is PointRewardLoaded) {
+          PointReward point = state.pointModel;
+          return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Reward',
+                    style: sWhiteTextStyle,
+                  ),
+                  const SizedBox(height: 5),
+                  Material(
+                    color: sBlackColor,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(8),
+                      onTap: () {  
+                        // Navigator.pushNamed(context, '/student-point');
+                      },
+                      splashColor: const Color(0xff30363D),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                              color: const Color(0xff30363D),
                             ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: sWhiteColor,
-                              size: 20,
-                            )
-                          ],
-                        )
-                      ]),
-                ),
-              ),
-            )
-          ],
-        ));
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Current Point',
+                                  style: sWhiteTextStyle.copyWith(
+                                      fontSize: 16, fontWeight: semiBold)),
+                              Row(
+                                children: [
+                                  const Icon(Icons.favorite,
+                                      color: Color(0xffD15151)),
+                                  const SizedBox(width: 10),
+                                  Text('${state.pointModel.data!.point } POINT',
+                                      style: sWhiteTextStyle.copyWith(
+                                          fontSize: 22, fontWeight: semiBold)),
+                                ],
+                              ),
+                              const Divider(
+                                height: 20,
+                                thickness: 1,
+                                color: Color(0xff272C33),
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'See your reward point',
+                                    style: sWhiteTextStyle.copyWith(
+                                        fontSize: 14, fontWeight: semiBold),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: sWhiteColor,
+                                    size: 20,
+                                  )
+                                ],
+                              )
+                            ]),
+                      ),
+                    ),
+                  )
+                ],
+              ));
+        } else {
+          return Container();
+        }
+      },
+    );
   }
 
   Widget _buildSidebar() {
@@ -832,5 +900,39 @@ class StudentHomePageState extends State<StudentHomePage> {
     var formattedDate = DateFormat("EEE, d MMMM").format(DateTime.now());
 
     return formattedDate.toString();
+  }
+
+  // ! set Text
+
+  _setCourseSchedule(schedule) {
+    if (schedule == 'DR - Drum') {
+      return 'Drum Class';
+    } else if (schedule == 'AG - Acoustic Guitar') {
+      return 'Acoustic Guitar Class';
+    } else if (schedule == 'CE - Cello') {
+      return 'Cello Class';
+    } else if (schedule == 'FL - Flute') {
+      return 'Flute Class';
+    } else if (schedule == 'SA - Saxophone') {
+      return 'Saxophone Class';
+    } else if (schedule == 'VI - Violin') {
+      return 'Violin Class';
+    } else if (schedule == 'BA - Bass') {
+      return 'Bass Class';
+    } else if (schedule == 'EG - Electric Guitar') {
+      return 'Electric Guitar Class';
+    } else if (schedule == 'VO - Vocal') {
+      return 'Vocal Class';
+    } else if (schedule == 'MM - Multi Mayor') {
+      return 'Multi Mayor Class';
+    } else if (schedule == 'PI - Piano') {
+      return 'Piano Class';
+    }
+  }
+
+  _setDatetimeSchedule(schedule) {
+    var parsedDate = DateTime.parse(schedule);
+    String formattedDate = DateFormat('dd MMMM yyyy').format(parsedDate);
+    return formattedDate;
   }
 }

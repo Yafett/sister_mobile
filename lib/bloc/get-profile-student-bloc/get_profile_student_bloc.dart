@@ -14,9 +14,10 @@ class GetProfileStudentBloc
 
     on<GetProfileList>((event, emit) async {
       try {
-        emit(GetProfileLoading()); 
+        emit(GetProfileLoading());
         final pList = await _profileProvider.fetchProfileStudent();
-        emit(GetProfileLoaded(pList)); 
+        emit(GetProfileLoaded(pList));
+        print(pList.error);
         if (pList.error != null) {
           emit(GetProfileError(pList.error));
         }
