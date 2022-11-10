@@ -20,6 +20,9 @@ class AuthProvider {
       "pwd": password
     });
 
+    prefs.setString('username', user);
+    prefs.setString('password', password);
+    
     final data = await json.decode(response.body);
     return data;
   }

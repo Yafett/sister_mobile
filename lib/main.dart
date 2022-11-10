@@ -3,12 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:sister_mobile/pages/guardians/guardian-home.dart';
 import 'package:sister_mobile/pages/guardians/guardian-kids.dart';
 import 'package:sister_mobile/pages/students/auth/login-page.dart';
-import 'package:sister_mobile/pages/students/auth/register-page.dart';
-import 'package:sister_mobile/pages/students/auth/splash-page.dart';
 import 'package:sister_mobile/pages/students/auth/terms-page.dart';
-import 'package:sister_mobile/pages/students/history/student-attendance-detail.dart';
-import 'package:sister_mobile/pages/students/history/student-attendance-history.dart';
-import 'package:sister_mobile/pages/students/history/student-enrollment-history.dart';
+import 'package:sister_mobile/pages/students/history/attendance/student-attendance-history.dart';
+import 'package:sister_mobile/pages/students/history/enrollment/student-enrollment-history.dart';
 import 'package:sister_mobile/pages/students/payment/student-payment-detail.dart';
 import 'package:sister_mobile/pages/students/payment/student-payment-help.dart';
 import 'package:sister_mobile/pages/students/point/student-point-detail.dart';
@@ -19,7 +16,6 @@ import 'package:sister_mobile/pages/students/schedule/student-schedule-help.dart
 import 'package:sister_mobile/pages/students/schedule/student-schedule.dart';
 import 'package:sister_mobile/pages/students/student-home.dart';
 import 'package:sister_mobile/pages/students/payment/student-payment.dart';
-import 'package:sister_mobile/pages/test.dart';
 
 void main() {
   // add these lines
@@ -44,17 +40,16 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (context) => const StudentHomePage(),
+        '/': (context) => const GuardianHomePage(),
         '/home': (context) => const LoginPage(),
         '/terms': (context) => const TermPage(),
 
         // ! Student Section
-        '/student-home': (context) => const StudentHomePage(),
         '/student-profile': (context) => const StudentProfilePage(),
         '/student-payment': (context) => const StudentPaymentPage(),
         '/student-payment-help': (context) => const StudentPaymentHelpPage(),
         '/student-payment-detail': (context) =>
-            const StudentPaymentDetailPage(),
+            StudentPaymentDetailPage(dueDate: DateTime.now()),
         '/student-point': (context) => const StudentPointPage(),
         '/student-point-help': (context) => const StudentPointHelpPage(),
         '/student-point-detail': (context) => const StudentPointDetailPage(),
@@ -64,8 +59,6 @@ class _MyAppState extends State<MyApp> {
             const StudentAttendanceHistoryPage(),
         '/student-history-enrollment': (context) =>
             const StudentEnrollmentHistoryPage(),
-        '/student-history-attendance-detail': (context) =>
-            const StudentAttendanceDetailPage(),
 
         // ! Guardian Section
         '/guardian-home': (context) => const GuardianHomePage(),

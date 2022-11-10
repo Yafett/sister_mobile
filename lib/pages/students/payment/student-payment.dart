@@ -1,6 +1,13 @@
 // ignore_for_file: file_names
 
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:money_formatter/money_formatter.dart';
+import 'package:sister_mobile/pages/students/payment/student-payment-detail.dart';
+import 'package:sister_mobile/pages/students/student-home.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 
@@ -13,6 +20,18 @@ class StudentPaymentPage extends StatefulWidget {
 
 class _StudentPaymentPageState extends State<StudentPaymentPage> {
   var itemList = ['', '', ''];
+
+  var feesList = [];
+  var componentsList = [];
+
+  final dio = Dio();
+  var cookieJar = CookieJar();
+
+  @override
+  void initState() {
+    _fetchFeesList();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,22 +73,41 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
   Widget _buildPaymentList() {
     return Column(
       children: <Widget>[
-        ...itemList.map((item) {
-          return _buildPaymentCard();
+        ...feesList.map((item) {
+          return _buildPaymentCard(item);
         }).toList(),
       ],
     );
   }
 
-  Widget _buildPaymentCard() {
+  Widget _buildPaymentCard(item) {
+    MoneyFormatter grandTotal =
+        MoneyFormatter(amount: item['data']['grand_total']);
+
+    var dueDate = DateTime.parse("${item['data']['due_date']} 11:47:00");
+
+    String formattedDate = DateFormat('EEEE, dd MMMM yyyy').format(dueDate);
+
     return Container(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             GestureDetector(
-              onTap: () =>
-                  Navigator.pushNamed(context, '/student-payment-detail'),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => StudentPaymentDetailPage(
+                              studentCode: item['data']['student'],
+                              studentName: item['data']['student_name'],
+                              feeName: item['data']['name'],
+                              dueDate: dueDate,
+                              grandTotal: grandTotal.output.nonSymbol,
+                              status: item['data']['status'],
+                              componentsList: item['data']['components'],
+                            )));
+              },
               child: Container(
                 margin: const EdgeInsets.only(top: 10),
                 decoration: BoxDecoration(
@@ -86,7 +124,7 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('ICPR3113DR',
+                            Text('${item['data']['name'].toString()}',
                                 style: sWhiteTextStyle.copyWith(
                                     fontSize: 20, fontWeight: semiBold)),
                             Material(
@@ -99,26 +137,19 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
                                   height: 20,
                                   width: 70,
                                   decoration: BoxDecoration(
-                                    color: sGreenColor,
+                                    color:
+                                        _setChipColor(item['data']['status']),
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Center(
                                       child: Text(
-                                    'Paid',
+                                    '${item['data']['status']}',
                                     style: sWhiteTextStyle.copyWith(
                                         fontWeight: semiBold),
                                   )),
                                 ),
                               ),
                             ),
-                            // Container(
-                            //   height: 20,
-                            //   width: 5,
-                            //   decoration: BoxDecoration(
-                            //     borderRadius: BorderRadius.circular(12),
-                            //     color: sGreenColor,
-                            //   ),
-                            // )
                           ],
                         ),
                       ),
@@ -134,17 +165,17 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Rp. 400.000,00',
+                            Text('Rp. ${grandTotal.output.nonSymbol}',
                                 style: sWhiteTextStyle.copyWith(
                                     fontSize: 26, fontWeight: semiBold)),
                             const SizedBox(height: 5),
                             Text(
-                              'Drum - Premium',
+                              '${item['data']['company']}',
                               style: sWhiteTextStyle.copyWith(fontSize: 12),
                             ),
                             const SizedBox(height: 5),
                             Text(
-                              'Due : 10 Sept 2022',
+                              'Due : ${formattedDate.toString()}',
                               style: sWhiteTextStyle.copyWith(fontSize: 12),
                             ),
                           ],
@@ -155,5 +186,47 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
             )
           ],
         ));
+  }
+
+  _setChipColor(item) {
+    if (item == 'Unpaid') {
+      return sOrangeColor;
+    } else if (item == 'Paid') {
+      return sGreenColor;
+    } else if (item == 'Overdue') {
+      return sRedColor;
+    } else {
+      return sGreyColor;
+    }
+  }
+
+  _fetchFeesList() async {
+    final dio = Dio();
+    var cookieJar = CookieJar();
+
+    dio.interceptors.add(CookieManager(cookieJar));
+    final response = await dio
+        .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+      'usr': 'administrator',
+      'pwd': 'admin',
+    });
+    final getCode =
+        await dio.get("https://njajal.sekolahmusik.co.id/api/resource/Fees");
+
+    if (getCode.statusCode == 200) {
+      for (var a = 0; a < getCode.data['data'].length; a++) {
+        var code = getCode.data['data'][a]['name'];
+        final request = await dio
+            .get('https://njajal.sekolahmusik.co.id/api/resource/Fees/${code}');
+
+        if (mounted) {
+          setState(() => feesList.add(request.data));
+        }
+      }
+
+      for (var a = 0; a < feesList.length; a++) {
+        componentsList.add(feesList[a]['data']['components']);
+      }
+    }
   }
 }

@@ -1,35 +1,99 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:sister_mobile/shared/theme.dart';
+import 'package:sister_mobile/widget/no_scroll_waves.dart';
 
-import '../../../shared/theme.dart';
-import '../../../widget/no_scroll_waves.dart';
+class StudentEnrollmentDetailPage extends StatefulWidget {
+  String? name;
+  String? date;
+  String? status;
+  String? program;
+  String? feeStructure;
+  String? className;
+  String? classFormat;
+  String? classGrading;
+  String? classType;
+  String? classDuration;
+  String? course;
 
-class StudentAttendanceDetailPage extends StatefulWidget {
-  const StudentAttendanceDetailPage({Key? key}) : super(key: key);
+  StudentEnrollmentDetailPage({
+    Key? key,
+    this.name,
+    this.date,
+    this.status,
+    this.program,
+    this.feeStructure,
+    this.className,
+    this.classFormat,
+    this.classGrading,
+    this.classType,
+    this.classDuration,
+    this.course,
+  }) : super(key: key);
 
   @override
-  State<StudentAttendanceDetailPage> createState() =>
-      _StudentAttendanceDetailPageState();
+  State<StudentEnrollmentDetailPage> createState() =>
+      _StudentEnrollmentDetailPageState();
 }
 
-class _StudentAttendanceDetailPageState
-    extends State<StudentAttendanceDetailPage> {
+class _StudentEnrollmentDetailPageState
+    extends State<StudentEnrollmentDetailPage> {
+  final _programController = TextEditingController();
+  final _feeStructureController = TextEditingController();
+  final _classNameController = TextEditingController();
+  final _classFormatController = TextEditingController();
+  final _classGradingController = TextEditingController();
+  final _classTypeController = TextEditingController();
+  final _classDurationController = TextEditingController();
+  final _courseController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return _buildStudentAttendancePage();
   }
 
   Widget _buildStudentAttendancePage() {
+    _setValue();
     return Scaffold(
       backgroundColor: sBlackColor,
       appBar: AppBar(
         backgroundColor: sBlackColor,
         leading: const BackButton(color: Color(0xffC9D1D9)),
         title: Text(
-          'Attendance Detail',
+          'Enrollment Detail',
           style: sWhiteTextStyle.copyWith(fontWeight: semiBold),
         ),
+        actions: [
+          PopupMenuButton(
+            icon: const Icon(
+                Icons.more_vert), //don't specify icon if you want 3 dot menu
+            color: sGreyColor,
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 0,
+                child: Text(
+                  "Delete",
+                  style: TextStyle(color: sWhiteColor),
+                ),
+              ),
+              PopupMenuItem(
+                value: 2,
+                child: Text(
+                  "Graduate",
+                  style: TextStyle(color: sWhiteColor),
+                ),
+              ),
+              PopupMenuItem(
+                value: 3,
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(color: sWhiteColor),
+                ),
+              ),
+            ],
+            onSelected: (item) => {print(item)},
+          ),
+        ],
       ),
       body: ScrollConfiguration(
         behavior: NoScrollWaves(),
@@ -51,24 +115,44 @@ class _StudentAttendanceDetailPageState
 
   Widget _buildTitleDetail() {
     return SizedBox(
-      child: Row(children: [
-        Container(
-          margin: const EdgeInsets.only(right: 5),
-          height: 20,
-          width: 10,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: sGreenColor,
-          ),
-        ),
-        Text(
-          'EDU-ATT-,YYYY',
-          style: sWhiteTextStyle.copyWith(
-            fontWeight: semiBold,
-            fontSize: 20,
-          ),
-        )
-      ]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Text(
+              widget.name.toString(),
+              style: sWhiteTextStyle.copyWith(
+                fontWeight: semiBold,
+                fontSize: 20,
+              ),
+            ),
+            Material(
+              color: sBlackColor,
+              child: InkWell(
+                splashColor: sGreyColor,
+                borderRadius: BorderRadius.circular(4),
+                onTap: () {},
+                child: Container(
+                  margin: EdgeInsets.only(left: 5),
+                  height: 20,
+                  width: 70,
+                  decoration: BoxDecoration(
+                    color: sGreenColor,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Center(
+                      child: Text(
+                    widget.status.toString(),
+                    style: sWhiteTextStyle.copyWith(fontWeight: semiBold),
+                  )),
+                ),
+              ),
+            ),
+          ]),
+          SizedBox(height: 10),
+          Text('start : ' + widget.date.toString(), style: fTextColorStyle),
+        ],
+      ),
     );
   }
 
@@ -77,15 +161,18 @@ class _StudentAttendanceDetailPageState
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ! instructor Field
-          Text('Instructor', style: fTextColorStyle),
+          // ! Program Field
+          Text('Program', style: fTextColorStyle),
           const SizedBox(height: 5),
           TextFormField(
+            readOnly: true,
+            style: sGreyTextStyle,
+            controller: _programController,
             decoration: InputDecoration(
               filled: true,
               fillColor: sBlackColor,
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8), 
+                borderRadius: BorderRadius.circular(8),
                 borderSide: const BorderSide(color: Color(0XFF444C56)),
               ),
               focusedBorder: OutlineInputBorder(
@@ -98,140 +185,13 @@ class _StudentAttendanceDetailPageState
           ),
           const SizedBox(height: 15),
 
-          // ! course schedule Field
-          Text('Course Schedule', style: fTextColorStyle),
+          // ! Class Name Field
+          Text('Class Name', style: fTextColorStyle),
           const SizedBox(height: 5),
           TextFormField(
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: sBlackColor,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0XFF444C56)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0XFF444C56)),
-              ),
-              hintText: 'e.x schedule',
-              hintStyle: fGreyTextStyle,
-            ),
-          ),
-          const SizedBox(height: 15),
-
-          // ! Student Group Field
-          Text('Student Group', style: fTextColorStyle),
-          const SizedBox(height: 5),
-          TextFormField(
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: sBlackColor,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0XFF444C56)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0XFF444C56)),
-              ),
-              hintText: 'e.x group',
-              hintStyle: fGreyTextStyle,
-            ),
-          ),
-          const SizedBox(height: 15),
-
-          // ! Date Field
-          Text('Date', style: fTextColorStyle),
-          const SizedBox(height: 5),
-          TextFormField(
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: sBlackColor,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0XFF444C56)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0XFF444C56)),
-              ),
-              hintText: 'e.x dd:mm:yyyy',
-              hintStyle: fGreyTextStyle,
-            ),
-          ),
-          const SizedBox(height: 15),
-
-          // ! Status Field
-          Text('Status', style: fTextColorStyle),
-          const SizedBox(height: 5),
-          TextFormField(
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: sBlackColor,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0XFF444C56)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0XFF444C56)),
-              ),
-              hintText: 'e.x present',
-              hintStyle: fGreyTextStyle,
-            ),
-          ),
-          const SizedBox(height: 15),
-
-          // ! Growth Point Field
-          Text('Growth Point', style: fTextColorStyle),
-          const SizedBox(height: 5),
-          TextFormField(
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: sBlackColor,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0XFF444C56)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0XFF444C56)),
-              ),
-              hintText: 'e.x 0',
-              hintStyle: fGreyTextStyle,
-            ),
-          ),
-          const SizedBox(height: 15),
-
-          // ! Comment Field
-          Text('Comment', style: fTextColorStyle),
-          const SizedBox(height: 5),
-          TextFormField(
-            maxLines: 5,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: sBlackColor,
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0XFF444C56)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0XFF444C56)),
-              ),
-              hintText: 'e.x comment',
-              hintStyle: fGreyTextStyle,
-            ),
-          ),
-          const SizedBox(height: 15),
-
-          // ! Lesson Field
-          Text('Lesson', style: fTextColorStyle),
-          const SizedBox(height: 5),
-          TextFormField(
+            readOnly: true,
+            style: sGreyTextStyle,
+            controller: _classNameController,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               filled: true,
@@ -250,10 +210,13 @@ class _StudentAttendanceDetailPageState
           ),
           const SizedBox(height: 15),
 
-          // ! Video Url Field
-          Text('Video Url', style: fTextColorStyle),
+          // ! Fees Structure Field
+          Text('Fees Structure', style: fTextColorStyle),
           const SizedBox(height: 5),
           TextFormField(
+            readOnly: true,
+            style: sGreyTextStyle,
+            controller: _feeStructureController,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               filled: true,
@@ -266,7 +229,132 @@ class _StudentAttendanceDetailPageState
                 borderRadius: BorderRadius.circular(8),
                 borderSide: const BorderSide(color: Color(0XFF444C56)),
               ),
-              hintText: 'e.x https://xxxx',
+              hintText: 'e.x place',
+              hintStyle: fGreyTextStyle,
+            ),
+          ),
+          const SizedBox(height: 15),
+
+          // ! Class Format Field
+          Text('Class Format', style: fTextColorStyle),
+          const SizedBox(height: 5),
+          TextFormField(
+            readOnly: true,
+            style: sGreyTextStyle,
+            controller: _classFormatController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: sBlackColor,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0XFF444C56)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0XFF444C56)),
+              ),
+              hintText: 'e.x place',
+              hintStyle: fGreyTextStyle,
+            ),
+          ),
+          const SizedBox(height: 15),
+
+          // ! Class Grading Field
+          Text('Class Grading', style: fTextColorStyle),
+          const SizedBox(height: 5),
+          TextFormField(
+            readOnly: true,
+            style: sGreyTextStyle,
+            controller: _classGradingController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: sBlackColor,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0XFF444C56)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0XFF444C56)),
+              ),
+              hintText: 'e.x place',
+              hintStyle: fGreyTextStyle,
+            ),
+          ),
+          const SizedBox(height: 15),
+
+          // ! Class Type Field
+          Text('Class Type', style: fTextColorStyle),
+          const SizedBox(height: 5),
+          TextFormField(
+            readOnly: true,
+            style: sGreyTextStyle,
+            controller: _classTypeController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: sBlackColor,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0XFF444C56)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0XFF444C56)),
+              ),
+              hintText: 'e.x place',
+              hintStyle: fGreyTextStyle,
+            ),
+          ),
+          const SizedBox(height: 15),
+
+          // ! Class Duration Field
+          Text('Class Duration', style: fTextColorStyle),
+          const SizedBox(height: 5),
+          TextFormField(
+            readOnly: true,
+            style: sGreyTextStyle,
+            controller: _classDurationController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: sBlackColor,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0XFF444C56)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0XFF444C56)),
+              ),
+              hintText: 'e.x place',
+              hintStyle: fGreyTextStyle,
+            ),
+          ),
+          const SizedBox(height: 15),
+
+          // ! Course Field
+          Text('Course', style: fTextColorStyle),
+          const SizedBox(height: 5),
+          TextFormField(
+            readOnly: true,
+            style: sGreyTextStyle,
+            controller: _courseController,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: sBlackColor,
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0XFF444C56)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: const BorderSide(color: Color(0XFF444C56)),
+              ),
+              hintText: 'e.x place',
               hintStyle: fGreyTextStyle,
             ),
           ),
@@ -274,5 +362,16 @@ class _StudentAttendanceDetailPageState
         ],
       ),
     );
+  }
+
+  _setValue() {
+    _programController.text = widget.program.toString();
+    _classNameController.text = widget.className.toString();
+    _feeStructureController.text = widget.feeStructure.toString();
+    _classFormatController.text = widget.classFormat.toString();
+    _classGradingController.text = widget.classGrading.toString();
+    _classTypeController.text = widget.classType.toString();
+    _classDurationController.text = widget.classDuration.toString();
+    _courseController.text = widget.course.toString();
   }
 }

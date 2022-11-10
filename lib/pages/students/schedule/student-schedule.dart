@@ -1,9 +1,20 @@
 // ignore_for_file: file_names
 
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sister_mobile/bloc/get-profile-student-bloc/get_profile_student_bloc.dart';
+import 'package:sister_mobile/bloc/get-student-schedule/student_schedule_bloc.dart';
+import 'package:sister_mobile/pages/students/schedule/student-schedule-details.dart';
+import 'package:skeletons/skeletons.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import 'package:syncfusion_flutter_core/theme.dart';
 
+import '../../../model/Schedule-model.dart';
 import '../../../shared/theme.dart';
 
 class StudentSchedulePage extends StatefulWidget {
@@ -14,6 +25,27 @@ class StudentSchedulePage extends StatefulWidget {
 }
 
 class _StudentSchedulePageState extends State<StudentSchedulePage> {
+  final _scheduleBloc = StudentScheduleBloc();
+
+  var length;
+  var listSchedule = [];
+
+  DateTime? start;
+  DateTime? end;
+
+  CalendarController _controller = CalendarController();
+  String? _text = '', _titleText = '';
+  Color? _headerColor, _viewHeaderColor, _calendarColor;
+
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scheduleBloc.add(GetScheduleList());
+    _fetchScheduleList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return _buildSchedulePage();
@@ -25,12 +57,12 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
         appBar: AppBar(
           backgroundColor: sBlackColor,
           leading: const BackButton(color: Color(0xffC9D1D9)),
-          title: Text('Point Reward',
+          title: Text('Your Schedule',
               style: sWhiteTextStyle.copyWith(fontWeight: semiBold)),
           actions: [
             GestureDetector(
-              onTap: () =>
-                  Navigator.pushNamed(context, '/student-schedule-help'),
+              onTap: () => _fetchScheduleList(),
+              // Navigator.pushNamed(context, '/student-schedule-help'),
               child: Container(
                   margin: const EdgeInsets.only(right: 20),
                   child: const Icon(Icons.help_outline,
@@ -44,67 +76,190 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
   Widget _buildCalendar() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      constraints: const BoxConstraints.expand(),
       color: sBlackColor,
-      child: SfCalendarTheme(
-        data: SfCalendarThemeData(
-          todayTextStyle: sWhiteTextStyle,
-          timeTextStyle: sWhiteTextStyle,
-          cellBorderColor: sBlackColor,
-          headerTextStyle:
-              sWhiteTextStyle.copyWith(fontSize: 20, fontWeight: semiBold),
-          activeDatesBackgroundColor: sBlackColor,
-          selectionBorderColor: sGreyColor,
-          
-          viewHeaderDayTextStyle: sWhiteTextStyle.copyWith(
-            fontWeight: semiBold,
-          ),
-        ),
-        child: SfCalendar(
-          headerHeight: 50,
-          todayHighlightColor: sRedColor,
-          viewHeaderHeight: 50,
-          appointmentTextStyle: sWhiteTextStyle,
-          dataSource: MeetingDataSource(_getDataSource()),
-          allowAppointmentResize: true,
-          showNavigationArrow: true,
-          view: CalendarView.month,
-          monthViewSettings: MonthViewSettings(
-            agendaViewHeight: 300,
-            agendaItemHeight: 50,
-            agendaStyle: AgendaStyle(
-              backgroundColor: sBlackColor,
-              appointmentTextStyle: sWhiteTextStyle,
-              dateTextStyle: sWhiteTextStyle,
-              dayTextStyle: sWhiteTextStyle,
-            ),
-            monthCellStyle: MonthCellStyle(
-              textStyle: sWhiteTextStyle,
-              leadingDatesTextStyle: sGreyTextStyle,
-              trailingDatesTextStyle: sGreyTextStyle,
-            ),
-            showAgenda: true,
-            navigationDirection: MonthNavigationDirection.horizontal,
-          ),
-          appointmentTimeTextFormat: 'hh:mm a',
-        ),
+      child: BlocBuilder<StudentScheduleBloc, StudentScheduleState>(
+        bloc: _scheduleBloc,
+        builder: (context, state) {
+          if (state is StudentScheduleLoaded) {
+            Schedule schedule = state.scheduleModel;
+
+            return SfCalendarTheme(
+              data: SfCalendarThemeData(
+                todayTextStyle: sWhiteTextStyle,
+                timeTextStyle: sWhiteTextStyle,
+                cellBorderColor: sBlackColor,
+                headerTextStyle: sWhiteTextStyle.copyWith(
+                    fontSize: 20, fontWeight: semiBold),
+                activeDatesBackgroundColor: sBlackColor,
+                selectionBorderColor: sGreyColor,
+                viewHeaderDayTextStyle: sWhiteTextStyle.copyWith(
+                  fontWeight: semiBold,
+                ),
+              ),
+              child: SfCalendar(
+                controller: _controller,
+                onTap: calendarTapped,
+                headerHeight: 50,
+                todayHighlightColor: sRedColor,
+                viewHeaderHeight: 50,
+                appointmentTextStyle: sWhiteTextStyle,
+                dataSource: MeetingDataSource(_getDataSource(schedule.message)),
+                allowAppointmentResize: true,
+                showNavigationArrow: true,
+                view: CalendarView.month,
+                monthViewSettings: MonthViewSettings(
+                  agendaViewHeight: 300,
+                  agendaItemHeight: 50,
+                  agendaStyle: AgendaStyle(
+                    backgroundColor: sBlackColor,
+                    appointmentTextStyle: sWhiteTextStyle,
+                    dateTextStyle: sWhiteTextStyle,
+                    dayTextStyle: sWhiteTextStyle,
+                  ),
+                  monthCellStyle: MonthCellStyle(
+                    textStyle: sWhiteTextStyle,
+                    leadingDatesTextStyle: sGreyTextStyle,
+                    trailingDatesTextStyle: sGreyTextStyle,
+                  ),
+                  showAgenda: true,
+                  navigationDirection: MonthNavigationDirection.horizontal,
+                ),
+                appointmentTimeTextFormat: 'hh:mm a',
+              ),
+            );
+          } else if (state is StudentScheduleLoading) {
+            return Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: SkeletonAvatar(
+                style: SkeletonAvatarStyle(
+                  width: MediaQuery.of(context).size.width / 4,
+                  height: MediaQuery.of(context).size.width / 2,
+                ),
+              ),
+            );
+          } else {
+            return Container();
+          }
+        },
       ),
     );
   }
-}
 
-List<Meeting> _getDataSource() {
-  final List<Meeting> meetings = <Meeting>[];
-  final DateTime today = DateTime.now();
-  final DateTime startTime =
-      DateTime(today.year, today.month, today.day, 9, 0, 0);
-  final DateTime endTime = startTime.add(const Duration(hours: 2));
-  meetings.add(Meeting(
-      'Piano Class - Mrs. Riri', startTime, endTime, sGreyColor, false));
-  meetings.add(Meeting(
-      'Piano Class - Mrs. Lina', startTime, endTime, sGreyColor, false));
+  void calendarTapped(CalendarTapDetails calendarTapDetails) {
+    if (calendarTapDetails.targetElement == CalendarElement.appointment) {
+      Meeting appointment = calendarTapDetails.appointments![0];
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => StudentScheduleDetailPage(
+                  title: appointment.eventName,
+                  date: appointment.date,
+                  endDate: appointment.to,
+                  startDate: appointment.from,
+                  instructor: appointment.instructor,
+                  location: appointment.location,
+                )),
+      );
+    }
+  }
 
-  return meetings;
+  _fetchScheduleList() async {
+    final dio = Dio();
+    var cookieJar = CookieJar();
+
+    isLoading = true;
+
+    dio.interceptors.add(CookieManager(cookieJar));
+    final response = await dio
+        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+      'usr': 'yafhet_rama',
+      'pwd': 'yafhet',
+    });
+    final getCode = await dio
+        .get("https://sister.sekolahmusik.co.id/api/resource/Course Schedule");
+
+    if (getCode.statusCode == 200) {
+      for (var a = 0; a < getCode.data['data'].length; a++) {
+        var code = getCode.data['data'][a]['name'];
+        final request = await dio.get(
+            'https://sister.sekolahmusik.co.id/api/resource/Course Schedule/${code}');
+
+        if (mounted) {
+          setState(() {
+            listSchedule.add(request.data);
+          });
+        }
+      }
+
+      isLoading = false;
+    }
+  }
+
+  _getDataSource(schedule) {
+    final List<Meeting> meetings = <Meeting>[];
+
+    for (var a = 0; a < listSchedule.length; a++) {
+      var element = listSchedule[a]['data'];
+
+      // ! phase 1
+      var rawDate = element['schedule_date'];
+      var rawTime = element['from_time'];
+      var rawEndTime = element['to_time'];
+      var time = rawTime;
+      var endTime = rawTime;
+
+      // ! phase 2
+      if (rawTime.length <= 7) {
+        time = '0' + rawTime;
+      }
+
+      if (rawEndTime.length <= 7) {
+        endTime = '0' + rawEndTime;
+      }
+
+      // ! phase 3
+      var rawDateToDate = rawDate + ' ' + time;
+
+      var replaced = rawDateToDate.replaceAll('-', '');
+
+      var replaced2 = replaced.replaceAll(':', '');
+
+      var replaced3 = replaced2.replaceAll(' ', '');
+
+      var rawDateToDateEnd = rawDate + ' ' + endTime;
+
+      var replace = rawDateToDateEnd.replaceAll('-', '');
+
+      var replace2 = replace.replaceAll(':', '');
+
+      var replace3 = replace2.replaceAll(' ', '');
+
+      // ! final phase
+      String date = replaced3;
+      String dateWithT = date.substring(0, 8) + 'T' + date.substring(8);
+      DateTime dateTime = DateTime.parse(dateWithT);
+
+      String dateEnd = replace3;
+      String dateEndWithT =
+          dateEnd.substring(0, 8) + 'T' + dateEnd.substring(8);
+      DateTime dateTimeEnd = DateTime.parse(dateEndWithT);
+
+      end = dateTimeEnd;
+
+      meetings.add(Meeting(
+          '${element['title']}',
+          dateTime,
+          dateTimeEnd,
+          sGreyColor,
+          false,
+          element['instructor_name'],
+          element['room'],
+          element['schedule_date']));
+    }
+
+    return meetings;
+  }
 }
 
 class MeetingDataSource extends CalendarDataSource {
@@ -139,11 +294,23 @@ class MeetingDataSource extends CalendarDataSource {
 }
 
 class Meeting {
-  Meeting(this.eventName, this.from, this.to, this.background, this.isAllDay);
+  Meeting(
+    this.eventName,
+    this.from,
+    this.to,
+    this.background,
+    this.isAllDay,
+    this.instructor,
+    this.location,
+    this.date,
+  );
 
   String eventName;
   DateTime from;
   DateTime to;
   Color background;
   bool isAllDay;
+  String instructor;
+  String location;
+  String date;
 }

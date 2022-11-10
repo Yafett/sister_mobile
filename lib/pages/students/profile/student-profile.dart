@@ -1,9 +1,7 @@
 // ignore_for_file: unused_field
 
 import 'package:expandable/expandable.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/material.dart'; 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sister_mobile/model/ProfileGuardian-model.dart';
 import 'package:skeletons/skeletons.dart';
@@ -117,12 +115,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                   bloc: _userBloc,
                   builder: (context, state) {
                     if (state is GetProfileUserLoaded) {
-                      ProfileUser profile = state.modelUser;
-                      _setControllerUser(profile.data);
+                      ProfileUser user = state.modelUser;
+                      _setControllerUser(user.data);
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildProfileName(profile.data!),
+                          _buildProfileName(user.data!),
                           _buildProfilePicture(),
                           _buildBasicUserInfo(),
                         ],
@@ -212,12 +210,12 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                               ],
                             ),
                           ),
-                        ], 
+                        ],
                       );
                     } else {
                       return Container();
                     }
-                  }, 
+                  },
                 ),
               ],
             )),
@@ -799,7 +797,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0XFF444C56)),
             ),
-            hintText: 'e.x john',
+            hintText: 'e.x 08xx',
             hintStyle: fGreyTextStyle,
           ),
         ),
@@ -869,7 +867,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0XFF444C56)),
             ),
-            hintText: 'e.x nik',
+            hintText: 'e.x company',
             hintStyle: fGreyTextStyle,
           ),
         ),
@@ -1003,7 +1001,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0XFF444C56)),
             ),
-            hintText: 'e.x john doe',
+            hintText: 'e.x 08xx',
             hintStyle: fGreyTextStyle,
           ),
         ),
@@ -1026,7 +1024,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0XFF444C56)),
             ),
-            hintText: 'e.x john',
+            hintText: 'e.x john@example.com',
             hintStyle: fGreyTextStyle,
           ),
         ),
@@ -1049,7 +1047,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0XFF444C56)),
             ),
-            hintText: 'e.x john@example.com',
+            hintText: 'e.x occupation',
             hintStyle: fGreyTextStyle,
           ),
         ),
@@ -1072,7 +1070,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: Color(0XFF444C56)),
             ),
-            hintText: 'e.x nik',
+            hintText: 'e.x @',
             hintStyle: fGreyTextStyle,
           ),
         ),
@@ -1082,13 +1080,14 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   }
 
   // ! set controller
+  
   _setControllerStudent(profile) {
     _usernameStudentController.text = profile.firstName;
     _mobileStudentController.text = profile.studentMobileNumber;
     _firstNameStudentController.text = profile.firstName;
     _lastNameStudentController.text = profile.lastName;
     _emailStudentController.text = profile.studentEmailId;
-    _nikStudentController.text = profile.nis;
+    _nikStudentController.text = (profile.nis == null) ? '' : profile.nis;
     _companyStudentController.text = profile.company;
 
     _dateBirthStudentController.text = profile.dateOfBirth;
@@ -1109,13 +1108,14 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     _guardianNameController.text = profile.guardianName;
     _guardianMobileNumberController.text = profile.mobileNumber;
     _guardianEmailController.text = profile.emailAddress;
-    _guardianOccupationController.text = profile.occupation;
-    _guardianSosmedController.text = profile.igUser;
+    _guardianOccupationController.text = profile.occupation.toString();
+    _guardianSosmedController.text = profile.igUser.toString()  ;
   }
 
   _setControllerUser(profile) {
     _userEmailController.text = profile.email;
-    _userUserNameController.text = profile.username;
+    _userUserNameController.text =
+        (profile.username == null) ? '' : profile.username;
     _userReferralController.text =
         (profile.referralCode == null) ? '' : profile.referralCode;
   }

@@ -4,11 +4,14 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
+import 'package:sister_mobile/bloc/get-enrollment-bloc/get_enrollment_bloc.dart';
 import 'package:sister_mobile/bloc/get-point-reward-bloc/point_reward_bloc.dart';
 import 'package:sister_mobile/bloc/get-student-schedule/student_schedule_bloc.dart';
+import 'package:sister_mobile/model/Enrollment-model.dart';
 import 'package:sister_mobile/resources/profile_provider.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
@@ -16,7 +19,10 @@ import 'package:intl/intl.dart';
 import 'package:skeletons/skeletons.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
 
+import '../../bloc/get-attendance-bloc/get_attendance_bloc.dart';
+import '../../bloc/get-payment-bloc/get_payment_bloc.dart';
 import '../../bloc/get-profile-student-bloc/get_profile_student_bloc.dart';
+import '../../model/Attendance-model.dart';
 import '../../model/PointReward-model.dart';
 import '../../model/ProfileStudent-model.dart';
 import '../../model/Schedule-model.dart';
@@ -37,9 +43,14 @@ class StudentHomePageState extends State<StudentHomePage> {
   final _profileBloc = GetProfileStudentBloc();
   final _scheduleBloc = StudentScheduleBloc();
   final _pointBloc = PointRewardBloc();
+  final _paymentBloc = GetPaymentBloc();
+  final _attendanceBloc = GetAttendanceBloc();
+  final _enrollmentBloc = GetEnrollmentBloc();
 
   var user;
   var pass;
+  var length;
+  var paymentLength;
 
   final _profileAuth = ProfileProvider();
 
@@ -52,6 +63,9 @@ class StudentHomePageState extends State<StudentHomePage> {
     _pointBloc.add(GetPointRewardList());
     _profileBloc.add(GetProfileList());
     _scheduleBloc.add(GetScheduleList());
+    _paymentBloc.add(GetPaymentList());
+    _attendanceBloc.add(GetAttendanceList());
+    _enrollmentBloc.add(GetEnrollmentList());
   }
 
   @override
@@ -75,21 +89,25 @@ class StudentHomePageState extends State<StudentHomePage> {
             type: SideMenuType.slideNRotate,
             menu: Padding(
               padding: const EdgeInsets.only(left: 25.0),
-              child: _buildSidebar(),
+              child: _buildSidebar(profile.data),
             ),
             maxMenuWidth: 250,
             onChange: (_isOpened) {
-              setState(() => isOpened = _isOpened);
+              if (mounted) {
+                setState(() => isOpened = _isOpened);
+              }
             },
             child: SideMenu(
               maxMenuWidth: 250,
               radius: BorderRadius.circular(12),
               background: const Color.fromARGB(255, 41, 41, 41),
               key: _sideMenuKey,
-              menu: _buildSidebar(),
+              menu: _buildSidebar(profile.data),
               type: SideMenuType.slideNRotate,
               onChange: (_isOpened) {
-                setState(() => isOpened = _isOpened);
+                if (mounted) {
+                  setState(() => isOpened = _isOpened);
+                }
               },
               child: IgnorePointer(
                 ignoring: isOpened,
@@ -339,17 +357,21 @@ class StudentHomePageState extends State<StudentHomePage> {
                   ),
 
                   // ! real clock
-                  DigitalClock(
-                      areaDecoration: const BoxDecoration(
-                        color: const Color(0xff0D1117),
-                      ),
-                      areaWidth: 95,
-                      showSecondsDigit: false,
-                      hourMinuteDigitDecoration: BoxDecoration(
-                          border: Border.all(color: const Color(0xff0D1117))),
-                      hourMinuteDigitTextStyle: sWhiteTextStyle.copyWith(
-                        fontSize: 40,
-                      )),
+                  Container(
+                    // margin: EdgeInsets.only(right: 10),
+                    child: DigitalClock(
+                        areaDecoration: const BoxDecoration(
+                          color: const Color(0xff0D1117),
+                        ),
+                        // areaWidth: 95,
+                        areaWidth: 115,
+                        showSecondsDigit: false,
+                        hourMinuteDigitDecoration: BoxDecoration(
+                            border: Border.all(color: const Color(0xff0D1117))),
+                        hourMinuteDigitTextStyle: sWhiteTextStyle.copyWith(
+                          fontSize: 40,
+                        )),
+                  ),
                   Text(_getCurrentDate(), style: sWhiteTextStyle),
                 ],
               ),
@@ -391,8 +413,34 @@ class StudentHomePageState extends State<StudentHomePage> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          _buildChip('78 POIN', Icons.favorite),
-          _buildChip('There’s no class today', Icons.star),
+          BlocBuilder<PointRewardBloc, PointRewardState>(
+            bloc: _pointBloc,
+            builder: (context, state) {
+              if (state is PointRewardLoaded) {
+                PointReward point = state.pointModel;
+                return GestureDetector(
+                    onTap: () => Navigator.pushNamed(context, '/student-point'),
+                    child: _buildChip(
+                        '${point.data!.point} POINT', Icons.favorite));
+              } else {
+                return Container();
+              }
+            },
+          ),
+          BlocBuilder<StudentScheduleBloc, StudentScheduleState>(
+            bloc: _scheduleBloc,
+            builder: (context, state) {
+              if (state is StudentScheduleLoaded) {
+                Schedule schedule = state.scheduleModel;
+                if (length == null) {
+                  return _buildChip('There’s no class', Icons.star);
+                } else {
+                  _buildChip('${length} Class', Icons.star);
+                }
+              }
+              return _buildChip('There’s no class', Icons.star);
+            },
+          ),
           _buildChip("You didn't pay yet", Icons.attach_money),
         ],
       ),
@@ -447,7 +495,7 @@ class StudentHomePageState extends State<StudentHomePage> {
                       borderRadius: BorderRadius.circular(8),
                       splashColor: sGreyColor,
                       onTap: () {
-                        // Navigator.pushNamed(context, '/student-schedule');
+                        Navigator.pushNamed(context, '/student-schedule');
                       },
                       child: Container(
                         padding: const EdgeInsets.all(10),
@@ -463,11 +511,11 @@ class StudentHomePageState extends State<StudentHomePage> {
                                   style: sWhiteTextStyle.copyWith(
                                       fontSize: 16, fontWeight: semiBold)),
                               Text(
-                                  '${_setCourseSchedule(schedule.data!.course.toString())} - ${_setDatetimeSchedule(schedule.data!.scheduleDate.toString())}',
+                                  '${schedule.message![0].course.toString()} - ${_setDatetimeSchedule(schedule.message![0].scheduleDate.toString())}',
                                   style: sWhiteTextStyle.copyWith(
                                       fontSize: 22, fontWeight: semiBold)),
                               Text(
-                                '${schedule.data!.company.toString()} - ${schedule.data!.fromTime.toString()}',
+                                'SMI Semarang - ${schedule.message![0].fromTime.toString()}',
                                 style: sGreyTextStyle.copyWith(fontSize: 14),
                               ),
                               const Divider(
@@ -531,68 +579,105 @@ class StudentHomePageState extends State<StudentHomePage> {
   }
 
   Widget _buildPaymentSection() {
-    return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              margin: const EdgeInsets.only(bottom: 5),
-              child: Text(
-                'Payment',
-                style: sWhiteTextStyle,
-              ),
-            ),
-            Material(
-              color: sBlackColor,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(8),
-                onTap: () {
-                  Navigator.pushNamed(context, '/student-payment');
-                },
-                splashColor: const Color(0xff30363D),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(0xff30363D),
-                      ),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Upcoming Class',
-                            style: sWhiteTextStyle.copyWith(
-                                fontSize: 16, fontWeight: semiBold)),
-                        Text('1 Payment',
-                            style: sRedTextStyle.copyWith(
-                                fontSize: 22, fontWeight: semiBold)),
-                        const Divider(
-                          height: 20,
-                          thickness: 1,
-                          color: Color(0xff272C33),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'See your Schedule',
-                              style: sWhiteTextStyle.copyWith(
-                                  fontSize: 14, fontWeight: semiBold),
+    return BlocBuilder<GetPaymentBloc, GetPaymentState>(
+      bloc: _paymentBloc,
+      builder: (context, state) {
+        if (state is GetPaymentLoaded) {
+          _setPaymentLength();
+          return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 5),
+                    child: Text(
+                      'Payment',
+                      style: sWhiteTextStyle,
+                    ),
+                  ),
+                  Material(
+                    color: sBlackColor,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(8),
+                      onTap: () {
+                        Navigator.pushNamed(context, '/student-payment');
+                      },
+                      splashColor: const Color(0xff30363D),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                              color: const Color(0xff30363D),
                             ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: sWhiteColor,
-                              size: 20,
-                            )
-                          ],
-                        )
-                      ]),
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('You have',
+                                  style: sWhiteTextStyle.copyWith(
+                                      fontSize: 16, fontWeight: semiBold)),
+                              Text('${paymentLength.toString()} Unpaid Payment',
+                                  style: sRedTextStyle.copyWith(
+                                      fontSize: 22, fontWeight: semiBold)),
+                              const Divider(
+                                height: 20,
+                                thickness: 1,
+                                color: Color(0xff272C33),
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'See your Payment',
+                                    style: sWhiteTextStyle.copyWith(
+                                        fontSize: 14, fontWeight: semiBold),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: sWhiteColor,
+                                    size: 20,
+                                  )
+                                ],
+                              )
+                            ]),
+                      ),
+                    ),
+                  )
+                ],
+              ));
+        } else if (state is GetPaymentLoading) {
+          return Column(
+            children: [
+              SkeletonParagraph(
+                style: SkeletonParagraphStyle(
+                    lines: 1,
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    spacing: 6,
+                    lineStyle: SkeletonLineStyle(
+                      randomLength: true,
+                      height: 10,
+                      borderRadius: BorderRadius.circular(8),
+                      minLength: MediaQuery.of(context).size.width / 6,
+                      maxLength: MediaQuery.of(context).size.width / 3,
+                    )),
+              ),
+              SkeletonAvatar(
+                style: SkeletonAvatarStyle(
+                  width: double.infinity,
+                  minHeight: MediaQuery.of(context).size.height / 8,
+                  maxHeight: MediaQuery.of(context).size.height / 6,
                 ),
               ),
-            )
-          ],
-        ));
+              const SizedBox(height: 20),
+            ],
+          );
+        } else {
+          return Container();
+        }
+      },
+    );
   }
 
   Widget _buildHistorySection() {
@@ -616,86 +701,132 @@ class StudentHomePageState extends State<StudentHomePage> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Material(
-                      color: sBlackColor,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(8),
-                        onTap: () {
-                          Navigator.pushNamed(
-                              context, '/student-history-attendance');
-                        },
-                        splashColor: sGreyColor,
-                        child: SizedBox(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('You didnt have any Attendance History yet',
-                                  style: sGreyTextStyle.copyWith(
-                                      fontSize: 16, fontWeight: semiBold)),
-                              const SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'See your History',
-                                    style: sWhiteTextStyle.copyWith(
-                                        fontSize: 14, fontWeight: semiBold),
+                    BlocBuilder<GetAttendanceBloc, GetAttendanceState>(
+                        bloc: _attendanceBloc,
+                        builder: (context, state) {
+                          if (state is GetAttendanceLoaded) {
+                            Attendance attendance = state.attendanceModel;
+                            var dueDate = DateTime.parse(
+                                "${attendance.data!.date} 11:47:00");
+
+                            String formattedDate =
+                                DateFormat('EEEE, dd MMMM yyyy')
+                                    .format(dueDate);
+                            return Material(
+                              color: sBlackColor,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(8),
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                      context, '/student-history-attendance');
+                                },
+                                splashColor: sGreyColor,
+                                child: SizedBox(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(attendance.data!.name.toString(),
+                                          style: sWhiteTextStyle.copyWith(
+                                              fontSize: 20,
+                                              fontWeight: semiBold)),
+                                      Text(formattedDate.toString(),
+                                          style: sGreyTextStyle.copyWith(
+                                              fontSize: 14,
+                                              fontWeight: semiBold)),
+                                      const SizedBox(height: 20),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            'See your Attendance',
+                                            style: sWhiteTextStyle.copyWith(
+                                                fontSize: 14,
+                                                fontWeight: semiBold),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_forward_ios,
+                                            color: sWhiteColor,
+                                            size: 20,
+                                          )
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                  Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: sWhiteColor,
-                                    size: 20,
-                                  )
-                                ],
+                                ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                            );
+                          } else {
+                            return Container();
+                          }
+                        }),
                     const Divider(
                       color: Color(0xff272C33),
                       height: 20,
                       thickness: 1,
                     ),
-                    Material(
-                      color: sBlackColor,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(8),
-                        onTap: () {
-                          Navigator.pushNamed(
-                              context, '/student-history-enrollment');
-                        },
-                        splashColor: sGreyColor,
-                        child: SizedBox(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('You didnt have any Enrollment History yet',
-                                  style: sGreyTextStyle.copyWith(
-                                      fontSize: 16, fontWeight: semiBold)),
-                              const SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'See your History',
-                                    style: sWhiteTextStyle.copyWith(
-                                        fontSize: 14, fontWeight: semiBold),
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: sWhiteColor,
-                                    size: 20,
-                                  )
-                                ],
+                    BlocBuilder<GetEnrollmentBloc, GetEnrollmentState>(
+                      bloc: _enrollmentBloc,
+                      builder: (context, state) {
+                        if (state is GetEnrollmentLoaded) {
+                          Enrollment enrollment = state.enrollModel;
+
+                          var dueDate = DateTime.parse(
+                              "${enrollment.data!.enrollmentDate} 11:47:00");
+
+                          String formattedDate =
+                              DateFormat('EEEE, dd MMMM yyyy').format(dueDate);
+                          return Material(
+                            color: sBlackColor,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(8),
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, '/student-history-enrollment');
+                              },
+                              splashColor: sGreyColor,
+                              child: SizedBox(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(enrollment.data!.name.toString(),
+                                        style: sWhiteTextStyle.copyWith(
+                                            fontSize: 20,
+                                            fontWeight: semiBold)),
+                                    Text(formattedDate.toString(),
+                                        style: sGreyTextStyle.copyWith(
+                                            fontSize: 14,
+                                            fontWeight: semiBold)),
+                                    const SizedBox(height: 20),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'See your Enrollment',
+                                          style: sWhiteTextStyle.copyWith(
+                                              fontSize: 14,
+                                              fontWeight: semiBold),
+                                        ),
+                                        Icon(
+                                          Icons.arrow_forward_ios,
+                                          color: sWhiteColor,
+                                          size: 20,
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
+                            ),
+                          );
+                        } else if (state is GetEnrollmentLoading) {
+                          return Container();
+                        } else {
+                          return Container();
+                        }
+                      },
                     ),
                   ]),
             )
@@ -723,8 +854,8 @@ class StudentHomePageState extends State<StudentHomePage> {
                     color: sBlackColor,
                     child: InkWell(
                       borderRadius: BorderRadius.circular(8),
-                      onTap: () {  
-                        // Navigator.pushNamed(context, '/student-point');
+                      onTap: () {
+                        Navigator.pushNamed(context, '/student-point');
                       },
                       splashColor: const Color(0xff30363D),
                       child: Container(
@@ -745,7 +876,7 @@ class StudentHomePageState extends State<StudentHomePage> {
                                   const Icon(Icons.favorite,
                                       color: Color(0xffD15151)),
                                   const SizedBox(width: 10),
-                                  Text('${state.pointModel.data!.point } POINT',
+                                  Text('${state.pointModel.data!.point} POINT',
                                       style: sWhiteTextStyle.copyWith(
                                           fontSize: 22, fontWeight: semiBold)),
                                 ],
@@ -784,7 +915,7 @@ class StudentHomePageState extends State<StudentHomePage> {
     );
   }
 
-  Widget _buildSidebar() {
+  Widget _buildSidebar(profile) {
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(vertical: 50.0),
       child: Column(
@@ -795,14 +926,15 @@ class StudentHomePageState extends State<StudentHomePage> {
             padding: const EdgeInsets.only(left: 16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 CircleAvatar(
                   backgroundColor: Colors.white,
                   radius: 22.0,
+                  backgroundImage: AssetImage('assets/images/lord-shrek.jpg'),
                 ),
                 SizedBox(height: 16.0),
                 Text(
-                  "Hello, John Doe",
+                  'Hello, ${profile.firstName.toString().toLowerCase()}',
                   style: TextStyle(color: Colors.white),
                 ),
                 SizedBox(height: 20.0),
@@ -810,7 +942,9 @@ class StudentHomePageState extends State<StudentHomePage> {
             ),
           ),
           ListTile(
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, '/student-profile');
+            },
             leading: const Icon(Icons.person_outline,
                 size: 20.0, color: Colors.white),
             title: const Text("Profile"),
@@ -818,7 +952,9 @@ class StudentHomePageState extends State<StudentHomePage> {
             dense: true,
           ),
           ListTile(
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, '/student-schedule');
+            },
             leading:
                 const Icon(Icons.date_range, size: 20.0, color: Colors.white),
             title: const Text("Schedule"),
@@ -828,7 +964,9 @@ class StudentHomePageState extends State<StudentHomePage> {
             // padding: EdgeInsets.zero,
           ),
           ListTile(
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, '/student-payment');
+            },
             leading: const Icon(Icons.payment, size: 20.0, color: Colors.white),
             title: const Text("Payment"),
             textColor: Colors.white,
@@ -847,7 +985,9 @@ class StudentHomePageState extends State<StudentHomePage> {
             // padding: EdgeInsets.zero,
           ),
           ListTile(
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, '/student-point');
+            },
             leading: const Icon(Icons.card_giftcard,
                 size: 20.0, color: Colors.white),
             title: const Text("Reward Points"),
@@ -857,7 +997,11 @@ class StudentHomePageState extends State<StudentHomePage> {
             // padding: EdgeInsets.zero,
           ),
           ListTile(
-            onTap: () {},
+            onTap: () async {
+              await dio
+                  .get('https://sister.sekolahmusik.co.id/api/method/logout');
+              SystemNavigator.pop();
+            },
             leading:
                 const Icon(Icons.exit_to_app, size: 20.0, color: Colors.white),
             title: const Text("Logout"),
@@ -903,6 +1047,15 @@ class StudentHomePageState extends State<StudentHomePage> {
   }
 
   // ! set Text
+  _setPaymentLength() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+
+    if (mounted) {
+      setState(() {
+        paymentLength = pref.getString('payment-length');
+      });
+    }
+  }
 
   _setCourseSchedule(schedule) {
     if (schedule == 'DR - Drum') {

@@ -20,20 +20,23 @@ class ProfileProvider {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
-
     try {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
-          .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
-        'usr': 'administrator',
-        'pwd': 'admin',
+          .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+        'usr': 'fabian@smi.com',
+        'pwd': 'admin123',
       });
       final getCode = await dio
-          .get("https://sister.sekolahmusik.co.id/api/resource/Student");
+          .get("https://njajal.sekolahmusik.co.id/api/resource/Student");
       var code = getCode.data['data'][0]['name'];
 
+      pref.setString('code', code);
+
       final request = await dio.get(
-          'https://sister.sekolahmusik.co.id/api/resource/Student/' + code);
+          'https://njajal.sekolahmusik.co.id/api/resource/Student/' + code);
+
+      // print('req : ${request.data}');
 
       return Profile.fromJson(request.data);
     } catch (error, stacktrace) {
@@ -69,7 +72,7 @@ class ProfileProvider {
       }
     } catch (error, stacktrace) {
       // ignore: avoid_print
-      // print('Exception Occured: $error stackTrace: $stacktrace');
+      print('Exception Occured: $error stackTrace: $stacktrace');
       return ProfileGuardian.withError('Data not found / Connection Issues');
     }
   }

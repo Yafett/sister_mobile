@@ -1,12 +1,34 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:money_formatter/money_formatter.dart';
 
 import '../../../shared/theme.dart';
 import '../../../widget/no_scroll_waves.dart';
 
 class StudentPaymentDetailPage extends StatefulWidget {
-  const StudentPaymentDetailPage({Key? key}) : super(key: key);
+  String? studentCode;
+  String? studentName;
+  String? feeName;
+  DateTime dueDate;
+  String? paymentDate;
+  String? status;
+  String? grandTotal;
+  var componentsList;
+
+  StudentPaymentDetailPage({
+    Key? key,
+    this.studentCode,
+    this.studentName,
+    this.feeName,
+    required this.dueDate,
+    this.paymentDate,
+    this.status,
+    this.grandTotal,
+    this.componentsList,
+  }) : super(key: key);
 
   @override
   State<StudentPaymentDetailPage> createState() =>
@@ -20,6 +42,11 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
   }
 
   Widget _buildPaymentDetailPage() {
+    var compList = [];
+
+    for (var a = 0; a < widget.componentsList.length; a++) {
+      compList.add(widget.componentsList[a]);
+    }
     return Scaffold(
       backgroundColor: sBlackColor,
       appBar: AppBar(
@@ -43,7 +70,7 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
                   const SizedBox(height: 10),
                   _buildCode(),
                   const SizedBox(height: 10),
-                  _buildFees()
+                  _buildFees(compList)
                 ],
               )),
         ),
@@ -86,9 +113,9 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('0062-S-PA-000190',
+                    Text('${widget.studentCode}',
                         style: sWhiteTextStyle.copyWith(fontSize: 12)),
-                    Text('EVANGELINE BEATRICE',
+                    Text('${widget.studentName}',
                         style: sWhiteTextStyle.copyWith(
                             fontSize: 22, fontWeight: semiBold)),
                   ]),
@@ -98,6 +125,8 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
   }
 
   Widget _buildCode() {
+    String formattedDate = DateFormat('MMM yyyy').format(widget.dueDate);
+
     return Container(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
@@ -118,11 +147,11 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
                     Text('INVOICE',
                         style: sWhiteTextStyle.copyWith(
                             fontSize: 22, fontWeight: semiBold)),
-                    Text('FEE-2209-S-PA-00193 | Sep 2022',
+                    Text('${widget.feeName} | ${formattedDate}',
                         style: sWhiteTextStyle.copyWith(
                             fontSize: 16, fontWeight: semiBold)),
                     const SizedBox(height: 10),
-                    Text('Due : 8 Sep 2022',
+                    Text('Payment : 8 Sep 2022',
                         style: sGreyTextStyle.copyWith(
                             fontSize: 12, fontWeight: semiBold)),
                   ]),
@@ -131,7 +160,7 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
         ));
   }
 
-  Widget _buildFees() {
+  Widget _buildFees(List<dynamic> compList) {
     return Container(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
@@ -156,78 +185,68 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
                     Text('Summary',
                         style: sWhiteTextStyle.copyWith(
                             fontSize: 14, fontWeight: semiBold)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(
-                              left: 10, bottom: 5, top: 5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                    Container(
+                      height: 40 * compList.length.toDouble(),
+                      child: ListView.builder(
+                        itemBuilder: (context, index) {
+                          var comp = compList[index];
+                          MoneyFormatter amount =
+                              MoneyFormatter(amount: comp['amount']);
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text('SPP',
-                                  style: sGreyTextStyle.copyWith(
-                                      fontSize: 14, fontWeight: semiBold)),
-                              Text('\u2022 None',
-                                  style: sGreyTextStyle.copyWith(
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    left: 10, bottom: 5, top: 5),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(' ${comp['fees_category'].toString()}',
+                                        style: sGreyTextStyle.copyWith(
+                                            fontSize: 14,
+                                            fontWeight: semiBold)),
+                                    Text('\u2022 None',
+                                        style: sGreyTextStyle.copyWith(
+                                            fontSize: 14,
+                                            fontWeight: semiBold)),
+                                  ],
+                                ),
+                              ),
+                              Text('Rp. ${amount.output.nonSymbol.toString()}',
+                                  style: sWhiteTextStyle.copyWith(
                                       fontSize: 14, fontWeight: semiBold)),
                             ],
-                          ),
-                        ),
-                        Text('Rp. 600.000,00',
-                            style: sWhiteTextStyle.copyWith(
-                                fontSize: 14, fontWeight: semiBold)),
-                      ],
+                          );
+                        },
+                        itemCount: compList.length,
+                      ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(
-                              left: 10, top: 5, bottom: 5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Discount',
-                                  style: sGreyTextStyle.copyWith(
-                                      fontSize: 14, fontWeight: semiBold)),
-                              Text('\u2022 None',
-                                  style: sGreyTextStyle.copyWith(
-                                      fontSize: 14, fontWeight: semiBold)),
-                            ],
-                          ),
-                        ),
-                        Text('- Rp. 100.000,00',
-                            style: sWhiteTextStyle.copyWith(
-                                fontSize: 14, fontWeight: semiBold)),
-                      ],
-                    ),
-                    Text('Payment',
-                        style: sWhiteTextStyle.copyWith(
-                            fontSize: 14, fontWeight: semiBold)),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(
-                              left: 10, top: 5, bottom: 5),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('PE-220922-S-PA-00001',
-                                  style: sGreyTextStyle.copyWith(
-                                      fontSize: 14, fontWeight: semiBold)),
-                              Text('\u2022 Transfer',
-                                  style: sGreyTextStyle.copyWith(
-                                      fontSize: 14, fontWeight: semiBold)),
-                            ],
-                          ),
-                        ),
-                        Text('Rp. 500.000,00',
-                            style: sWhiteTextStyle.copyWith(
-                                fontSize: 14, fontWeight: semiBold)),
-                      ],
-                    ),
+                    // Text('Payment',
+                    //     style: sWhiteTextStyle.copyWith(
+                    //         fontSize: 14, fontWeight: semiBold)),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //   children: [
+                    //     Container(
+                    //       margin: const EdgeInsets.only(
+                    //           left: 10, top: 5, bottom: 5),
+                    //       child: Column(
+                    //         crossAxisAlignment: CrossAxisAlignment.start,
+                    //         children: [
+                    //           Text('PE-220922-S-PA-00001',
+                    //               style: sGreyTextStyle.copyWith(
+                    //                   fontSize: 14, fontWeight: semiBold)),
+                    //           Text('\u2022 Transfer',
+                    //               style: sGreyTextStyle.copyWith(
+                    //                   fontSize: 14, fontWeight: semiBold)),
+                    //         ],
+                    //       ),
+                    //     ),
+                    //     Text('Rp. 500.000,00',
+                    //         style: sWhiteTextStyle.copyWith(
+                    //             fontSize: 14, fontWeight: semiBold)),
+                    //   ],
+                    // ),
                     Text('Status',
                         style: sWhiteTextStyle.copyWith(
                             fontSize: 14, fontWeight: semiBold)),
@@ -244,12 +263,12 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
                             height: 20,
                             width: 70,
                             decoration: BoxDecoration(
-                              color: sGreenColor,
+                              color: _setChipColor(widget.status),
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Center(
                                 child: Text(
-                              'Paid',
+                              widget.status.toString(),
                               style: sWhiteTextStyle.copyWith(
                                   fontWeight: semiBold),
                             )),
@@ -268,7 +287,7 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
                         Text('Grand Total',
                             style: sWhiteTextStyle.copyWith(
                                 fontSize: 20, fontWeight: semiBold)),
-                        Text('Rp. 500.000,00',
+                        Text(widget.grandTotal.toString(),
                             style: sWhiteTextStyle.copyWith(
                                 fontSize: 20, fontWeight: semiBold)),
                       ],
@@ -277,5 +296,42 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
             )
           ],
         ));
+  }
+
+  Widget _summaryTile(comp) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Container(
+          margin: const EdgeInsets.only(left: 10, bottom: 5, top: 5),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(comp['name'].toString(),
+                  style: sGreyTextStyle.copyWith(
+                      fontSize: 14, fontWeight: semiBold)),
+              Text('\u2022 None',
+                  style: sGreyTextStyle.copyWith(
+                      fontSize: 14, fontWeight: semiBold)),
+            ],
+          ),
+        ),
+        Text('Rp. 600.000,00',
+            style:
+                sWhiteTextStyle.copyWith(fontSize: 14, fontWeight: semiBold)),
+      ],
+    );
+  }
+
+  _setChipColor(item) {
+    if (item == 'Unpaid') {
+      return sOrangeColor;
+    } else if (item == 'Paid') {
+      return sGreenColor;
+    } else if (item == 'Overdue') {
+      return sRedColor;
+    } else {
+      return sGreyColor;
+    }
   }
 }

@@ -9,6 +9,7 @@ part 'student_schedule_state.dart';
 
 class StudentScheduleBloc
     extends Bloc<StudentScheduleEvent, StudentScheduleState> {
+      
   StudentScheduleBloc() : super(StudentScheduleInitial()) {
     on<GetScheduleList>((event, emit) async {
       final _dataProvider = DataProvider();

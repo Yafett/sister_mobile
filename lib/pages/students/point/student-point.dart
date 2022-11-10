@@ -1,9 +1,13 @@
 // ignore_for_file: file_names, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:sister_mobile/bloc/get-point-reward-bloc/point_reward_bloc.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
+import 'package:skeletons/skeletons.dart';
 
+import '../../../model/PointReward-model.dart';
 import '../../../shared/theme.dart';
 
 class StudentPointPage extends StatefulWidget {
@@ -19,6 +23,14 @@ class _StudentPointPageState extends State<StudentPointPage> {
   Barcode? result;
   QRViewController? controller;
   final qrKey = GlobalKey();
+
+  final _pointBloc = PointRewardBloc();
+
+  @override
+  void initState() {
+    super.initState();
+    _pointBloc.add(GetPointRewardList());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,19 +73,15 @@ class _StudentPointPageState extends State<StudentPointPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildPointTotal(),
-                  const SizedBox(height: 40),
-                  _buildBenefitTitle(),
-                  const SizedBox(height: 10),
-                  _buildBenefitList(),
-                  const SizedBox(height: 30),
-                  _buildRedeemTitle(),
-                  const SizedBox(height: 10),
-                  _buildRewardTile(),
-                  const SizedBox(height: 30),
-                 
-                  // _buildClaimTitle(),
+                  // const SizedBox(height: 40),
+                  // _buildBenefitTitle(),
                   // const SizedBox(height: 10),
-                  // _buildClaimList(),
+                  // _buildBenefitList(),
+                  // const SizedBox(height: 30),
+                  // _buildRedeemTitle(),
+                  // const SizedBox(height: 10),
+                  // _buildRewardTile(),
+                  // const SizedBox(height: 30),
                 ],
               )),
         ),
@@ -82,16 +90,116 @@ class _StudentPointPageState extends State<StudentPointPage> {
   }
 
   Widget _buildPointTotal() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return BlocBuilder<PointRewardBloc, PointRewardState>(
+      bloc: _pointBloc,
+      builder: (context, state) {
+        if (state is PointRewardLoaded) {
+          PointReward point = state.pointModel;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Total Current Point',
+                style: sWhiteTextStyle.copyWith(fontSize: 14),
+              ),
+              Text(
+                '${point.data!.point} POINT',
+                style: sWhiteTextStyle.copyWith(fontSize: 24),
+              ),
+              const SizedBox(height: 40),
+              _buildBenefitTitle(),
+              const SizedBox(height: 10),
+              _emptyReward(),
+              // _buildBenefitList(),
+              // const SizedBox(height: 30),
+              // _buildRedeemTitle(),
+              // const SizedBox(height: 10),
+              // _buildRewardTile(),
+              const SizedBox(height: 30),
+            ],
+          );
+        } else {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SkeletonParagraph(
+                style: SkeletonParagraphStyle(
+                    lines: 1,
+                    padding: EdgeInsets.symmetric(vertical: 5),
+                    spacing: 6,
+                    lineStyle: SkeletonLineStyle(
+                      height: 10,
+                      width: 120,
+                      borderRadius: BorderRadius.circular(8),
+                    )),
+              ),
+              SkeletonAvatar(
+                style: SkeletonAvatarStyle(
+                  width: MediaQuery.of(context).size.width / 4,
+                  height: 30,
+                ),
+              ),
+              SizedBox(height: 30),
+              SkeletonAvatar(
+                style: SkeletonAvatarStyle(
+                  width: MediaQuery.of(context).size.width / 3,
+                  height: 30,
+                ),
+              ),
+              SizedBox(height: 5),
+              SkeletonAvatar(
+                style: SkeletonAvatarStyle(
+                  width: MediaQuery.of(context).size.width / 1.5,
+                  height: 10,
+                ),
+              ),
+              SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SkeletonAvatar(
+                    style: SkeletonAvatarStyle(
+                      width: MediaQuery.of(context).size.width / 2.3,
+                      height: 150,
+                    ),
+                  ),
+                  SkeletonAvatar(
+                    style: SkeletonAvatarStyle(
+                      width: MediaQuery.of(context).size.width / 2.3,
+                      height: 150,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 20),
+              SkeletonAvatar(
+                style: SkeletonAvatarStyle(
+                  width: MediaQuery.of(context).size.width / 1.5,
+                  height: 10,
+                ),
+              ),
+              SizedBox(height: 5),
+              SkeletonAvatar(
+                style: SkeletonAvatarStyle(
+                  width: MediaQuery.of(context).size.width / 2.3,
+                  height: 150,
+                ),
+              ),
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  Widget _emptyReward() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          'Total Current Point',
-          style: sWhiteTextStyle.copyWith(fontSize: 14),
-        ),
-        Text(
-          '78 POINT',
-          style: sWhiteTextStyle.copyWith(fontSize: 24),
+          "there's no merchandise available at the moment",
+          style: sGreyTextStyle,
         ),
       ],
     );

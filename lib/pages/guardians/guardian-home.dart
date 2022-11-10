@@ -1,12 +1,27 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers, file_names, unnecessary_const, prefer_const_constructors, unused_local_variable
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:expandable/expandable.dart';
 
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
+import 'package:sister_mobile/bloc/get-payment-bloc/get_payment_bloc.dart';
+import 'package:sister_mobile/bloc/get-profile-guardian-bloc/get_profile_guardian_bloc.dart';
+import 'package:sister_mobile/bloc/get-profile-user-bloc/get_profile_user_bloc.dart';
+import 'package:sister_mobile/bloc/get-student-schedule/student_schedule_bloc.dart';
+import 'package:sister_mobile/model/ProfileGuardian-model.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:intl/intl.dart';
+import 'package:skeletons/skeletons.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
+
+import '../../bloc/get-profile-student-bloc/get_profile_student_bloc.dart';
+import '../../resources/data_provider.dart';
 
 class GuardianHomePage extends StatefulWidget {
   const GuardianHomePage({Key? key}) : super(key: key);
@@ -18,11 +33,30 @@ class GuardianHomePage extends StatefulWidget {
 class GuardianHomePageState extends State<GuardianHomePage> {
   bool isOpened = false;
 
+  var studentList = [];
+  var paymentList = [];
+  var scheduleList = [];
+
+  var dio = Dio();
+  var cookieJar = CookieJar();
+
+  final _profileBloc = GetProfileStudentBloc();
+  final _userBloc = GetProfileUserBloc();
+  final _guardianBloc = GetProfileGuardianBloc();
+  final _scheduleBloc = StudentScheduleBloc();
+  final _paymentBloc = GetPaymentBloc();
+
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
   final GlobalKey<SideMenuState> _endSideMenuKey = GlobalKey<SideMenuState>();
 
+  final dataProvider = DataProvider();
+
   @override
   void initState() {
+    _profileBloc.add(GetProfileList());
+    _userBloc.add(GetProfileUserList());
+    _guardianBloc.add(GetProfileGuardianList());
+    _fetchGuardianList();
     super.initState();
   }
 
@@ -83,25 +117,220 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildHeaderProfile(),
-                    _buildHeaderTitle(),
-                    _buildKidsSection(),
-                    // const SizedBox(height: 10),
-                    // _buildParentsSection(),
-                    // const SizedBox(height: 20),
-                    // _buildKidsTitle(),
-                    const SizedBox(height: 20),
-                    _buildScheduleSection(),
-                    const SizedBox(height: 30),
-                    _buildPaymentSection(),
-                    const SizedBox(height: 30),
-                    _buildHistorySection(),
-                    const SizedBox(height: 30),
-                    _buildRewardSection(),
-                    const SizedBox(height: 30),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     _paymentBloc.add(GetPaymentList(code: 'Baam'));
+                    //   },
+                    //   child: Text(''),
+                    // ),
+                    _headerSection(),
+                    Column(
+                      children: <Widget>[
+                        ...studentList.map((item) {
+                          return Container(
+                            margin: EdgeInsets.only(bottom: 20),
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: ExpandablePanel(
+                              theme: ExpandableThemeData(
+                                iconColor: sWhiteColor,
+                                iconPadding: const EdgeInsets.all(0),
+                              ),
+                              header: Text(
+                                item['student_name'].toLowerCase(),
+                                style: sWhiteTextStyle.copyWith(
+                                    fontWeight: semiBold, fontSize: 20),
+                              ),
+                              collapsed: Container(),
+                              expanded: Column(
+                                children: [
+                                  const SizedBox(height: 20),
+                                  _buildStudentProfileSection(item),
+                                  const SizedBox(height: 30),
+                                  _buildScheduleSection(item),
+                                  const SizedBox(height: 30),
+                                  _buildPaymentSection(''),
+                                  const SizedBox(height: 30),
+                                  _buildHistorySection(),
+                                  const SizedBox(height: 30),
+                                  _buildRewardSection(),
+                                  const SizedBox(height: 30),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
                   ],
                 ),
               ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _headerSection() {
+    return BlocConsumer<GetProfileGuardianBloc, GetProfileGuardianState>(
+      bloc: _guardianBloc,
+      listener: (context, state) {},
+      builder: (context, state) {
+        print(state);
+        if (state is GetProfileGuardianLoaded) {
+          ProfileGuardian profile = state.guardianModel;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeaderProfile(),
+              _buildHeaderTitle(profile.data),
+              // ElevatedButton(
+              //     onPressed: () {
+              //       _fetchGuardianList();
+              //       // _fetchGuardianList();
+              //     },
+              //     child: Text('aaa')),
+              // _buildKidsSection(profile.data),
+            ],
+          );
+        } else if (state is GetProfileGuardianLoading) {
+          return _buildSkeleton();
+        } else {
+          return Container();
+        }
+      },
+    );
+  }
+
+  Widget _buildSkeleton() {
+    return SafeArea(
+      child: ScrollConfiguration(
+        behavior: NoScrollWaves(),
+        child: SingleChildScrollView(
+          child: Container(
+            margin: const EdgeInsets.only(top: 40),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SkeletonAvatar(
+                  style: SkeletonAvatarStyle(
+                    shape: BoxShape.rectangle,
+                    width: 80,
+                    height: 80,
+                  ),
+                ),
+                SkeletonParagraph(
+                  style: SkeletonParagraphStyle(
+                      lines: 2,
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      spacing: 6,
+                      lineStyle: SkeletonLineStyle(
+                        randomLength: true,
+                        height: 10,
+                        borderRadius: BorderRadius.circular(8),
+                        minLength: MediaQuery.of(context).size.width / 6,
+                        maxLength: MediaQuery.of(context).size.width / 3,
+                      )),
+                ),
+                Row(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(right: 5),
+                      child: SkeletonLine(
+                        style: SkeletonLineStyle(
+                          randomLength: true,
+                          maxLength: 100,
+                          minLength: 60,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(right: 5),
+                      child: SkeletonLine(
+                        style: SkeletonLineStyle(
+                          randomLength: true,
+                          maxLength: 100,
+                          minLength: 60,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(right: 5),
+                      child: SkeletonLine(
+                        style: SkeletonLineStyle(
+                          randomLength: true,
+                          maxLength: 100,
+                          minLength: 60,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                SkeletonParagraph(
+                  style: SkeletonParagraphStyle(
+                      lines: 1,
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      spacing: 6,
+                      lineStyle: SkeletonLineStyle(
+                        randomLength: true,
+                        height: 10,
+                        borderRadius: BorderRadius.circular(8),
+                        minLength: MediaQuery.of(context).size.width / 6,
+                        maxLength: MediaQuery.of(context).size.width / 3,
+                      )),
+                ),
+                SkeletonAvatar(
+                  style: SkeletonAvatarStyle(
+                    width: double.infinity,
+                    minHeight: MediaQuery.of(context).size.height / 8,
+                    maxHeight: MediaQuery.of(context).size.height / 6,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SkeletonParagraph(
+                  style: SkeletonParagraphStyle(
+                      lines: 1,
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      spacing: 6,
+                      lineStyle: SkeletonLineStyle(
+                        randomLength: true,
+                        height: 10,
+                        borderRadius: BorderRadius.circular(8),
+                        minLength: MediaQuery.of(context).size.width / 6,
+                        maxLength: MediaQuery.of(context).size.width / 3,
+                      )),
+                ),
+                SkeletonAvatar(
+                  style: SkeletonAvatarStyle(
+                    width: double.infinity,
+                    minHeight: MediaQuery.of(context).size.height / 8,
+                    maxHeight: MediaQuery.of(context).size.height / 6,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SkeletonParagraph(
+                  style: SkeletonParagraphStyle(
+                      lines: 1,
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      spacing: 6,
+                      lineStyle: SkeletonLineStyle(
+                        randomLength: true,
+                        height: 10,
+                        borderRadius: BorderRadius.circular(8),
+                        minLength: MediaQuery.of(context).size.width / 6,
+                        maxLength: MediaQuery.of(context).size.width / 3,
+                      )),
+                ),
+                SkeletonAvatar(
+                  style: SkeletonAvatarStyle(
+                    width: double.infinity,
+                    minHeight: MediaQuery.of(context).size.height / 8,
+                    maxHeight: MediaQuery.of(context).size.height / 6,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -156,17 +385,21 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                   ),
 
                   // ! real clock
-                  DigitalClock(
-                      areaDecoration: const BoxDecoration(
-                        color: const Color(0xff0D1117),
-                      ),
-                      areaWidth: 95,
-                      showSecondsDigit: false,
-                      hourMinuteDigitDecoration: BoxDecoration(
-                          border: Border.all(color: const Color(0xff0D1117))),
-                      hourMinuteDigitTextStyle: sWhiteTextStyle.copyWith(
-                        fontSize: 40,
-                      )),
+                  Container(
+                    // margin: EdgeInsets.only(right: 10),
+                    child: DigitalClock(
+                        areaDecoration: const BoxDecoration(
+                          color: const Color(0xff0D1117),
+                        ),
+                        // areaWidth: 95,
+                        areaWidth: 115,
+                        showSecondsDigit: false,
+                        hourMinuteDigitDecoration: BoxDecoration(
+                            border: Border.all(color: const Color(0xff0D1117))),
+                        hourMinuteDigitTextStyle: sWhiteTextStyle.copyWith(
+                          fontSize: 40,
+                        )),
+                  ),
                   Text(_getCurrentDate(), style: sWhiteTextStyle),
                 ],
               ),
@@ -175,75 +408,166 @@ class GuardianHomePageState extends State<GuardianHomePage> {
     );
   }
 
-  Widget _buildScheduleSection() {
+  Widget _buildStudentProfileSection(item) {
     return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Schedule',
-              style: sWhiteTextStyle,
-            ),
-            const SizedBox(height: 5),
-            Material(
-              color: sBlackColor,
-              borderRadius: BorderRadius.circular(8),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(8),
-                splashColor: sGreyColor,
-                onTap: () {
-                  Navigator.pushNamed(context, '/student-schedule');
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(0xff30363D),
-                      ),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Profile',
+          style: sWhiteTextStyle,
+        ),
+        const SizedBox(height: 5),
+        Material(
+          color: sBlackColor,
+          borderRadius: BorderRadius.circular(8),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            splashColor: sGreyColor,
+            onTap: () {},
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: const Color(0xff30363D),
+                  ),
+                  borderRadius: BorderRadius.circular(8)),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
-                        Text('Upcoming Class',
-                            style: sWhiteTextStyle.copyWith(
-                                fontSize: 16, fontWeight: semiBold)),
-                        Text('Piano Class - 20 September 2022',
-                            style: sWhiteTextStyle.copyWith(
-                                fontSize: 22, fontWeight: semiBold)),
-                        Text(
-                          'At SMI - 08:00 AM',
-                          style: sGreyTextStyle.copyWith(fontSize: 14),
+                        Container(
+                          height: 60,
+                          width: 60,
+                          decoration: BoxDecoration(
+                              color: Colors.red,
+                              image: const DecorationImage(
+                                image:
+                                    AssetImage('assets/images/lord-shrek.jpg'),
+                                fit: BoxFit.fitHeight,
+                              ),
+                              borderRadius: BorderRadius.circular(8)),
                         ),
-                        const Divider(
-                          height: 20,
-                          thickness: 1,
-                          color: Color(0xff272C33),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        const SizedBox(width: 5),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            Text(item['student_name'].toString().toLowerCase(),
+                                overflow: TextOverflow.ellipsis,
+                                style: sWhiteTextStyle.copyWith(
+                                    fontSize: 16, fontWeight: semiBold)),
                             Text(
-                              'See your Schedule',
-                              style: sWhiteTextStyle.copyWith(
-                                  fontSize: 14, fontWeight: semiBold),
+                              item['student'].toString().toLowerCase(),
+                              style: sGreyTextStyle.copyWith(fontSize: 14),
                             ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: sWhiteColor,
-                              size: 20,
-                            )
                           ],
+                        ),
+                      ],
+                    ),
+                    const Divider(
+                      height: 20,
+                      thickness: 1,
+                      color: Color(0xff272C33),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'See your Kids Profile',
+                          style: sWhiteTextStyle.copyWith(
+                              fontSize: 14, fontWeight: semiBold),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: sWhiteColor,
+                          size: 20,
                         )
-                      ]),
-                ),
-              ),
-            )
-          ],
-        ));
+                      ],
+                    )
+                  ]),
+            ),
+          ),
+        )
+      ],
+    ));
   }
 
-  Widget _buildHeaderTitle() {
+  Widget _buildScheduleSection(item) {
+    _fetchScheduleList(item);
+    return Container(
+        child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Schedule',
+          style: sWhiteTextStyle,
+        ),
+        const SizedBox(height: 5),
+        Column(
+          children: <Widget>[
+            ...studentList.map((item) {
+              return Material(
+                color: sBlackColor,
+                borderRadius: BorderRadius.circular(8),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  splashColor: sGreyColor,
+                  onTap: () {
+                    Navigator.pushNamed(context, '/student-schedule');
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: const Color(0xff30363D),
+                        ),
+                        borderRadius: BorderRadius.circular(8)),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Upcoming Class',
+                              style: sWhiteTextStyle.copyWith(
+                                  fontSize: 16, fontWeight: semiBold)),
+                          Text('Piano Class - 20 September 2022',
+                              style: sWhiteTextStyle.copyWith(
+                                  fontSize: 22, fontWeight: semiBold)),
+                          Text(
+                            'At SMI - 08:00 AM',
+                            style: sGreyTextStyle.copyWith(fontSize: 14),
+                          ),
+                          const Divider(
+                            height: 20,
+                            thickness: 1,
+                            color: Color(0xff272C33),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'See your Schedule',
+                                style: sWhiteTextStyle.copyWith(
+                                    fontSize: 14, fontWeight: semiBold),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                color: sWhiteColor,
+                                size: 20,
+                              )
+                            ],
+                          )
+                        ]),
+                  ),
+                ),
+              );
+            }).toList(),
+          ],
+        ),
+      ],
+    ));
+  }
+
+  Widget _buildHeaderTitle(profile) {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, '/student-profile');
@@ -255,7 +579,7 @@ class GuardianHomePageState extends State<GuardianHomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Hello, Shrek!',
+              'Hello, ${profile.guardianName.toString().toLowerCase()}!',
               style:
                   sWhiteTextStyle.copyWith(fontSize: 32, fontWeight: semiBold),
             ),
@@ -269,7 +593,9 @@ class GuardianHomePageState extends State<GuardianHomePage> {
     );
   }
 
-  Widget _buildKidsSection() {
+  Widget _buildKidsSection(profile) {
+    List<Students> students = profile.students;
+    _getStudentList(students);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -448,83 +774,27 @@ class GuardianHomePageState extends State<GuardianHomePage> {
         ));
   }
 
-  Widget _buildPaymentSection() {
+  Widget _buildPaymentSection(code) {
     return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              margin: const EdgeInsets.only(bottom: 5),
-              child: Text(
-                'Payment',
-                style: sWhiteTextStyle,
-              ),
-            ),
-            Material(
-              color: sBlackColor,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(8),
-                onTap: () {
-                  Navigator.pushNamed(context, '/student-payment');
-                },
-                splashColor: const Color(0xff30363D),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(0xff30363D),
-                      ),
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Upcoming Class',
-                            style: sWhiteTextStyle.copyWith(
-                                fontSize: 16, fontWeight: semiBold)),
-                        Text('1 Payment',
-                            style: sRedTextStyle.copyWith(
-                                fontSize: 22, fontWeight: semiBold)),
-                        const Divider(
-                          height: 20,
-                          thickness: 1,
-                          color: Color(0xff272C33),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'See your Schedule',
-                              style: sWhiteTextStyle.copyWith(
-                                  fontSize: 14, fontWeight: semiBold),
-                            ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: sWhiteColor,
-                              size: 20,
-                            )
-                          ],
-                        )
-                      ]),
-                ),
-              ),
-            )
-          ],
-        ));
-  }
-
-  Widget _buildHistorySection() {
-    return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'History',
-              style: sWhiteTextStyle,
-            ),
-            Container(
-              margin: EdgeInsets.only(top: 5),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          margin: const EdgeInsets.only(bottom: 5),
+          child: Text(
+            'Payment ${code}',
+            style: sWhiteTextStyle,
+          ),
+        ),
+        Material(
+          color: sBlackColor,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: () {
+              Navigator.pushNamed(context, '/student-payment');
+            },
+            splashColor: const Color(0xff30363D),
+            child: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                   border: Border.all(
@@ -534,161 +804,208 @@ class GuardianHomePageState extends State<GuardianHomePage> {
               child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Material(
-                      color: sBlackColor,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(8),
-                        onTap: () {
-                          Navigator.pushNamed(
-                              context, '/student-history-attendance');
-                        },
-                        splashColor: sGreyColor,
-                        child: SizedBox(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('You didnt have any Attendance History yet',
-                                  style: sGreyTextStyle.copyWith(
-                                      fontSize: 16, fontWeight: semiBold)),
-                              const SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'See your History',
-                                    style: sWhiteTextStyle.copyWith(
-                                        fontSize: 14, fontWeight: semiBold),
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: sWhiteColor,
-                                    size: 20,
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                    Text('Upcoming Class',
+                        style: sWhiteTextStyle.copyWith(
+                            fontSize: 16, fontWeight: semiBold)),
+                    Text('1 Payment',
+                        style: sRedTextStyle.copyWith(
+                            fontSize: 22, fontWeight: semiBold)),
                     const Divider(
-                      color: Color(0xff272C33),
                       height: 20,
                       thickness: 1,
+                      color: Color(0xff272C33),
                     ),
-                    Material(
-                      color: sBlackColor,
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(8),
-                        onTap: () {
-                          Navigator.pushNamed(
-                              context, '/student-history-enrollment');
-                        },
-                        splashColor: sGreyColor,
-                        child: SizedBox(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('You didnt have any Enrollment History yet',
-                                  style: sGreyTextStyle.copyWith(
-                                      fontSize: 16, fontWeight: semiBold)),
-                              const SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'See your History',
-                                    style: sWhiteTextStyle.copyWith(
-                                        fontSize: 14, fontWeight: semiBold),
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward_ios,
-                                    color: sWhiteColor,
-                                    size: 20,
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'See your Schedule',
+                          style: sWhiteTextStyle.copyWith(
+                              fontSize: 14, fontWeight: semiBold),
                         ),
-                      ),
-                    ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: sWhiteColor,
+                          size: 20,
+                        )
+                      ],
+                    )
                   ]),
-            )
-          ],
-        ));
+            ),
+          ),
+        )
+      ],
+    ));
   }
 
-  Widget _buildRewardSection() {
+  Widget _buildHistorySection() {
     return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Reward',
-              style: sWhiteTextStyle,
-            ),
-            const SizedBox(height: 5),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'History',
+          style: sWhiteTextStyle,
+        ),
+        Container(
+          margin: EdgeInsets.only(top: 5),
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+              border: Border.all(
+                color: const Color(0xff30363D),
+              ),
+              borderRadius: BorderRadius.circular(8)),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Material(
               color: sBlackColor,
               child: InkWell(
                 borderRadius: BorderRadius.circular(8),
                 onTap: () {
-                  Navigator.pushNamed(context, '/student-point');
+                  Navigator.pushNamed(context, '/student-history-attendance');
                 },
-                splashColor: const Color(0xff30363D),
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(0xff30363D),
-                      ),
-                      borderRadius: BorderRadius.circular(8)),
+                splashColor: sGreyColor,
+                child: SizedBox(
                   child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Current Point',
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('You didnt have any Attendance History yet',
+                          style: sGreyTextStyle.copyWith(
+                              fontSize: 16, fontWeight: semiBold)),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'See your History',
                             style: sWhiteTextStyle.copyWith(
-                                fontSize: 16, fontWeight: semiBold)),
-                        Row(
-                          children: [
-                            const Icon(Icons.favorite,
-                                color: Color(0xffD15151)),
-                            const SizedBox(width: 10),
-                            Text('78 POIN',
-                                style: sWhiteTextStyle.copyWith(
-                                    fontSize: 22, fontWeight: semiBold)),
-                          ],
-                        ),
-                        const Divider(
-                          height: 20,
-                          thickness: 1,
-                          color: Color(0xff272C33),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'See your reward point',
-                              style: sWhiteTextStyle.copyWith(
-                                  fontSize: 14, fontWeight: semiBold),
-                            ),
-                            Icon(
-                              Icons.arrow_forward_ios,
-                              color: sWhiteColor,
-                              size: 20,
-                            )
-                          ],
-                        )
-                      ]),
+                                fontSize: 14, fontWeight: semiBold),
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            color: sWhiteColor,
+                            size: 20,
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            )
-          ],
-        ));
+            ),
+            const Divider(
+              color: Color(0xff272C33),
+              height: 20,
+              thickness: 1,
+            ),
+            Material(
+              color: sBlackColor,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(8),
+                onTap: () {
+                  Navigator.pushNamed(context, '/student-history-enrollment');
+                },
+                splashColor: sGreyColor,
+                child: SizedBox(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('You didnt have any Enrollment History yet',
+                          style: sGreyTextStyle.copyWith(
+                              fontSize: 16, fontWeight: semiBold)),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'See your History',
+                            style: sWhiteTextStyle.copyWith(
+                                fontSize: 14, fontWeight: semiBold),
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            color: sWhiteColor,
+                            size: 20,
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ]),
+        )
+      ],
+    ));
+  }
+
+  Widget _buildRewardSection() {
+    return Container(
+        child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Reward',
+          style: sWhiteTextStyle,
+        ),
+        const SizedBox(height: 5),
+        Material(
+          color: sBlackColor,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(8),
+            onTap: () {
+              Navigator.pushNamed(context, '/student-point');
+            },
+            splashColor: const Color(0xff30363D),
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                  border: Border.all(
+                    color: const Color(0xff30363D),
+                  ),
+                  borderRadius: BorderRadius.circular(8)),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Current Point',
+                        style: sWhiteTextStyle.copyWith(
+                            fontSize: 16, fontWeight: semiBold)),
+                    Row(
+                      children: [
+                        const Icon(Icons.favorite, color: Color(0xffD15151)),
+                        const SizedBox(width: 10),
+                        Text('78 POIN',
+                            style: sWhiteTextStyle.copyWith(
+                                fontSize: 22, fontWeight: semiBold)),
+                      ],
+                    ),
+                    const Divider(
+                      height: 20,
+                      thickness: 1,
+                      color: Color(0xff272C33),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'See your reward point',
+                          style: sWhiteTextStyle.copyWith(
+                              fontSize: 14, fontWeight: semiBold),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: sWhiteColor,
+                          size: 20,
+                        )
+                      ],
+                    )
+                  ]),
+            ),
+          ),
+        )
+      ],
+    ));
   }
 
   Widget _buildSidebar() {
@@ -778,6 +1095,10 @@ class GuardianHomePageState extends State<GuardianHomePage> {
     );
   }
 
+  _getStudentList(profile) {
+    print(profile.toString());
+  }
+
   _toggleMenu([bool end = false]) {
     if (end) {
       final _state = _endSideMenuKey.currentState!;
@@ -807,5 +1128,126 @@ class GuardianHomePageState extends State<GuardianHomePage> {
     var formattedDate = DateFormat("EEE, d MMMM").format(DateTime.now());
 
     return formattedDate.toString();
+  }
+
+  // ! api
+  _fetchGuardianList() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var user = pref.getString("username");
+    var pass = pref.getString('password');
+
+    dio.interceptors.add(CookieManager(cookieJar));
+
+    final response = await dio
+        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+      'usr': 'administrator',
+      'pwd': 'admin',
+    });
+
+    final getCode = await dio
+        .get("https://sister.sekolahmusik.co.id/api/resource/Guardian");
+
+    if (getCode.statusCode == 200) {
+      var code = getCode.data['data'][0]['name'];
+      final request = await dio.get(
+          'https://sister.sekolahmusik.co.id/api/resource/Guardian/EDU-GRD-2022-00631');
+
+      for (var a = 0; a < request.data['data']['students'].length; a++) {
+        if (mounted) {
+          setState(() {
+            studentList.add(request.data['data']['students'][a]);
+          });
+        }
+      }
+
+      _fetchStudentProfile(studentList[0]['student']);
+
+      _fetchStudentCourse(studentList[0]['student'].toString());
+
+      _fetchPaymentList(studentList[0]['student']);
+    }
+  }
+
+  _fetchStudentProfile(code) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var user = pref.getString("username");
+    var pass = pref.getString('password');
+
+    dio.interceptors.add(CookieManager(cookieJar));
+    final response = await dio
+        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+      'usr': 'administrator',
+      'pwd': 'admin',
+    });
+
+    final request = await dio
+        .get('https://sister.sekolahmusik.co.id/api/resource/Student/' + code);
+  }
+
+  _fetchStudentCourse(code) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var user = pref.getString("username");
+    var pass = pref.getString('password');
+
+    dio.interceptors.add(CookieManager(cookieJar));
+    final response = await dio
+        .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+      'usr': 'fabian@smi.com',
+      'pwd': 'admin123',
+    });
+
+    final request = await dio.post(
+      'https://njajal.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule',
+      data: {
+        'stud': '${code}',
+      },
+    );
+
+    print(request.data);
+  }
+
+  _fetchPaymentList(coded) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var user = pref.getString("username");
+    var pass = pref.getString('password');
+
+    dio.interceptors.add(CookieManager(cookieJar));
+    final response = await dio
+        .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+      'usr': 'administrator',
+      'pwd': 'admin',
+    });
+
+    print('coded : ' + coded);
+
+    final request = await dio.get(
+        'https://njajal.sekolahmusik.co.id/api/resource/Fees?filters=[["student","=","0062-S-PA-000332"]]&fields=["*"]');
+
+    paymentList.add(request.data['data']);
+
+    print(paymentList.length.toString());
+
+    print(paymentList.toString());
+  }
+
+  _fetchScheduleList(item) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var user = pref.getString("username");
+    var pass = pref.getString('password');
+
+    dio.interceptors.add(CookieManager(cookieJar));
+    final response = await dio
+        .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+      'usr': 'administrator',
+      'pwd': 'admin',
+    });
+
+    final getCode = await dio.post(
+        'https://njajal.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule',
+        data: {'stud': item['student']});
+
+    print('sse :' + getCode.data['message'].toString());
+ 
+    scheduleList.add(getCode.data);
   }
 }

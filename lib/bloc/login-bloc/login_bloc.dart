@@ -21,6 +21,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       try {
         emit(LoginLoading());
         final result = await _authRepository.login(event.email, event.password);
+        print(event.email);
+        print(event.password);
         if (result['message'] == "Logged In") {
           prefs.setString('username', event.email);
           prefs.setString('password', event.password);
