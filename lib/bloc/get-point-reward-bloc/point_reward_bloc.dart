@@ -15,7 +15,7 @@ class PointRewardBloc extends Bloc<PointRewardEvent, PointRewardState> {
     on<GetPointRewardList>((event, emit) async {
       try {
         emit(PointRewardLoading());
-        final pList = await _pointProvider.fetchPointReward();
+        final pList = await _pointProvider.fetchPointReward(event.code);
         emit(PointRewardLoaded(pList));
       
       } on NetworkError {

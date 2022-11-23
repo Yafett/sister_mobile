@@ -167,40 +167,58 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
   _fetchScheduleList() async {
     final dio = Dio();
     var cookieJar = CookieJar();
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var user = pref.getString("username");
+    var pass = pref.getString('password');
 
     isLoading = true;
 
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
-        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
-      'usr': 'yafhet_rama',
-      'pwd': 'yafhet',
+        .post('https://njajal.sekolahmusik.co.id/api/method/login', data: {
+      'usr': user,
+      'pwd': pass,
     });
-    final getCode = await dio
-        .get("https://sister.sekolahmusik.co.id/api/resource/Course Schedule");
 
-    if (getCode.statusCode == 200) {
-      for (var a = 0; a < getCode.data['data'].length; a++) {
-        var code = getCode.data['data'][a]['name'];
-        final request = await dio.get(
-            'https://sister.sekolahmusik.co.id/api/resource/Course Schedule/${code}');
+    final getCode =
+        await dio.get('https://njajal.sekolahmusik.co.id/api/resource/Student');
 
-        if (mounted) {
-          setState(() {
-            listSchedule.add(request.data);
-          });
-        }
-      }
+    final request = await dio.post(
+      'https://njajal.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule',
+      data: {
+        'stud': getCode.data['data'][0]['name'],
+      },
+    );
 
-      isLoading = false;
+    for (var a = 0; a < request.data['message'].length; a++) {
+      listSchedule.add(request.data['message'][a]);
     }
+
+    // final getCode = await dio
+    //     .get("https://sister.sekolahmusik.co.id/api/resource/Course Schedule");
+
+    // if (getCode.statusCode == 200) {
+    //   for (var a = 0; a < getCode.data['data'].length; a++) {
+    //     var code = getCode.data['data'][a]['name'];
+    //     final request = await dio.get(
+    //         'https://sister.sekolahmusik.co.id/api/resource/Course Schedule/${code}');
+
+    //     if (mounted) {
+    //       setState(() {
+    //         listSchedule.add(request.data);
+    //       });
+    //     }
+    //   }
+
+    //   isLoading = false;
+    // }
   }
 
   _getDataSource(schedule) {
     final List<Meeting> meetings = <Meeting>[];
 
     for (var a = 0; a < listSchedule.length; a++) {
-      var element = listSchedule[a]['data'];
+      var element = listSchedule[a];
 
       // ! phase 1
       var rawDate = element['schedule_date'];

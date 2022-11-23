@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:sister_mobile/pages/guardians/guardian-home.dart';
 import 'package:sister_mobile/pages/guardians/guardian-kids.dart';
 import 'package:sister_mobile/pages/students/auth/login-page.dart';
+import 'package:sister_mobile/pages/students/auth/splash-page.dart';
 import 'package:sister_mobile/pages/students/auth/terms-page.dart';
 import 'package:sister_mobile/pages/students/history/attendance/student-attendance-history.dart';
 import 'package:sister_mobile/pages/students/history/enrollment/student-enrollment-history.dart';
@@ -40,12 +41,12 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: {
-        '/': (context) => const GuardianHomePage(),
+        '/': (context) => const SplashPage(),
         '/home': (context) => const LoginPage(),
         '/terms': (context) => const TermPage(),
 
         // ! Student Section
-        '/student-profile': (context) => const StudentProfilePage(),
+        '/student-profile': (context) => StudentProfilePage(),
         '/student-payment': (context) => const StudentPaymentPage(),
         '/student-payment-help': (context) => const StudentPaymentHelpPage(),
         '/student-payment-detail': (context) =>

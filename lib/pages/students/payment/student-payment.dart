@@ -6,6 +6,7 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:money_formatter/money_formatter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sister_mobile/pages/students/payment/student-payment-detail.dart';
 import 'package:sister_mobile/pages/students/student-home.dart';
 import 'package:sister_mobile/shared/theme.dart';
@@ -203,12 +204,15 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
   _fetchFeesList() async {
     final dio = Dio();
     var cookieJar = CookieJar();
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var user = pref.getString("username");
+    var pass = pref.getString('password');
 
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
         .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
-      'usr': 'administrator',
-      'pwd': 'admin',
+      'usr': user,
+      'pwd': pass,
     });
     final getCode =
         await dio.get("https://njajal.sekolahmusik.co.id/api/resource/Fees");

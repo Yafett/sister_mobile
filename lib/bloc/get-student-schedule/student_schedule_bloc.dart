@@ -16,7 +16,7 @@ class StudentScheduleBloc
 
       try {
         emit(StudentScheduleLoading());
-        final pList = await _dataProvider.fetchSchedule();
+        final pList = await _dataProvider.fetchSchedule(event.code);
         emit(StudentScheduleLoaded(pList));
         if (pList.error != null) {
           emit(StudentScheduleError(pList.error));

@@ -1,7 +1,7 @@
 // ignore_for_file: unused_field
 
 import 'package:expandable/expandable.dart';
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sister_mobile/model/ProfileGuardian-model.dart';
 import 'package:skeletons/skeletons.dart';
@@ -15,7 +15,9 @@ import '../../../shared/theme.dart';
 import '../../../widget/no_scroll_waves.dart';
 
 class StudentProfilePage extends StatefulWidget {
-  const StudentProfilePage({Key? key}) : super(key: key);
+  final String? code;
+
+  StudentProfilePage({Key? key, this.code}) : super(key: key);
 
   @override
   State<StudentProfilePage> createState() => _StudentProfilePageState();
@@ -69,9 +71,9 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   @override
   void initState() {
     super.initState();
-    _userBloc.add(GetProfileUserList());
-    _profileBloc.add(GetProfileList());
-    _guardianBloc.add(GetProfileGuardianList());
+    _profileBloc.add(GetProfileList(code: widget.code)); 
+    _guardianBloc.add(GetProfileGuardianList(code: widget.code));
+    _userBloc.add(GetProfileUserList(code: widget.code));
   }
 
   @override
@@ -81,24 +83,25 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
 
   Widget _buildProfilePage() {
     return Scaffold(
-      backgroundColor: sBlackColor,
-      appBar: AppBar(
         backgroundColor: sBlackColor,
-        leading: const BackButton(color: Color(0xffC9D1D9)),
-        title: Text('My Profile',
-            style: sWhiteTextStyle.copyWith(fontWeight: semiBold)),
-        actions: [
-          GestureDetector(
-            onTap: () => Navigator.pushNamed(context, '/student-point-help'),
-            child: Container(
-                margin: const EdgeInsets.only(right: 20),
-                child: const Icon(Icons.save_outlined,
-                    size: 30, color: Color(0xffC9D1D9))),
-          )
-        ],
-      ),
-      body: _buildProfile(),
-    );
+        appBar: AppBar(
+          backgroundColor: sBlackColor,
+          leading: const BackButton(color: Color(0xffC9D1D9)),
+          title: Text('My Profile',
+              style: sWhiteTextStyle.copyWith(fontWeight: semiBold)),
+          actions: [
+            GestureDetector(
+              onTap: () => Navigator.pushNamed(context, '/student-point-help'),
+              child: Container(
+                  margin: const EdgeInsets.only(right: 20),
+                  child: const Icon(Icons.save_outlined,
+                      size: 30, color: Color(0xffC9D1D9))),
+            )
+          ],
+        ),
+        body: (widget.code == null)
+            ? _buildProfile()
+            : _buildProfileForGuardian());
   }
 
   Widget _buildProfile() {
@@ -217,6 +220,48 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                     }
                   },
                 ),
+              ],
+            )),
+      ),
+    );
+  }
+
+  Widget _buildProfileForGuardian() {
+    return ScrollConfiguration(
+      behavior: NoScrollWaves(),
+      child: SingleChildScrollView(
+        child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ! Student Sect
+                BlocBuilder<GetProfileStudentBloc, GetProfileStudentState>(
+                  bloc: _profileBloc,
+                  builder: (context, state) {
+                    if (state is GetProfileLoaded) {
+                      Profile profile = state.profileModel;
+                      _setControllerStudent(profile.data);
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildProfileName(profile.data!),
+                          _buildProfilePicture(),
+                          _buildBasicInfo(),
+                          const SizedBox(height: 20),
+                          _buildPersonalInfo(),
+                          const SizedBox(height: 20),
+                          _buildMoreInfo(),
+                          const SizedBox(height: 20),
+                          _buildGuardian(),
+                        ],
+                      );
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
+                const SizedBox(height: 5),
               ],
             )),
       ),
@@ -429,7 +474,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     ]);
   }
 
-  // ! student dets
+  // ! student details
 
   Widget _buildMoreInfo() {
     return Column(
@@ -943,7 +988,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     );
   }
 
-  // ! guardian det
+  // ! guardian details
 
   Widget _buildBasicGuardianInfo() {
     return Column(
@@ -1080,12 +1125,13 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   }
 
   // ! set controller
-  
+
   _setControllerStudent(profile) {
     _usernameStudentController.text = profile.firstName;
     _mobileStudentController.text = profile.studentMobileNumber;
     _firstNameStudentController.text = profile.firstName;
-    _lastNameStudentController.text = profile.lastName;
+    _lastNameStudentController.text =
+        profile.lastName == null ? '' : profile.lastName;
     _emailStudentController.text = profile.studentEmailId;
     _nikStudentController.text = (profile.nis == null) ? '' : profile.nis;
     _companyStudentController.text = profile.company;
@@ -1109,7 +1155,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
     _guardianMobileNumberController.text = profile.mobileNumber;
     _guardianEmailController.text = profile.emailAddress;
     _guardianOccupationController.text = profile.occupation.toString();
-    _guardianSosmedController.text = profile.igUser.toString()  ;
+    _guardianSosmedController.text = profile.igUser.toString();
   }
 
   _setControllerUser(profile) {

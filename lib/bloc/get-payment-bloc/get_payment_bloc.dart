@@ -8,14 +8,13 @@ part 'get_payment_event.dart';
 part 'get_payment_state.dart';
 
 class GetPaymentBloc extends Bloc<GetPaymentEvent, GetPaymentState> {
-  GetPaymentBloc() : super(GetPaymentInitial()) {
+  GetPaymentBloc({String? code}) : super(GetPaymentInitial()) {
     final _paymentProvider = DataProvider();
 
     on<GetPaymentList>((event, emit) async {
-      print('${event.code.toString()}');
       try {
         emit(GetPaymentLoading());
-        final pList = await _paymentProvider.fetchFees(code: event.code.toString());
+        final pList = await _paymentProvider.fetchFees(event.code.toString());
         emit(GetPaymentLoaded(pList));
         if (pList.error != null) {
           emit(GetPaymentError(pList.error));

@@ -211,7 +211,7 @@ class Components {
   int? idx;
   int? docstatus;
   String? feesCategory;
-  int? amount;
+  double? amount;
   String? doctype;
 
   Components(

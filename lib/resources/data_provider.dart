@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable
+
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
@@ -7,33 +9,34 @@ import 'package:sister_mobile/model/Enrollment-model.dart';
 import 'package:sister_mobile/model/Payment-model.dart';
 import 'package:sister_mobile/model/PointReward-model.dart';
 import 'package:sister_mobile/model/Schedule-model.dart';
-import 'package:sister_mobile/model/Test-model.dart';
-
-import '../model/Unit-model.dart';
 
 class DataProvider {
   final dio = Dio();
   var cookieJar = CookieJar();
 
-  Future<PointReward> fetchPointReward() async {
+  String urlLogin = "https://njajal.sekolahmusik.co.id/api/method/login";
+  String urlPointReward =
+      "https://njajal.sekolahmusik.co.id/api/resource/Point Reward";
+  String urlSchedule =
+      'https://njajal.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule';
+
+  Future<PointReward> fetchPointReward(codeDef) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
 
     try {
       dio.interceptors.add(CookieManager(cookieJar));
-      final response = await dio
-          .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+      final response = await dio.post(urlLogin, data: {
         'usr': 'administrator',
         'pwd': 'admin',
       });
-      final getCode = await dio
-          .get("https://sister.sekolahmusik.co.id/api/resource/Point Reward");
+      final getCode = await dio.get(urlPointReward);
 
       if (getCode.statusCode == 200) {
         var code = getCode.data['data'][0]['name'];
-        final request = await dio.get(
-            'https://sister.sekolahmusik.co.id/api/resource/Point Reward/${code}');
+        final request = await dio
+            .get('${urlPointReward}/${codeDef == null ? code : codeDef}');
 
         return PointReward.fromJson(request.data);
       } else {
@@ -47,37 +50,29 @@ class DataProvider {
     }
   }
 
-  Future<Schedule> fetchSchedule({stud}) async {
+  Future<Schedule> fetchSchedule(code) async {
+    // 0062-t1-000001
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
 
     try {
       dio.interceptors.add(CookieManager(cookieJar));
-      final response = await dio
-          .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
-        'usr': 'fabian@smi.com',
-        'pwd': 'admin123',
+      final response = await dio.post(urlLogin, data: {
+        'usr': user,
+        'pwd': pass,
       });
 
       final request = await dio.post(
-        'https://njajal.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule',
+        urlSchedule,
         data: {
-          if (stud != null)
-            {
-              'stud': '${stud}',
-            }
-          else
-            {
-              'stud': '0062-S-PA-000332',
-            }
+          'stud': code,
         },
       );
 
       if (request.statusCode == 200) {
-        pref.setString('schedule-length', 1.toString());
-
-        var length = pref.getString('schedule-length');
+        pref.setString(
+            'schedule-length', request.data['message'].length.toString());
 
         return Schedule.fromJson(request.data);
       } else {
@@ -91,7 +86,7 @@ class DataProvider {
     }
   }
 
-  Future<Attendance> fetchAttendance() async {
+  Future<Attendance> fetchAttendance() async {    
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
@@ -99,26 +94,17 @@ class DataProvider {
     try {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
-          .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
-        'usr': 'administrator',
-        'pwd': 'admin',
+          .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+        'usr': user,
+        'pwd': pass,
       });
-      final getCode = await dio.get(
-          "https://sister.sekolahmusik.co.id/api/resource/Student Attendance");
+      final getCode = await dio
+          .get('https://njajal.sekolahmusik.co.id/api/resource/Student/');
 
-      if (getCode.statusCode == 200) {
-        var code = getCode.data['data'][0]['name'];
-        final request = await dio.get(
-          'https://sister.sekolahmusik.co.id/api/resource/Student Attendance/' +
-              code,
-        );
+      final request = await dio.get(
+          'https://njajal.sekolahmusik.co.id/api/resource/Student Attendance?filters=[["student","=","${getCode.data['data'][0]['name']}"]]&fields=["*"]');
 
-        pref.setString('attendance-length', code.length.toString());
-
-        var length = pref.getString('attendance-length');
-
-        print(request.data);
-
+      if (request.statusCode == 200) {
         return Attendance.fromJson(request.data);
       } else {
         return Attendance.withError('Data not found / Connection Issues');
@@ -139,20 +125,17 @@ class DataProvider {
     try {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
-          .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
-        'usr': 'administrator',
-        'pwd': 'admin',
+          .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+        'usr': user,
+        'pwd': pass,
       });
       final getCode = await dio.get(
-          "https://sister.sekolahmusik.co.id/api/resource/Program Enrollment");
+          'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/');
 
-      print(getCode.data['data'].length.toString());
+      final request = await dio.get(
+          'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/${getCode.data['data'][0]['name']}');
 
-      if (getCode.statusCode == 200) {
-        var code = getCode.data['data'][0]['name'];
-        final request = await dio.get(
-            'https://sister.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
-
+      if (request.statusCode == 200) {
         return Enrollment.fromJson(request.data);
       } else {
         return Enrollment.withError('Data not found / Connection Issues');
@@ -165,20 +148,19 @@ class DataProvider {
     }
   }
 
-  Future<Payment> fetchFees({code}) async {
+  Future<Payment> fetchFees(codeDef) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
     var feesList = [];
-
-    print('code : ' + code.toString());
+    var unpaidFeesList = [];
 
     try {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
           .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
-        'usr': 'administrator',
-        'pwd': 'admin',
+        'usr': user,
+        'pwd': pass,
       });
       final getCode =
           await dio.get("https://njajal.sekolahmusik.co.id/api/resource/Fees");
@@ -192,101 +174,18 @@ class DataProvider {
           var code = getCode.data['data'][a]['name'];
           final request = await dio.get(
               'https://njajal.sekolahmusik.co.id/api/resource/Fees/${code}');
-
+          feesList.add(request.data['data']);
           if (request.data['data']['status'].toString() == 'Unpaid') {
-            feesList.add(request.data['data']);
+            unpaidFeesList.add(request.data['data']);
           }
         }
 
-        pref.setString('payment-length', feesList.length.toString());
+        pref.setString('payment-total', feesList.length.toString());
+        pref.setString('payment-length', unpaidFeesList.length.toString());
 
         return Payment.fromJson(request.data);
       } else {
         return Payment.withError('Data not found / Connection Issues');
-      }
-    } catch (error, stacktrace) {
-      // ignore: avoid_print
-      print('Fees Exception Occured: $error stackTrace: $stacktrace');
-
-      return Payment.withError('Data not found / Connection Issues');
-    }
-  }
-
-  // Future<List<Testing>> testing({code}) async {
-  //   SharedPreferences pref = await SharedPreferences.getInstance();
-
-  //   print('code : ' + code.toString());
-
-  //   try {
-  //     dio.interceptors.add(CookieManager(cookieJar));
-  //     final response = await dio
-  //         .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
-  //       'usr': 'administrator',
-  //       'pwd': 'admin',
-  //     });
-
-  //     if (response.statusCode == 200) {
-  //       final json = jsonDecode(response.body) as List;
-  //       final news = json.map((e) => News.fromJson(e)).toList();
-  //       return news;
-  //     } else {
-  //       throw Exception("Failed to load News");
-  //     }
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-
-  // try {
-  //   dio.interceptors.add(CookieManager(cookieJar));
-  //   final response = await dio
-  //       .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
-  //     'usr': 'administrator',
-  //     'pwd': 'admin',
-  //   });
-  //   final getCode =
-  //       await dio.get("https://njajal.sekolahmusik.co.id/api/resource/Fees");
-
-  //     for (var a = 0; a < getCode.data['data'].length; a++) {
-  //       var code = getCode.data['data'][a]['name'];
-  //       final request = await dio.get(
-  //           'https://njajal.sekolahmusik.co.id/api/resource/Fees/${code}');
-
-  //       if (request.data['data']['status'].toString() == 'Unpaid') {
-  //         feesList.add(request.data['data']);
-  //       }
-  //     }
-
-  //     return Testing.fromJson(request.data);
-  //   } else {
-  //     return Testing.withError('Data not found / Connection Issues');
-  //   }
-  // } catch (error, stacktrace) {
-  //   // ignore: avoid_print
-  //   print('Fees Exception Occured: $error stackTrace: $stacktrace');
-
-  //   return Testing.withError('Data not found / Connection Issues');
-  // }
-  // }
-
-  fetchTest() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-
-    try {
-      dio.interceptors.add(CookieManager(cookieJar));
-      final response = await dio
-          .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
-        'usr': 'administrator',
-        'pwd': 'admin',
-      });
-      final getCode =
-          await dio.get("https://sister.sekolahmusik.co.id/api/resource/Fees");
-
-      for (var a = 0; a < getCode.data['data'].length; a++) {
-        var code = getCode.data['data'][a]['name'];
-        final request = await dio
-            .get('https://sister.sekolahmusik.co.id/api/resource/Fees/${code}');
-
-        return Payment.fromJson(request.data);
       }
     } catch (error, stacktrace) {
       // ignore: avoid_print

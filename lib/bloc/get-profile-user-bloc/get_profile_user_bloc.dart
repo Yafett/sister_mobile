@@ -14,7 +14,7 @@ class GetProfileUserBloc
     on<GetProfileUserList>((event, emit) async {
       try {
         emit(GetProfileUserLoading());
-        final pList = await _profileProvider.fetchProfileUser();
+        final pList = await _profileProvider.fetchProfileUser(event.code);
         emit(GetProfileUserLoaded(pList));
         if (pList.error != null) {
           emit(GetProfileUserError(pList.error));

@@ -7,4 +7,8 @@ abstract class PointRewardEvent extends Equatable {
   List<PointReward> get props => [];
 }
 
-class GetPointRewardList extends PointRewardEvent {}
+class GetPointRewardList extends PointRewardEvent {
+  final String? code;
+
+  GetPointRewardList({this.code});
+}

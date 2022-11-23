@@ -21,14 +21,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       try {
         emit(LoginLoading());
         final result = await _authRepository.login(event.email, event.password);
-        print(event.email);
-        print(event.password);
-        if (result['message'] == "Logged In") {
-          prefs.setString('username', event.email);
-          prefs.setString('password', event.password);
-          emit(LoginSuccess());
+
+        if (result.toString() == 'error') {
+          emit(LoginError('Your Email or Password is incorrect!'));
         } else {
-          emit(LoginError(result['message']));
+          if (result.toString() == 'Parents') {
+            emit(LoginSuccess(result.toString()));
+          } else {
+            emit(LoginSuccess(result.toString()));
+          }
         }
       } on NetworkError {
         emit(LoginError("Failed to fetch data. is your device online?"));

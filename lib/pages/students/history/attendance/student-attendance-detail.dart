@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:sister_mobile/model/Attendance-model.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
@@ -124,6 +125,23 @@ class _StudentAttendanceDetailPageState
         children: [
           // ! Growth Point Field
           Text('Growth Point', style: fTextColorStyle),
+          const SizedBox(height: 5),
+          RatingBar.builder(
+            initialRating: double.parse(_growthController.text),
+            minRating: 0,
+            direction: Axis.horizontal,
+            allowHalfRating: true,
+            itemCount: 5,
+            itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
+            itemBuilder: (context, _) => Icon(
+              Icons.star,
+              color: Color.fromARGB(255, 151, 141, 27),
+            ),
+            onRatingUpdate: (rating) {
+              print(rating);
+            },
+          ),
+
           const SizedBox(height: 5),
           TextFormField(
             readOnly: true,

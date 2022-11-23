@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable
+// ignore_for_file: unused_local_variable, unused_catch_stack
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
@@ -14,9 +14,9 @@ class ProfileProvider {
   var cookieJar = CookieJar();
 
   final String urlGetProfile =
-      'https://sister.sekolahmusik.co.id/api/resource/Student/';
+      'https://njajal.sekolahmusik.co.id/api/resource/Student/';
 
-  Future<Profile> fetchProfileStudent() async {
+  Future<Profile> fetchProfileStudent(codeDef) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
@@ -24,8 +24,8 @@ class ProfileProvider {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
           .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
-        'usr': 'fabian@smi.com',
-        'pwd': 'admin123',
+        'usr': user,
+        'pwd': pass,
       });
       final getCode = await dio
           .get("https://njajal.sekolahmusik.co.id/api/resource/Student");
@@ -33,10 +33,10 @@ class ProfileProvider {
 
       pref.setString('code', code);
 
-      final request = await dio.get(
-          'https://njajal.sekolahmusik.co.id/api/resource/Student/' + code);
+      print('code def  1 : ' + codeDef.toString());
 
-      // print('req : ${request.data}');
+      final request = await dio.get(
+          'https://njajal.sekolahmusik.co.id/api/resource/Student/${codeDef == null ? code : codeDef}');
 
       return Profile.fromJson(request.data);
     } catch (error, stacktrace) {
@@ -46,7 +46,7 @@ class ProfileProvider {
     }
   }
 
-  Future<ProfileGuardian> fetchProfileGuardian() async {
+  Future<ProfileGuardian> fetchProfileGuardian(codeDef) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
@@ -54,17 +54,18 @@ class ProfileProvider {
     try {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
-          .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
-        'usr': 'administrator',
-        'pwd': 'admin',
+          .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+        'usr': user,
+        'pwd': pass,
       });
-      final getCode = await dio
-          .get("https://sister.sekolahmusik.co.id/api/resource/Guardian");
 
+      final getCode = await dio
+          .get("https://njajal.sekolahmusik.co.id/api/resource/Guardian");
+ 
       if (getCode.statusCode == 200) {
         var code = getCode.data['data'][0]['name'];
         final request = await dio.get(
-            'https://sister.sekolahmusik.co.id/api/resource/Guardian/' + code);
+            'https://njajal.sekolahmusik.co.id/api/resource/Guardian/${codeDef == null ? code : codeDef}');
 
         return ProfileGuardian.fromJson(request.data);
       } else {
@@ -77,25 +78,29 @@ class ProfileProvider {
     }
   }
 
-  Future<ProfileUser> fetchProfileUser() async {
+  Future<ProfileUser> fetchProfileUser(codeDef) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
 
+    print('username :  ' + user.toString());
+
     try {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
-          .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
-        'usr': 'administrator',
-        'pwd': 'admin',
+          .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+        'usr': user,
+        'pwd': pass,
       });
       final getCode =
-          await dio.get("https://sister.sekolahmusik.co.id/api/resource/User");
+          await dio.get("https://njajal.sekolahmusik.co.id/api/resource/User");
+
+      print('code def 3 : ' + codeDef.toString());
 
       if (getCode.statusCode == 200) {
         var code = getCode.data['data'][0]['name'];
-        final request = await dio
-            .get('https://sister.sekolahmusik.co.id/api/resource/User/' + code);
+        final request = await dio.get(
+            'https://njajal.sekolahmusik.co.id/api/resource/User/${codeDef == null ? code : codeDef}');
 
         return ProfileUser.fromJson(request.data);
       } else {

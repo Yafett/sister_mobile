@@ -39,3 +39,6 @@ FontWeight regular = FontWeight.w300;
 FontWeight medium = FontWeight.w400;
 FontWeight semi = FontWeight.w500;
 FontWeight semiBold = FontWeight.bold;
+
+// ! URL
+String baseUrl = 'https://njajal.sekolahmusik.co.id/api';

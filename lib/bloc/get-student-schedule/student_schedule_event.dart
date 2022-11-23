@@ -7,4 +7,8 @@ abstract class StudentScheduleEvent extends Equatable {
   List<Schedule> get props => [];
 }
 
-class GetScheduleList extends StudentScheduleEvent {}
+class GetScheduleList extends StudentScheduleEvent {
+  final String? code;
+
+  GetScheduleList({this.code});
+}

@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:sister_mobile/pages/students/history/enrollment/student-enrollment-add.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sister_mobile/pages/students/history/enrollment/student-enrollment-detail.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
@@ -60,23 +60,23 @@ class _StudentEnrollmentHistoryPageState
           'Enrollment History',
           style: sWhiteTextStyle.copyWith(fontWeight: semiBold),
         ),
-        actions: [
-          Container(
-            margin: EdgeInsets.only(right: 20),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: ((context) => StudentEnrollmentAddPage())));
-              },
-              child: Icon(
-                Icons.add_circle_outline_outlined,
-                color: sWhiteColor,
-                size: 25,
-              ),
-            ),
-          )
+        actions: const [
+          // Container(
+          //   margin: EdgeInsets.only(right: 20),
+          //   child: GestureDetector(
+          //     onTap: () {
+          //       Navigator.push(
+          //           context,
+          //           MaterialPageRoute(
+          //               builder: ((context) => StudentEnrollmentAddPage())));
+          //     },
+          //     child: Icon(
+          //       Icons.add_circle_outline_outlined,
+          //       color: sWhiteColor,
+          //       size: 25,
+          //     ),
+          //   ),
+          // )
         ],
       ),
       body: ScrollConfiguration(
@@ -281,30 +281,37 @@ class _StudentEnrollmentHistoryPageState
 
   _fetchStudentEnrollment() async {
     isLoading = true;
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var user = pref.getString("username");
+    var pass = pref.getString('password');
 
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
-        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
-      'usr': 'administrator',
-      'pwd': 'admin',
+        .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+      'usr': user,
+      'pwd': pass,
     });
     final getCode = await dio.get(
-        "https://sister.sekolahmusik.co.id/api/resource/Program Enrollment/");
+        "https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/");
 
     if (getCode.statusCode == 200) {
       for (var a = 0; a < getCode.data['data'].length; a++) {
         var code = getCode.data['data'][a]['name'];
         final request = await dio.get(
-            'https://sister.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
+            'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
 
         if (mounted) {
           setState(() {
             enrollmentList.add(request.data);
             rawEnrollmentList.add(request.data);
-            isLoading = false;
           });
         }
       }
+    }
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 

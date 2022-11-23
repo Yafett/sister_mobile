@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sister_mobile/pages/students/history/attendance/student-attendance-detail.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
@@ -257,12 +258,15 @@ class _StudentAttendanceHistoryPageState
 
   _fetchStudentAttendance() async {
     isLoading = true;
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    var user = pref.getString("username");
+    var pass = pref.getString('password');
 
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
         .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
-      'usr': 'administrator',
-      'pwd': 'admin',
+      'usr': user,
+      'pwd': pass,
     });
     final getCode = await dio.get(
         "https://njajal.sekolahmusik.co.id/api/resource/Student Attendance/");
@@ -270,6 +274,7 @@ class _StudentAttendanceHistoryPageState
     if (getCode.statusCode == 200) {
       for (var a = 0; a < getCode.data['data'].length; a++) {
         var code = getCode.data['data'][a]['name'];
+
         final request = await dio.get(
             'https://njajal.sekolahmusik.co.id/api/resource/Student Attendance/${code}');
 
@@ -277,9 +282,13 @@ class _StudentAttendanceHistoryPageState
           setState(() {
             rawAttendanceList.add(request.data);
             attendanceList.add(request.data);
-            isLoading = false;
           });
         }
+      }
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
       }
     }
   }

@@ -12,6 +12,7 @@ import 'package:sister_mobile/bloc/get-enrollment-bloc/get_enrollment_bloc.dart'
 import 'package:sister_mobile/bloc/get-point-reward-bloc/point_reward_bloc.dart';
 import 'package:sister_mobile/bloc/get-student-schedule/student_schedule_bloc.dart';
 import 'package:sister_mobile/model/Enrollment-model.dart';
+import 'package:sister_mobile/pages/students/profile/student-profile.dart';
 import 'package:sister_mobile/resources/profile_provider.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
@@ -35,27 +36,25 @@ class StudentHomePage extends StatefulWidget {
 }
 
 class StudentHomePageState extends State<StudentHomePage> {
-  var dio = Dio();
   var cookieJar = CookieJar();
-
+  var dio = Dio();
   bool isOpened = false;
+  var length;
+  var pass;
+  var unpaidPaymentLength;
+  var paymentLength;
+  var scheduleLength;
+  var user;
 
+  final _attendanceBloc = GetAttendanceBloc();
+  final GlobalKey<SideMenuState> _endSideMenuKey = GlobalKey<SideMenuState>();
+  final _enrollmentBloc = GetEnrollmentBloc();
+  final _paymentBloc = GetPaymentBloc();
+  final _pointBloc = PointRewardBloc();
+  final _profileAuth = ProfileProvider();
   final _profileBloc = GetProfileStudentBloc();
   final _scheduleBloc = StudentScheduleBloc();
-  final _pointBloc = PointRewardBloc();
-  final _paymentBloc = GetPaymentBloc();
-  final _attendanceBloc = GetAttendanceBloc();
-  final _enrollmentBloc = GetEnrollmentBloc();
-
-  var user;
-  var pass;
-  var length;
-  var paymentLength;
-
-  final _profileAuth = ProfileProvider();
-
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
-  final GlobalKey<SideMenuState> _endSideMenuKey = GlobalKey<SideMenuState>();
 
   @override
   void initState() {
@@ -66,11 +65,6 @@ class StudentHomePageState extends State<StudentHomePage> {
     _paymentBloc.add(GetPaymentList());
     _attendanceBloc.add(GetAttendanceList());
     _enrollmentBloc.add(GetEnrollmentList());
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _buildHomePage();
   }
 
   Widget _buildHomePage() {
@@ -383,7 +377,12 @@ class StudentHomePageState extends State<StudentHomePage> {
   Widget _buildHeaderTitle(profile) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/student-profile');
+        print(profile.name.toString());
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    StudentProfilePage(code: profile.name.toString())));
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -427,21 +426,9 @@ class StudentHomePageState extends State<StudentHomePage> {
               }
             },
           ),
-          BlocBuilder<StudentScheduleBloc, StudentScheduleState>(
-            bloc: _scheduleBloc,
-            builder: (context, state) {
-              if (state is StudentScheduleLoaded) {
-                Schedule schedule = state.scheduleModel;
-                if (length == null) {
-                  return _buildChip('There’s no class', Icons.star);
-                } else {
-                  _buildChip('${length} Class', Icons.star);
-                }
-              }
-              return _buildChip('There’s no class', Icons.star);
-            },
-          ),
-          _buildChip("You didn't pay yet", Icons.attach_money),
+          _buildChip('${scheduleLength.toString()} Class', Icons.star),
+          _buildChip(
+              "${paymentLength.toString()} Payment Total", Icons.attach_money),
         ],
       ),
     );
@@ -510,14 +497,20 @@ class StudentHomePageState extends State<StudentHomePage> {
                               Text('Upcoming Class',
                                   style: sWhiteTextStyle.copyWith(
                                       fontSize: 16, fontWeight: semiBold)),
-                              Text(
-                                  '${schedule.message![0].course.toString()} - ${_setDatetimeSchedule(schedule.message![0].scheduleDate.toString())}',
-                                  style: sWhiteTextStyle.copyWith(
-                                      fontSize: 22, fontWeight: semiBold)),
-                              Text(
-                                'SMI Semarang - ${schedule.message![0].fromTime.toString()}',
-                                style: sGreyTextStyle.copyWith(fontSize: 14),
-                              ),
+                              (schedule.message!.length == 0)
+                                  ? Text("There's no Schedule avaliable",
+                                      style:
+                                          sGreyTextStyle.copyWith(fontSize: 22))
+                                  : Text(
+                                      '${schedule.message![0].course.toString()} - ${_setDatetimeSchedule(schedule.message![0].scheduleDate.toString())}',
+                                      style: sWhiteTextStyle.copyWith(
+                                          fontSize: 22, fontWeight: semiBold)),
+                              (schedule.message!.length == 0)
+                                  ? SizedBox()
+                                  : Text(
+                                      '${schedule.message![0].fromTime.toString()} - ${_setDatetimeSchedule(schedule.message![0].scheduleDate.toString())}',
+                                      style: sGreyTextStyle.copyWith(
+                                          fontSize: 14, fontWeight: semiBold)),
                               const Divider(
                                 height: 20,
                                 thickness: 1,
@@ -617,7 +610,8 @@ class StudentHomePageState extends State<StudentHomePage> {
                               Text('You have',
                                   style: sWhiteTextStyle.copyWith(
                                       fontSize: 16, fontWeight: semiBold)),
-                              Text('${paymentLength.toString()} Unpaid Payment',
+                              Text(
+                                  '${unpaidPaymentLength.toString()} Unpaid Payment',
                                   style: sRedTextStyle.copyWith(
                                       fontSize: 22, fontWeight: semiBold)),
                               const Divider(
@@ -716,7 +710,7 @@ class StudentHomePageState extends State<StudentHomePage> {
                               color: sBlackColor,
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(8),
-                                onTap: () {
+                                onTap: () async {
                                   Navigator.pushNamed(
                                       context, '/student-history-attendance');
                                 },
@@ -758,7 +752,47 @@ class StudentHomePageState extends State<StudentHomePage> {
                               ),
                             );
                           } else {
-                            return Container();
+                            return Material(
+                              color: sBlackColor,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(8),
+                                onTap: () async {
+                                  Navigator.pushNamed(
+                                      context, '/student-history-attendance');
+                                },
+                                splashColor: sGreyColor,
+                                child: SizedBox(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text("There's no Attendance avaliable",
+                                          style: sGreyTextStyle.copyWith(
+                                              fontSize: 20,
+                                              fontWeight: semiBold)),
+                                      const SizedBox(height: 20),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            'See your Attendance',
+                                            style: sWhiteTextStyle.copyWith(
+                                                fontSize: 14,
+                                                fontWeight: semiBold),
+                                          ),
+                                          Icon(
+                                            Icons.arrow_forward_ios,
+                                            color: sWhiteColor,
+                                            size: 20,
+                                          )
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            );
                           }
                         }),
                     const Divider(
@@ -781,7 +815,7 @@ class StudentHomePageState extends State<StudentHomePage> {
                             color: sBlackColor,
                             child: InkWell(
                               borderRadius: BorderRadius.circular(8),
-                              onTap: () {
+                              onTap: () async {
                                 Navigator.pushNamed(
                                     context, '/student-history-enrollment');
                               },
@@ -821,10 +855,47 @@ class StudentHomePageState extends State<StudentHomePage> {
                               ),
                             ),
                           );
-                        } else if (state is GetEnrollmentLoading) {
-                          return Container();
                         } else {
-                          return Container();
+                          return Material(
+                            color: sBlackColor,
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(8),
+                              onTap: () async {
+                                Navigator.pushNamed(
+                                    context, '/student-history-enrollment');
+                              },
+                              splashColor: sGreyColor,
+                              child: SizedBox(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text("There's no Enrollment available",
+                                        style: sGreyTextStyle.copyWith(
+                                            fontSize: 20,
+                                            fontWeight: semiBold)),
+                                    const SizedBox(height: 20),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          'See your Enrollment',
+                                          style: sWhiteTextStyle.copyWith(
+                                              fontSize: 14,
+                                              fontWeight: semiBold),
+                                        ),
+                                        Icon(
+                                          Icons.arrow_forward_ios,
+                                          color: sWhiteColor,
+                                          size: 20,
+                                        )
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
                         }
                       },
                     ),
@@ -1052,7 +1123,9 @@ class StudentHomePageState extends State<StudentHomePage> {
 
     if (mounted) {
       setState(() {
-        paymentLength = pref.getString('payment-length');
+        unpaidPaymentLength = pref.getString('payment-length');
+        paymentLength = pref.getString('payment-total');
+        scheduleLength = pref.getString('schedule-length');
       });
     }
   }
@@ -1087,5 +1160,10 @@ class StudentHomePageState extends State<StudentHomePage> {
     var parsedDate = DateTime.parse(schedule);
     String formattedDate = DateFormat('dd MMMM yyyy').format(parsedDate);
     return formattedDate;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildHomePage();
   }
 }

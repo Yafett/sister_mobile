@@ -7,4 +7,8 @@ abstract class GetProfileGuardianEvent extends Equatable {
   List<ProfileGuardian> get props => [];
 }
 
-class GetProfileGuardianList extends GetProfileGuardianEvent {}
+class GetProfileGuardianList extends GetProfileGuardianEvent {
+  final String? code;
+
+  GetProfileGuardianList({this.code});
+}

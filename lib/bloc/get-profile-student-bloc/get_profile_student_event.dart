@@ -7,4 +7,8 @@ abstract class GetProfileStudentEvent extends Equatable {
   List<Profile> get props => [];
 }
 
-class GetProfileList extends GetProfileStudentEvent {}
+class GetProfileList extends GetProfileStudentEvent {
+  final String? code;
+
+  GetProfileList({this.code});
+}

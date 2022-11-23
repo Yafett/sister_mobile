@@ -14,7 +14,7 @@ class GetProfileGuardianBloc
 
       try {
         emit(GetProfileGuardianLoading());
-        final pList = await _profileProvider.fetchProfileGuardian();
+        final pList = await _profileProvider.fetchProfileGuardian(event.code);
         emit(GetProfileGuardianLoaded(pList));
         if (pList.error != null) {
           emit(GetProfileGuardianError(pList.error));

@@ -29,7 +29,7 @@ class _SplashPageState extends State<SplashPage> {
     return Scaffold(
       body: AnimatedSplashScreen(
         splashIconSize: 1000,
-        duration: 2500,
+        duration: 1500,
         splash: _buildSplashBackground(context),
         nextScreen: const LoginPage(),
         splashTransition: SplashTransition.fadeTransition, 

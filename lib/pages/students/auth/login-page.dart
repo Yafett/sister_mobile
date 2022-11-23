@@ -1,8 +1,15 @@
+import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio/dio.dart';
+import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:google_fonts/google_fonts.dart'; 
 import 'package:motion_toast/motion_toast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sister_mobile/bloc/get-profile-user-bloc/get_profile_user_bloc.dart';
+import 'package:sister_mobile/pages/guardians/guardian-home.dart';
 import 'package:sister_mobile/pages/students/auth/register-page.dart';
+import 'package:sister_mobile/pages/students/student-home.dart';
 import 'package:sister_mobile/shared/theme.dart';
 
 import '../../../bloc/login-bloc/login_bloc.dart';
@@ -18,7 +25,9 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+
   final LoginBloc _loginBloc = LoginBloc();
+  final _userBloc = GetProfileUserBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -113,12 +122,25 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildLoginButton(context) {
-    return BlocListener<LoginBloc, LoginState>(
+    return BlocConsumer<LoginBloc, LoginState>(
       bloc: _loginBloc,
       listener: (context, state) {
         if (state is LoginSuccess) {
-          Navigator.pushNamedAndRemoveUntil(
-              context, '/student-home', (route) => false);
+          final role = state.role.toString();
+
+          if (role == 'Guardian') {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => GuardianHomePage()),
+                (route) => false);
+          } else {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => StudentHomePage()),
+                (route) => false);
+          }
+
+          print('role : ' + role.toString());
         } else if (state is LoginError) {
           MotionToast(
             height: 50,
@@ -133,34 +155,54 @@ class _LoginPageState extends State<LoginPage> {
           ).show(context);
         }
       },
-      child: Material(
-        color: const Color(0xffE22426),
-        child: InkWell(
-          splashColor: Colors.grey,
-          onTap: () {
-            _loginBloc.add(
-              Login(
-                // 'yafhet_rama', 'yafhet',
-                _usernameController.text,
-                _passwordController.text,
+      builder: (context, state) {
+        if (state is LoginLoading) {
+          return Material(
+            color: const Color(0xffE22426),
+            child: InkWell(
+              splashColor: Colors.grey,
+              onTap: () {},
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 50,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: sWhiteColor,
+                  ),
+                ),
               ),
-            );
-          },
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: 50,
-            child: Center(
-                child: Text(
-              'Login',
-              style: GoogleFonts.openSans(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
+            ),
+          );
+        } else {
+          return Material(
+            color: const Color(0xffE22426),
+            child: InkWell(
+              splashColor: Colors.grey,
+              onTap: () {
+                _loginBloc.add(
+                  Login(
+                    _usernameController.text,
+                    _passwordController.text,
+                  ),
+                );
+              },
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 50,
+                child: Center(
+                    child: Text(
+                  'Login',
+                  style: GoogleFonts.openSans(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600,
+                  ),
+                )),
               ),
-            )),
-          ),
-        ),
-      ),
+            ),
+          );
+        }
+      },
     );
   }
 
@@ -242,5 +284,78 @@ class _LoginPageState extends State<LoginPage> {
         const SizedBox(height: 120),
       ],
     );
+  }
+
+  // ! validation
+
+  rolesNavigation() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+
+    Dio dio = Dio();
+    var cookieJar = CookieJar();
+    var emailId;
+
+    dio.interceptors.add(CookieManager(cookieJar));
+    final response = await dio
+        .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+      'usr': 'administrator',
+      'pwd': 'admin',
+    });
+
+    print('reponse : ' + response.data.toString());
+
+    if (response.statusCode == 200) {
+      final getCode =
+          await dio.get("https://njajal.sekolahmusik.co.id/api/resource/User");
+
+      print('get code : ' + getCode.data.toString());
+
+      var code = getCode.data['data'][0]['name'];
+
+      final request = await dio
+          .get('https://njajal.sekolahmusik.co.id/api/resource/User/${code}');
+
+      if (mounted) {
+        setState(() {
+          emailId = request.data['data']['email'].toString();
+        });
+      }
+
+      dio.interceptors.add(CookieManager(cookieJar));
+      final identity = await dio
+          .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+        'usr': 'administrator',
+        'pwd': 'admin',
+      });
+
+      final checking = await dio.get(
+          'https://njajal.sekolahmusik.co.id/api/resource/Guardian?filters=[["email_address","=","${emailId}"]]');
+
+      print(checking.data['data'].length);
+
+      if (checking.data['data'].length > 0) {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => GuardianHomePage()),
+            (route) => false);
+      } else {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => StudentHomePage()),
+            (route) => false);
+      }
+    } else {
+      MotionToast(
+        height: 50,
+        width: 300,
+        primaryColor: sRedColor,
+        description: Text(
+          'Wrong Username or Password',
+          style: sRedTextStyle.copyWith(fontWeight: semiBold),
+        ),
+        icon: Icons.warning_amber,
+        animationCurve: Curves.bounceIn,
+      ).show(context);
+    }
   }
 }
