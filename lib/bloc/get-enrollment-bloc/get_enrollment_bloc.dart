@@ -13,7 +13,7 @@ class GetEnrollmentBloc extends Bloc<GetEnrollmentEvent, GetEnrollmentState> {
     on<GetEnrollmentList>((event, emit) async {
       try {
         emit(GetEnrollmentLoading());
-        final pList = await _dataProvider.fetchEnrollment();
+        final pList = await _dataProvider.fetchEnrollment(event.code);
         emit(GetEnrollmentLoaded(pList));
         if (pList.error != null) {
           emit(GetEnrollmentError(pList.error));

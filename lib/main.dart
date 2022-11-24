@@ -47,7 +47,7 @@ class _MyAppState extends State<MyApp> {
 
         // ! Student Section
         '/student-profile': (context) => StudentProfilePage(),
-        '/student-payment': (context) => const StudentPaymentPage(),
+        '/student-payment': (context) => StudentPaymentPage(),
         '/student-payment-help': (context) => const StudentPaymentHelpPage(),
         '/student-payment-detail': (context) =>
             StudentPaymentDetailPage(dueDate: DateTime.now()),
@@ -57,9 +57,9 @@ class _MyAppState extends State<MyApp> {
         '/student-schedule': (context) => const StudentSchedulePage(),
         '/student-schedule-help': (context) => const StudentScheduleHelpPage(),
         '/student-history-attendance': (context) =>
-            const StudentAttendanceHistoryPage(),
+            StudentAttendanceHistoryPage(),
         '/student-history-enrollment': (context) =>
-            const StudentEnrollmentHistoryPage(),
+            StudentEnrollmentHistoryPage(),
 
         // ! Guardian Section
         '/guardian-home': (context) => const GuardianHomePage(),

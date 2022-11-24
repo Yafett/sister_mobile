@@ -7,4 +7,7 @@ abstract class GetEnrollmentEvent extends Equatable {
   List<Enrollment> get props => [];
 }
 
-class GetEnrollmentList extends GetEnrollmentEvent {}
+class GetEnrollmentList extends GetEnrollmentEvent {
+  final String? code;
+  GetEnrollmentList({this.code});
+}

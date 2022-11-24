@@ -11,6 +11,7 @@ import 'package:sister_mobile/bloc/get-profile-guardian-bloc/get_profile_guardia
 import 'package:sister_mobile/bloc/get-profile-user-bloc/get_profile_user_bloc.dart';
 import 'package:sister_mobile/model/ProfileGuardian-model.dart';
 import 'package:sister_mobile/pages/guardians/student-details.dart';
+import 'package:sister_mobile/pages/students/auth/splash-page.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:intl/intl.dart';
@@ -579,7 +580,14 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                   dense: true,
                 ),
                 ListTile(
-                  onTap: () {},
+                  onTap: () async {
+                    await dio.get(
+                        'https://sister.sekolahmusik.co.id/api/method/logout');
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => SplashPage()),
+                        (route) => false);
+                  },
                   leading: const Icon(Icons.exit_to_app,
                       size: 20.0, color: Colors.white),
                   title: const Text("Logout"),

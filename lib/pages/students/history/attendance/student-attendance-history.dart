@@ -10,7 +10,8 @@ import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:skeletons/skeletons.dart';
 
 class StudentAttendanceHistoryPage extends StatefulWidget {
-  const StudentAttendanceHistoryPage({Key? key}) : super(key: key);
+  final String? code;
+  StudentAttendanceHistoryPage({Key? key, this.code}) : super(key: key);
 
   @override
   State<StudentAttendanceHistoryPage> createState() =>
@@ -42,7 +43,7 @@ class _StudentAttendanceHistoryPageState
   @override
   void initState() {
     super.initState();
-    _fetchStudentAttendance();
+    _fetchStudentAttendance(widget.code);
   }
 
   @override
@@ -256,7 +257,7 @@ class _StudentAttendanceHistoryPageState
     }
   }
 
-  _fetchStudentAttendance() async {
+  _fetchStudentAttendance(codeDef) async {
     isLoading = true;
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
@@ -268,13 +269,34 @@ class _StudentAttendanceHistoryPageState
       'usr': user,
       'pwd': pass,
     });
-    final getCode = await dio.get(
-        "https://njajal.sekolahmusik.co.id/api/resource/Student Attendance/");
 
-    if (getCode.statusCode == 200) {
+    if (codeDef == null) {
+      final getCode = await dio.get(
+          "https://njajal.sekolahmusik.co.id/api/resource/Student Attendance/");
+
+      if (getCode.statusCode == 200) {
+        for (var a = 0; a < getCode.data['data'].length; a++) {
+          var code = getCode.data['data'][a]['name'];
+
+          final request = await dio.get(
+              'https://njajal.sekolahmusik.co.id/api/resource/Student Attendance/${code}');
+
+          if (mounted) {
+            setState(() {
+              rawAttendanceList.add(request.data);
+              attendanceList.add(request.data);
+            });
+          }
+        }
+      }
+    } else {
+      print('this is code ${codeDef}');
+
+      final getCode = await dio.get(
+          'https://njajal.sekolahmusik.co.id/api/resource/StudentAttendance?filters=[["student","=","${codeDef}"]]&fields=["*"]');
+
       for (var a = 0; a < getCode.data['data'].length; a++) {
-        var code = getCode.data['data'][a]['name'];
-
+        final code = getCode.data['data'][a]['name'];
         final request = await dio.get(
             'https://njajal.sekolahmusik.co.id/api/resource/Student Attendance/${code}');
 
@@ -285,11 +307,12 @@ class _StudentAttendanceHistoryPageState
           });
         }
       }
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
+    }
+
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 

@@ -13,7 +13,9 @@ import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 
 class StudentPaymentPage extends StatefulWidget {
-  const StudentPaymentPage({Key? key}) : super(key: key);
+  final String? codeDef;
+
+  StudentPaymentPage({Key? key, this.codeDef}) : super(key: key);
 
   @override
   State<StudentPaymentPage> createState() => _StudentPaymentPageState();
@@ -25,12 +27,14 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
   var feesList = [];
   var componentsList = [];
 
+  final studList = [];
+
   final dio = Dio();
   var cookieJar = CookieJar();
 
   @override
   void initState() {
-    _fetchFeesList();
+    _fetchFeesList(widget.codeDef);
     super.initState();
   }
 
@@ -201,7 +205,7 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
     }
   }
 
-  _fetchFeesList() async {
+  _fetchFeesList(codeDef) async {
     final dio = Dio();
     var cookieJar = CookieJar();
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -214,12 +218,42 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
       'usr': user,
       'pwd': pass,
     });
-    final getCode =
-        await dio.get("https://njajal.sekolahmusik.co.id/api/resource/Fees");
 
-    if (getCode.statusCode == 200) {
+    if (codeDef == null) {
+      // ! guardian
+
+      print('guardian');
+
+      final getCode =
+          await dio.get("https://njajal.sekolahmusik.co.id/api/resource/Fees");
+
+      if (getCode.statusCode == 200) {
+        for (var a = 0; a < getCode.data['data'].length; a++) {
+          var code = getCode.data['data'][a]['name'];
+          final request = await dio.get(
+              'https://njajal.sekolahmusik.co.id/api/resource/Fees/${code}');
+
+          if (mounted) {
+            setState(() => feesList.add(request.data));
+          }
+        }
+
+        for (var a = 0; a < feesList.length; a++) {
+          componentsList.add(feesList[a]['data']['components']);
+        }
+      }
+    } else {
+      print('student');
+
+      final getCode = await dio.get(
+          'https://njajal.sekolahmusik.co.id/api/resource/Fees?filters=[["student","=","${codeDef}"]]&fields=["*"]');
+
       for (var a = 0; a < getCode.data['data'].length; a++) {
-        var code = getCode.data['data'][a]['name'];
+        studList.add(getCode.data['data'][a]['name']);
+      }
+
+      for (var a = 0; a < studList.length; a++) {
+        var code = studList[a];
         final request = await dio
             .get('https://njajal.sekolahmusik.co.id/api/resource/Fees/${code}');
 

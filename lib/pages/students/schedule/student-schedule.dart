@@ -18,7 +18,9 @@ import '../../../model/Schedule-model.dart';
 import '../../../shared/theme.dart';
 
 class StudentSchedulePage extends StatefulWidget {
-  const StudentSchedulePage({Key? key}) : super(key: key);
+  final String? codeDef;
+
+  const StudentSchedulePage({Key? key, this.codeDef}) : super(key: key);
 
   @override
   State<StudentSchedulePage> createState() => _StudentSchedulePageState();
@@ -43,7 +45,7 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
   void initState() {
     super.initState();
     _scheduleBloc.add(GetScheduleList());
-    _fetchScheduleList();
+    _fetchScheduleList(widget.codeDef);
   }
 
   @override
@@ -61,7 +63,7 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
               style: sWhiteTextStyle.copyWith(fontWeight: semiBold)),
           actions: [
             GestureDetector(
-              onTap: () => _fetchScheduleList(),
+              // onTap: () => _fetchScheduleList(),
               // Navigator.pushNamed(context, '/student-schedule-help'),
               child: Container(
                   margin: const EdgeInsets.only(right: 20),
@@ -164,7 +166,7 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
     }
   }
 
-  _fetchScheduleList() async {
+  _fetchScheduleList(codeDef) async {
     final dio = Dio();
     var cookieJar = CookieJar();
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -180,18 +182,31 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
       'pwd': pass,
     });
 
-    final getCode =
-        await dio.get('https://njajal.sekolahmusik.co.id/api/resource/Student');
+    if (codeDef == null) {
+      final getCode = await dio
+          .get('https://njajal.sekolahmusik.co.id/api/resource/Student');
 
-    final request = await dio.post(
-      'https://njajal.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule',
-      data: {
-        'stud': getCode.data['data'][0]['name'],
-      },
-    );
+      final request = await dio.post(
+        'https://njajal.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule',
+        data: {
+          'stud': getCode.data['data'][0]['name'],
+        },
+      );
 
-    for (var a = 0; a < request.data['message'].length; a++) {
-      listSchedule.add(request.data['message'][a]);
+      for (var a = 0; a < request.data['message'].length; a++) {
+        listSchedule.add(request.data['message'][a]);
+      }
+    } else {
+      final request = await dio.post(
+        'https://njajal.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule',
+        data: {
+          'stud': codeDef,
+        },
+      );
+
+      for (var a = 0; a < request.data['message'].length; a++) {
+        listSchedule.add(request.data['message'][a]);
+      }
     }
 
     // final getCode = await dio

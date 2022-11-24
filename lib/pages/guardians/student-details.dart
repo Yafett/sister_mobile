@@ -18,7 +18,11 @@ import 'package:sister_mobile/model/Enrollment-model.dart';
 import 'package:sister_mobile/model/PointReward-model.dart';
 import 'package:sister_mobile/model/ProfileStudent-model.dart';
 import 'package:sister_mobile/model/Schedule-model.dart';
+import 'package:sister_mobile/pages/students/history/enrollment/student-enrollment-detail.dart';
+import 'package:sister_mobile/pages/students/history/enrollment/student-enrollment-history.dart';
+import 'package:sister_mobile/pages/students/payment/student-payment.dart';
 import 'package:sister_mobile/pages/students/profile/student-profile.dart';
+import 'package:sister_mobile/pages/students/schedule/student-schedule.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:skeletons/skeletons.dart';
@@ -61,7 +65,7 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
     _scheduleBloc.add(GetScheduleList(code: widget.code));
     _paymentBloc.add(GetPaymentList(code: widget.code));
     _attendanceBloc.add(GetAttendanceList());
-    _enrollmentBloc.add(GetEnrollmentList());
+    _enrollmentBloc.add(GetEnrollmentList(code: widget.code));
     _pointBloc.add(GetPointRewardList());
   }
 
@@ -251,7 +255,11 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
                   borderRadius: BorderRadius.circular(8),
                   splashColor: sGreyColor,
                   onTap: () {
-                    Navigator.pushNamed(context, '/student-schedule');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                StudentSchedulePage(codeDef: widget.code)));
                   },
                   child: Container(
                     padding: const EdgeInsets.all(10),
@@ -354,7 +362,12 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(8),
                   onTap: () {
-                    Navigator.pushNamed(context, '/student-payment');
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => StudentPaymentPage(
+                                  codeDef: widget.code,
+                                )));
                   },
                   splashColor: const Color(0xff30363D),
                   child: Container(
@@ -550,8 +563,8 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(8),
                       onTap: () {
-                        Navigator.pushNamed(
-                            context, '/student-history-enrollment');
+                        Navigator.push(
+                            context, MaterialPageRoute(builder: (context) => StudentEnrollmentHistoryPage(code: widget.code,)));
                       },
                       splashColor: sGreyColor,
                       child: SizedBox(

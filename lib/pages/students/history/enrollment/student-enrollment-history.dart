@@ -10,7 +10,9 @@ import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:skeletons/skeletons.dart';
 
 class StudentEnrollmentHistoryPage extends StatefulWidget {
-  const StudentEnrollmentHistoryPage({Key? key}) : super(key: key);
+  final String? code;
+
+  StudentEnrollmentHistoryPage({Key? key, this.code}) : super(key: key);
 
   @override
   State<StudentEnrollmentHistoryPage> createState() =>
@@ -42,7 +44,7 @@ class _StudentEnrollmentHistoryPageState
   @override
   void initState() {
     super.initState();
-    _fetchStudentEnrollment();
+    _fetchStudentEnrollment(widget.code);
   }
 
   @override
@@ -279,7 +281,9 @@ class _StudentEnrollmentHistoryPageState
     }
   }
 
-  _fetchStudentEnrollment() async {
+  _fetchStudentEnrollment(codeDef) async {
+    print('this is code ${codeDef}');
+
     isLoading = true;
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
@@ -291,12 +295,31 @@ class _StudentEnrollmentHistoryPageState
       'usr': user,
       'pwd': pass,
     });
-    final getCode = await dio.get(
-        "https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/");
 
-    if (getCode.statusCode == 200) {
+    if (codeDef == null) {
+      final getCode = await dio.get(
+          "https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/");
+
+      if (getCode.statusCode == 200) {
+        for (var a = 0; a < getCode.data['data'].length; a++) {
+          var code = getCode.data['data'][a]['name'];
+          final request = await dio.get(
+              'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
+
+          if (mounted) {
+            setState(() {
+              enrollmentList.add(request.data);
+              rawEnrollmentList.add(request.data);
+            });
+          }
+        }
+      }
+    } else {
+      final getCode = await dio.get(
+          'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment?filters=[["student","=","${codeDef}"]]&fields=["*"]');
+
       for (var a = 0; a < getCode.data['data'].length; a++) {
-        var code = getCode.data['data'][a]['name'];
+        final code = getCode.data['data'][a]['name'];
         final request = await dio.get(
             'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
 

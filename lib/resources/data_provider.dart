@@ -44,7 +44,7 @@ class DataProvider {
       }
     } catch (error, stacktrace) {
       // ignore: avoid_print
-      print('Exception Occured: $error stackTrace: $stacktrace');
+      // print('Exception Occured: $error stackTrace: $stacktrace');
 
       return PointReward.withError('Data not found / Connection Issues');
     }
@@ -63,30 +63,46 @@ class DataProvider {
         'pwd': pass,
       });
 
-      final request = await dio.post(
-        urlSchedule,
-        data: {
-          'stud': code,
-        },
-      );
+      if (code == null) {
+        final getCode = await dio
+            .get('https://njajal.sekolahmusik.co.id/api/resource/Student/');
 
-      if (request.statusCode == 200) {
+        final code = getCode.data['data'][0]['name'];
+
+        final request = await dio.post(urlSchedule, data: {
+          'stud': code,
+        });
+
         pref.setString(
             'schedule-length', request.data['message'].length.toString());
 
         return Schedule.fromJson(request.data);
       } else {
-        return Schedule.withError('Data not found / Connection Issues');
+        final request = await dio.post(
+          urlSchedule,
+          data: {
+            'stud': code,
+          },
+        );
+
+        if (request.statusCode == 200) {
+          pref.setString(
+              'schedule-length', request.data['message'].length.toString());
+
+          return Schedule.fromJson(request.data);
+        } else {
+          return Schedule.withError('Data not found / Connection Issues');
+        }
       }
     } catch (error, stacktrace) {
       // ignore: avoid_print
-      print('Schedule Data Exception Occured: $error stackTrace: $stacktrace');
+      // print('Schedule Data Exception Occured: $error stackTrace: $stacktrace');
 
       return Schedule.withError('Data not found / Connection Issues');
     }
   }
 
-  Future<Attendance> fetchAttendance() async {    
+  Future<Attendance> fetchAttendance(codeDef) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
@@ -98,26 +114,41 @@ class DataProvider {
         'usr': user,
         'pwd': pass,
       });
-      final getCode = await dio
-          .get('https://njajal.sekolahmusik.co.id/api/resource/Student/');
 
-      final request = await dio.get(
-          'https://njajal.sekolahmusik.co.id/api/resource/Student Attendance?filters=[["student","=","${getCode.data['data'][0]['name']}"]]&fields=["*"]');
+      if (codeDef == null) {
+        print('student');
+        final getCode = await dio
+            .get('https://njajal.sekolahmusik.co.id/api/resource/Student/');
 
-      if (request.statusCode == 200) {
-        return Attendance.fromJson(request.data);
+        final request = await dio.get(
+            'https://njajal.sekolahmusik.co.id/api/resource/Student Attendance?filters=[["student","=","${getCode.data['data'][0]['name']}"]]&fields=["*"]');
+
+        if (request.statusCode == 200) {
+          return Attendance.fromJson(request.data);
+        } else {
+          return Attendance.withError('Data not found / Connection Issues');
+        }
       } else {
-        return Attendance.withError('Data not found / Connection Issues');
+        print('guardian');
+        final getCode = await dio.get(
+            'https://njajal.sekolahmusik.co.id/api/resource/Student Attendance?filters=[["student","=","${codeDef}"]]&fields=["*"]');
+
+        final code = getCode.data['data'][0]['name'];
+
+        final request = await dio.get(
+            'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
+
+        return Attendance.fromJson(request.data);
       }
     } catch (error, stacktrace) {
       // ignore: avoid_print
-      print('Exception Occured: $error stackTrace: $stacktrace');
+      // print('Exception Occured: $error stackTrace: $stacktrace');
 
       return Attendance.withError('Data not found / Connection Issues');
     }
   }
 
-  Future<Enrollment> fetchEnrollment() async {
+  Future<Enrollment> fetchEnrollment(codeDef) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
@@ -129,16 +160,29 @@ class DataProvider {
         'usr': user,
         'pwd': pass,
       });
-      final getCode = await dio.get(
-          'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/');
 
-      final request = await dio.get(
-          'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/${getCode.data['data'][0]['name']}');
+      if (codeDef == null) {
+        final getCode = await dio.get(
+            'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/');
 
-      if (request.statusCode == 200) {
-        return Enrollment.fromJson(request.data);
+        final request = await dio.get(
+            'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/${getCode.data['data'][0]['name']}');
+
+        if (request.statusCode == 200) {
+          return Enrollment.fromJson(request.data);
+        } else {
+          return Enrollment.withError('Data not found / Connection Issues');
+        }
       } else {
-        return Enrollment.withError('Data not found / Connection Issues');
+        final getCode = await dio.get(
+            'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment?filters=[["student","=","${codeDef}"]]&fields=["*"]');
+
+        final code = getCode.data['data'][0]['name'];
+
+        final request = await dio.get(
+            'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
+
+        return Enrollment.fromJson(request.data);
       }
     } catch (error, stacktrace) {
       // ignore: avoid_print
@@ -162,11 +206,13 @@ class DataProvider {
         'usr': user,
         'pwd': pass,
       });
-      final getCode =
-          await dio.get("https://njajal.sekolahmusik.co.id/api/resource/Fees");
 
-      if (getCode.statusCode == 200) {
+      if (codeDef.toString() == null.toString()) {
+        final getCode = await dio
+            .get("https://njajal.sekolahmusik.co.id/api/resource/Fees");
+
         var code = getCode.data['data'][0]['name'];
+
         final request = await dio
             .get('https://njajal.sekolahmusik.co.id/api/resource/Fees/${code}');
 
@@ -179,13 +225,25 @@ class DataProvider {
             unpaidFeesList.add(request.data['data']);
           }
         }
-
         pref.setString('payment-total', feesList.length.toString());
         pref.setString('payment-length', unpaidFeesList.length.toString());
 
         return Payment.fromJson(request.data);
       } else {
-        return Payment.withError('Data not found / Connection Issues');
+        final getCode = await dio.get(
+            'https://njajal.sekolahmusik.co.id/api/resource/Fees?filters=[["student","=","${codeDef}"]]&fields=["*"]');
+
+        for (var a = 0; a < getCode.data['data'].length; a++) {
+          feesList.add(getCode.data['data']);
+          if (getCode.data['data'][a]['status'].toString() == 'Unpaid') {
+            unpaidFeesList.add(getCode.data['data']);
+          }
+        }
+
+        pref.setString('payment-total', feesList.length.toString());
+        pref.setString('payment-length', unpaidFeesList.length.toString());
+
+        return Payment.fromJson(getCode.data['data'][0]);
       }
     } catch (error, stacktrace) {
       // ignore: avoid_print

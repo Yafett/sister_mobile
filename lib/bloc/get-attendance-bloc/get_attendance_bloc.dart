@@ -14,7 +14,7 @@ class GetAttendanceBloc extends Bloc<GetAttendanceEvent, GetAttendanceState> {
     on<GetAttendanceList>((event, emit) async {
       try {
         emit(GetAttendanceLoading());
-        final pList = await _attendanceProvider.fetchAttendance();
+        final pList = await _attendanceProvider.fetchAttendance(event.code);
         emit(GetAttendanceLoaded(pList));
         if (pList.error != null) {
           emit(GetAttendanceError(pList.error));

@@ -12,6 +12,7 @@ import 'package:sister_mobile/bloc/get-enrollment-bloc/get_enrollment_bloc.dart'
 import 'package:sister_mobile/bloc/get-point-reward-bloc/point_reward_bloc.dart';
 import 'package:sister_mobile/bloc/get-student-schedule/student_schedule_bloc.dart';
 import 'package:sister_mobile/model/Enrollment-model.dart';
+import 'package:sister_mobile/pages/students/auth/splash-page.dart';
 import 'package:sister_mobile/pages/students/profile/student-profile.dart';
 import 'package:sister_mobile/resources/profile_provider.dart';
 import 'package:sister_mobile/shared/theme.dart';
@@ -1071,7 +1072,10 @@ class StudentHomePageState extends State<StudentHomePage> {
             onTap: () async {
               await dio
                   .get('https://sister.sekolahmusik.co.id/api/method/logout');
-              SystemNavigator.pop();
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => SplashPage()),
+                  (route) => false);
             },
             leading:
                 const Icon(Icons.exit_to_app, size: 20.0, color: Colors.white),

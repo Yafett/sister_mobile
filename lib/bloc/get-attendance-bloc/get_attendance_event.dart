@@ -7,4 +7,7 @@ abstract class GetAttendanceEvent extends Equatable {
   List<Attendance> get props => [];
 }
 
-class GetAttendanceList extends GetAttendanceEvent {}
+class GetAttendanceList extends GetAttendanceEvent {
+  final String? code;
+  GetAttendanceList({this.code});
+}
