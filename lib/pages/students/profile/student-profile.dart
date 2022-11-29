@@ -1,9 +1,11 @@
 // ignore_for_file: unused_field
 
+import 'package:dio/dio.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sister_mobile/model/ProfileGuardian-model.dart';
+import 'package:sister_mobile/pages/students/auth/splash-page.dart';
 import 'package:skeletons/skeletons.dart';
 
 import '../../../bloc/get-profile-guardian-bloc/get_profile_guardian_bloc.dart';
@@ -16,8 +18,13 @@ import '../../../widget/no_scroll_waves.dart';
 
 class StudentProfilePage extends StatefulWidget {
   final String? code;
+  final bool? back;
 
-  StudentProfilePage({Key? key, this.code}) : super(key: key);
+  StudentProfilePage({
+    Key? key,
+    this.code,
+    this.back,
+  }) : super(key: key);
 
   @override
   State<StudentProfilePage> createState() => _StudentProfilePageState();
@@ -71,9 +78,11 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
   @override
   void initState() {
     super.initState();
-    _profileBloc.add(GetProfileList(code: widget.code)); 
-    _guardianBloc.add(GetProfileGuardianList(code: widget.code));
     _userBloc.add(GetProfileUserList(code: widget.code));
+    if (widget.back != false) {
+      _profileBloc.add(GetProfileList(code: widget.code));
+      _guardianBloc.add(GetProfileGuardianList(code: widget.code));
+    }
   }
 
   @override
@@ -86,7 +95,24 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
         backgroundColor: sBlackColor,
         appBar: AppBar(
           backgroundColor: sBlackColor,
-          leading: const BackButton(color: Color(0xffC9D1D9)),
+          leading: (widget.back == null)
+              ? const BackButton(color: Color(0xffC9D1D9))
+              : GestureDetector(
+                  onTap: () async {
+                    Dio dio = Dio();
+
+                    await dio.get(
+                        'https://sister.sekolahmusik.co.id/api/method/logout');
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => SplashPage()),
+                        (route) => false);
+                  },
+                  child: Icon(
+                    Icons.logout,
+                    color: Color(0xffC9D1D9),
+                  ),
+                ),
           title: Text('My Profile',
               style: sWhiteTextStyle.copyWith(fontWeight: semiBold)),
           actions: [

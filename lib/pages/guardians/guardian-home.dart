@@ -140,7 +140,49 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                           List<Students>? students = guardian.data?.students;
                           final student = studentList;
                           return (_isLoading == true)
-                              ? CircularProgressIndicator()
+                              ? Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: Column(
+                                    children: [
+                                      SkeletonParagraph(
+                                        style: SkeletonParagraphStyle(
+                                            lines: 1,
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 10),
+                                            spacing: 6,
+                                            lineStyle: SkeletonLineStyle(
+                                              randomLength: true,
+                                              height: 10,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              minLength: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  6,
+                                              maxLength: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  3,
+                                            )),
+                                      ),
+                                      SkeletonAvatar(
+                                        style: SkeletonAvatarStyle(
+                                          width: double.infinity,
+                                          minHeight: MediaQuery.of(context)
+                                                  .size
+                                                  .height /
+                                              8,
+                                          maxHeight: MediaQuery.of(context)
+                                                  .size
+                                                  .height /
+                                              6,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 20),
+                                    ],
+                                  ),
+                                )
                               : SingleChildScrollView(
                                   child: Column(
                                     crossAxisAlignment:
@@ -662,6 +704,7 @@ class GuardianHomePageState extends State<GuardianHomePage> {
       }
     }
 
+    print(studentList.length);
     _isLoading = false;
   }
 }

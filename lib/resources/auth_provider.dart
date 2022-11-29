@@ -8,58 +8,126 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:sister_mobile/shared/theme.dart';
-import 'package:http/http.dart' as http;
 
 class AuthProvider {
   final String urlLogin = '${baseUrl}/method/login';
   final String urlLogout = '${baseUrl}/method/logout';
   final String urlRegister = '${baseUrl}/method/smi.api.registrasi_student';
 
-  login(user, password) async {
+  login(username, password) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     Dio dio = Dio();
     var cookieJar = CookieJar();
+    var listEmail = [];
+    var listUser = [];
 
-    final response = await http.post(
-      Uri.parse('https://njajal.sekolahmusik.co.id/api/method/login'),
-      body: {
-        'usr': user,
-        'pwd': password,
-      },
-    );
+    var user = username;
+    final pass = password;
 
-    prefs.setString('username', user);
-    prefs.setString('password', password);
-
-    if (response.statusCode == 200) {
+    final verify = await http.post(
+        Uri.parse('https://njajal.sekolahmusik.co.id/api/method/login'),
+        body: {
+          'usr': user,
+          'pwd': pass,
+        });
+    if (verify.statusCode == 200) {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio.post(
         'https://njajal.sekolahmusik.co.id/api/method/login',
         data: {
           'usr': user,
-          'pwd': password,
+          'pwd': pass,
         },
       );
 
-      final getCode =
-          await dio.get("https://njajal.sekolahmusik.co.id/api/resource/User");
+      prefs.setString('username', user);
+      prefs.setString('password', pass);
 
-      final code = getCode.data['data'][0]['name'];
+      if (response.statusCode == 200) {
+        if (user.toString().contains('@')) {
+          final getCode = await dio.get(
+              'https://njajal.sekolahmusik.co.id/api/resource/User?filters=[["email","=","${user}"]]&fields=["*"]');
 
-      dio.interceptors.add(CookieManager(cookieJar));
-      final identity = await dio
-          .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
-        'usr': 'administrator',
-        'pwd': 'admin',
-      });
+          final code = getCode.data['data'][0]['name'];
 
-      final checking = await dio.get(
-          'https://njajal.sekolahmusik.co.id/api/resource/Guardian?filters=[["email_address","=","${code}"]]');
+          final getUser = await dio.get(
+              'https://njajal.sekolahmusik.co.id/api/resource/User/${code}');
 
-      if (checking.data['data'].length > 0) {
-        return 'Guardian';
-      } else {
-        return 'Student';
+          for (var a = 0; a < getUser.data['data']['roles'].length; a++) {
+            print(getUser.data['data']['roles'][a]['role'].toString());
+
+            listUser.add(getUser.data['data']['roles'][a]['role'].toString());
+          }
+
+          print(listUser.toString());
+        } else {
+          final getCode = await dio.get(
+              'https://njajal.sekolahmusik.co.id/api/resource/User?filters=[["username","=","${user}"]]&fields=["*"]');
+
+          final code = getCode.data['data'][0]['name'];
+
+          user = code;
+
+          final getUser = await dio.get(
+              'https://njajal.sekolahmusik.co.id/api/resource/User/${code}');
+
+          for (var a = 0; a < getUser.data['data']['roles'].length; a++) {
+            print(getUser.data['data']['roles'][a]['role'].toString());
+
+            listUser.add(getUser.data['data']['roles'][a]['role'].toString());
+          }
+        }
+
+        print(user.toString());
+        prefs.setString('user-email', user);
+
+        if (listUser.contains('Student Guardian')) {
+          print('lily');
+          final getGuardianCode = await dio
+              .get('https://njajal.sekolahmusik.co.id/api/resource/Guardian/');
+
+          for (var a = 0; a < getGuardianCode.data['data'].length; a++) {
+            final getGuardian = await dio.get(
+                'https://njajal.sekolahmusik.co.id/api/resource/Guardian/${getGuardianCode.data['data'][a]['name'].toString()}');
+
+            if (getGuardian.data['data']['user'].toString() == user) {
+              print('im Guardian');
+              return 'Guardian';
+            }
+          }
+        } else if (listUser.contains('Student')) {
+          print('eve');
+          final getStudentCode = await dio
+              .get('https://njajal.sekolahmusik.co.id/api/resource/Student/');
+
+          for (var a = 0; a < getStudentCode.data['data'].length; a++) {
+            final getStudent = await dio.get(
+                'https://njajal.sekolahmusik.co.id/api/resource/Student/${getStudentCode.data['data'][a]['name'].toString()}');
+
+            if (getStudent.data['data']['user'].toString() == user) {
+              print('im Student');
+              return 'Student';
+            }
+          }
+        }
+        if (listUser.contains('Instructor') || listUser.contains('Employee')) {
+          print('im Staff');
+          return 'Staff';
+        } else {
+          print('ursus');
+          final getUserCode = await dio
+              .get('https://njajal.sekolahmusik.co.id/api/resource/User/');
+
+          for (var a = 0; a < getUserCode.data['data'].length; a++) {
+            final getUser = await dio.get(
+                'https://njajal.sekolahmusik.co.id/api/resource/User/${getUserCode.data['data'][a]['name'].toString()}');
+
+            print(user.toString());
+            if (getUser.data['data']['user'].toString() == user) {
+              return 'Customer';
+            }
+          }
+        }
       }
     } else {
       return 'error';

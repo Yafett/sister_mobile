@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sister_mobile/bloc/get-point-reward-bloc/point_reward_bloc.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:skeletons/skeletons.dart';
@@ -19,6 +20,8 @@ class StudentPointPage extends StatefulWidget {
 
 class _StudentPointPageState extends State<StudentPointPage> {
   var itemList = ['', ''];
+
+  var pointTotal;
 
   Barcode? result;
   QRViewController? controller;
@@ -85,6 +88,7 @@ class _StudentPointPageState extends State<StudentPointPage> {
       bloc: _pointBloc,
       builder: (context, state) {
         if (state is PointRewardLoaded) {
+          _setPointTotal();
           PointReward point = state.pointModel;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -94,7 +98,7 @@ class _StudentPointPageState extends State<StudentPointPage> {
                 style: sWhiteTextStyle.copyWith(fontSize: 14),
               ),
               Text(
-                '${point.data!.point} POINT',
+                '${pointTotal.toString()} POINT',
                 style: sWhiteTextStyle.copyWith(fontSize: 24),
               ),
               const SizedBox(height: 40),
@@ -393,5 +397,15 @@ class _StudentPointPageState extends State<StudentPointPage> {
         ),
       ]),
     );
+  }
+
+  _setPointTotal() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+
+    if (mounted) {
+      setState(() {
+        pointTotal = pref.getString('point-length');
+      });
+    }
   }
 }

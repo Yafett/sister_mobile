@@ -20,6 +20,8 @@ class ProfileProvider {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
+    var email = pref.getString('user-email');
+
     try {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
@@ -27,18 +29,25 @@ class ProfileProvider {
         'usr': user,
         'pwd': pass,
       });
-      final getCode = await dio
-          .get("https://njajal.sekolahmusik.co.id/api/resource/Student");
-      var code = getCode.data['data'][0]['name'];
 
-      pref.setString('code', code);
+      if (codeDef == null) {
+        final getCode = await dio.get(
+            'https://njajal.sekolahmusik.co.id/api/resource/Student?filters=[["student_email_id","=","${email}"]]&fields=["*"]');
 
-      print('code def  1 : ' + codeDef.toString());
+        var code = getCode.data['data'][0]['name'];
 
-      final request = await dio.get(
-          'https://njajal.sekolahmusik.co.id/api/resource/Student/${codeDef == null ? code : codeDef}');
+        pref.setString('code', code);
 
-      return Profile.fromJson(request.data);
+        final request = await dio.get(
+            'https://njajal.sekolahmusik.co.id/api/resource/Student/${code}');
+
+        return Profile.fromJson(request.data);
+      } else {
+        final request = await dio.get(
+            'https://njajal.sekolahmusik.co.id/api/resource/Student/${codeDef}');
+
+        return Profile.fromJson(request.data);
+      }
     } catch (error, stacktrace) {
       // ignore: avoid_print
       print('Exception Occured: $error stackTrace: $stacktrace');
@@ -50,6 +59,7 @@ class ProfileProvider {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
+    var email = pref.getString('guardian-email');
 
     try {
       dio.interceptors.add(CookieManager(cookieJar));
@@ -59,11 +69,15 @@ class ProfileProvider {
         'pwd': pass,
       });
 
+      final gege = await dio.get(
+          'https://njajal.sekolahmusik.co.id/api/resource/Guardian?filters=[["user","=","${email}"]]&fields=["*"]');
+
+      final code = gege.data['data'][0]['name'];
+
       final getCode = await dio
           .get("https://njajal.sekolahmusik.co.id/api/resource/Guardian");
- 
+
       if (getCode.statusCode == 200) {
-        var code = getCode.data['data'][0]['name'];
         final request = await dio.get(
             'https://njajal.sekolahmusik.co.id/api/resource/Guardian/${codeDef == null ? code : codeDef}');
 
@@ -82,8 +96,7 @@ class ProfileProvider {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
-
-    print('username :  ' + user.toString());
+    var userCode;
 
     try {
       dio.interceptors.add(CookieManager(cookieJar));
@@ -92,20 +105,44 @@ class ProfileProvider {
         'usr': user,
         'pwd': pass,
       });
-      final getCode =
-          await dio.get("https://njajal.sekolahmusik.co.id/api/resource/User");
 
-      print('code def 3 : ' + codeDef.toString());
+      var userEmail = pref.getString('user-email');
 
-      if (getCode.statusCode == 200) {
-        var code = getCode.data['data'][0]['name'];
+      if (codeDef == null) {
+        final getCode = await dio
+            .get("https://njajal.sekolahmusik.co.id/api/resource/User/");
+
         final request = await dio.get(
-            'https://njajal.sekolahmusik.co.id/api/resource/User/${codeDef == null ? code : codeDef}');
+            "https://njajal.sekolahmusik.co.id/api/resource/User/${userEmail}");
 
         return ProfileUser.fromJson(request.data);
+        // for (var a = 0; a < getCode.data['data'].length; a++) {
+        //   final code = getCode.data['data'][a]['name'];
+        //   final request = await dio.get(
+        //       'https://njajal.sekolahmusik.co.id/api/resource/User/${code}');
+        //   if (request.data['data']['user'] == userEmail) {
+        //     userCode = request.data['data']['user'];
+        //   }
+        // }
       } else {
-        return ProfileUser.withError('Data not found / Connection Issues');
+        final getCode = await dio
+            .get("https://njajal.sekolahmusik.co.id/api/resource/User/");
+
+        final request = await dio.get(
+            "https://njajal.sekolahmusik.co.id/api/resource/User/${codeDef}");
+
+        return ProfileUser.fromJson(request.data);
       }
+      //         if (getCode.statusCode == 200) {
+
+      //           }
+      //         } else {
+      //           return ProfileUser.withError('Data not found / Connection Issues');
+      //         }
+      //       } else {
+      //         final request = await dio.get(
+      //             'https://njajal.sekolahmusik.co.id/api/resource/User/${codeDef}');
+      //       }
     } catch (error, stacktrace) {
       // ignore: avoid_print
       return ProfileUser.withError('Data not found / Connection Issues');

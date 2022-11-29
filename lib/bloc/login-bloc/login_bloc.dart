@@ -25,11 +25,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         if (result.toString() == 'error') {
           emit(LoginError('Your Email or Password is incorrect!'));
         } else {
-          if (result.toString() == 'Parents') {
-            emit(LoginSuccess(result.toString()));
-          } else {
-            emit(LoginSuccess(result.toString()));
-          }
+          emit(LoginSuccess(result.toString()));
         }
       } on NetworkError {
         emit(LoginError("Failed to fetch data. is your device online?"));

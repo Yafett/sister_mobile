@@ -24,27 +24,63 @@ class DataProvider {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
+    var listPoint = [];
 
     try {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio.post(urlLogin, data: {
-        'usr': 'administrator',
-        'pwd': 'admin',
+        'usr': user,
+        'pwd': pass,
       });
-      final getCode = await dio.get(urlPointReward);
 
-      if (getCode.statusCode == 200) {
-        var code = getCode.data['data'][0]['name'];
-        final request = await dio
-            .get('${urlPointReward}/${codeDef == null ? code : codeDef}');
+      print(codeDef.toString());
+
+      if (codeDef == null) {
+        final getCode = await dio.get(
+            'https://njajal.sekolahmusik.co.id/api/resource/Point Reward/');
+        if (getCode.statusCode == 200) {
+          for (var a = 0; a < getCode.data['data'].length; a++) {
+            final getPoint = await dio.get(
+                'https://njajal.sekolahmusik.co.id/api/resource/Point Reward/${getCode.data['data'][a]['name']}');
+            listPoint
+                .add(double.parse(getPoint.data['data']['point'].toString()));
+          }
+
+          var sum = listPoint.reduce((a, b) => a + b);
+
+          pref.setString('point-length', sum.toString());
+
+          final request = await dio.get(
+              'https://njajal.sekolahmusik.co.id/api/resource/Point Reward/${getCode.data['data'][0]['name']}');
+
+          return PointReward.fromJson(request.data);
+        } else {
+          return PointReward.withError('Data not found / Connection Issues');
+        }
+      } else {
+        final getCode = await dio.get(
+            'https://njajal.sekolahmusik.co.id/api/resource/Point Reward?filters=[["student","=","${codeDef}"]]&fields=["*"]');
+        for (var a = 0; a < getCode.data['data'].length; a++) {
+          final getPoint = await dio.get(
+              'https://njajal.sekolahmusik.co.id/api/resource/Point Reward/${getCode.data['data'][a]['name']}');
+          listPoint
+              .add(double.parse(getPoint.data['data']['point'].toString()));
+        }
+
+        var sum = listPoint.reduce((a, b) => a + b);
+
+        pref.setString('point-length', sum.toString());
+
+        final code = getCode.data['data'][0]['name'];
+
+        final request = await dio.get(
+            'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
 
         return PointReward.fromJson(request.data);
-      } else {
-        return PointReward.withError('Data not found / Connection Issues');
       }
     } catch (error, stacktrace) {
       // ignore: avoid_print
-      // print('Exception Occured: $error stackTrace: $stacktrace');
+      print('Exception Occured: $error stackTrace: $stacktrace');
 
       return PointReward.withError('Data not found / Connection Issues');
     }

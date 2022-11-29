@@ -2,9 +2,7 @@
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
-import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
@@ -46,6 +44,7 @@ class StudentHomePageState extends State<StudentHomePage> {
   var paymentLength;
   var scheduleLength;
   var user;
+  var pointTotal;
 
   final _attendanceBloc = GetAttendanceBloc();
   final GlobalKey<SideMenuState> _endSideMenuKey = GlobalKey<SideMenuState>();
@@ -421,7 +420,7 @@ class StudentHomePageState extends State<StudentHomePage> {
                 return GestureDetector(
                     onTap: () => Navigator.pushNamed(context, '/student-point'),
                     child: _buildChip(
-                        '${point.data!.point} POINT', Icons.favorite));
+                        '${pointTotal.toString()} POINT', Icons.favorite));
               } else {
                 return Container();
               }
@@ -911,6 +910,7 @@ class StudentHomePageState extends State<StudentHomePage> {
       bloc: _pointBloc,
       builder: (context, state) {
         if (state is PointRewardLoaded) {
+          _setPointTotal();
           PointReward point = state.pointModel;
           return Container(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -948,7 +948,7 @@ class StudentHomePageState extends State<StudentHomePage> {
                                   const Icon(Icons.favorite,
                                       color: Color(0xffD15151)),
                                   const SizedBox(width: 10),
-                                  Text('${state.pointModel.data!.point} POINT',
+                                  Text('${pointTotal.toString()} POINT',
                                       style: sWhiteTextStyle.copyWith(
                                           fontSize: 22, fontWeight: semiBold)),
                                 ],
@@ -1130,6 +1130,16 @@ class StudentHomePageState extends State<StudentHomePage> {
         unpaidPaymentLength = pref.getString('payment-length');
         paymentLength = pref.getString('payment-total');
         scheduleLength = pref.getString('schedule-length');
+      });
+    }
+  }
+
+  _setPointTotal() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+
+    if (mounted) {
+      setState(() {
+        pointTotal = pref.getString('point-length');
       });
     }
   }

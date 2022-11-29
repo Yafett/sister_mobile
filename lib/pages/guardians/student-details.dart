@@ -44,6 +44,7 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
   var studentName;
   var studentCode;
   var paymentLength;
+  var pointTotal;
 
   final _profileBloc = GetProfileStudentBloc();
   final _scheduleBloc = StudentScheduleBloc();
@@ -64,9 +65,9 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
     _profileBloc.add(GetProfileList(code: widget.code));
     _scheduleBloc.add(GetScheduleList(code: widget.code));
     _paymentBloc.add(GetPaymentList(code: widget.code));
-    _attendanceBloc.add(GetAttendanceList());
+    _attendanceBloc.add(GetAttendanceList(code: widget.code));
     _enrollmentBloc.add(GetEnrollmentList(code: widget.code));
-    _pointBloc.add(GetPointRewardList());
+    _pointBloc.add(GetPointRewardList(code: widget.code));
   }
 
   @override
@@ -564,7 +565,12 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
                       borderRadius: BorderRadius.circular(8),
                       onTap: () {
                         Navigator.push(
-                            context, MaterialPageRoute(builder: (context) => StudentEnrollmentHistoryPage(code: widget.code,)));
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    StudentEnrollmentHistoryPage(
+                                      code: widget.code,
+                                    )));
                       },
                       splashColor: sGreyColor,
                       child: SizedBox(
@@ -637,8 +643,9 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
       bloc: _pointBloc,
       builder: (context, state) {
         if (state is PointRewardLoaded) {
+          _setPointTotal();
           PointReward point = state.pointModel;
-          return SizedBox(
+          return Container(
               child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -673,7 +680,7 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
                               const Icon(Icons.favorite,
                                   color: Color(0xffD15151)),
                               const SizedBox(width: 10),
-                              Text('${state.pointModel.data!.point} POINT',
+                              Text('${pointTotal.toString()} POINT',
                                   style: sWhiteTextStyle.copyWith(
                                       fontSize: 22, fontWeight: semiBold)),
                             ],
@@ -704,32 +711,6 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
               )
             ],
           ));
-        } else if (state is PointRewardLoading) {
-          return Column(
-            children: [
-              SkeletonParagraph(
-                style: SkeletonParagraphStyle(
-                    lines: 1,
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    spacing: 6,
-                    lineStyle: SkeletonLineStyle(
-                      randomLength: true,
-                      height: 10,
-                      borderRadius: BorderRadius.circular(8),
-                      minLength: MediaQuery.of(context).size.width / 6,
-                      maxLength: MediaQuery.of(context).size.width / 3,
-                    )),
-              ),
-              SkeletonAvatar(
-                style: SkeletonAvatarStyle(
-                  width: double.infinity,
-                  minHeight: MediaQuery.of(context).size.height / 8,
-                  maxHeight: MediaQuery.of(context).size.height / 6,
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-          );
         } else {
           return Container();
         }
@@ -744,6 +725,16 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
     if (mounted) {
       setState(() {
         paymentLength = pref.getString('payment-length');
+      });
+    }
+  }
+
+  _setPointTotal() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+
+    if (mounted) {
+      setState(() {
+        pointTotal = pref.getString('point-length');
       });
     }
   }

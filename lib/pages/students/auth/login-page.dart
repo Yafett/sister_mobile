@@ -3,13 +3,15 @@ import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart'; 
+import 'package:google_fonts/google_fonts.dart';
 import 'package:motion_toast/motion_toast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sister_mobile/bloc/get-profile-user-bloc/get_profile_user_bloc.dart';
 import 'package:sister_mobile/pages/guardians/guardian-home.dart';
 import 'package:sister_mobile/pages/students/auth/register-page.dart';
+import 'package:sister_mobile/pages/students/profile/student-profile.dart';
 import 'package:sister_mobile/pages/students/student-home.dart';
+import 'package:http/http.dart' as http;
 import 'package:sister_mobile/shared/theme.dart';
 
 import '../../../bloc/login-bloc/login_bloc.dart';
@@ -133,13 +135,32 @@ class _LoginPageState extends State<LoginPage> {
                 context,
                 MaterialPageRoute(builder: (context) => GuardianHomePage()),
                 (route) => false);
-          } else {
+          } else if (role == 'Student') {
             Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(builder: (context) => StudentHomePage()),
                 (route) => false);
+          } else if (role == 'Staff') {
+            MotionToast(
+              height: 50,
+              width: 300,
+              primaryColor: sRedColor,
+              description: Text(
+                'errr',
+                style: sRedTextStyle.copyWith(fontWeight: semiBold),
+              ),
+              icon: Icons.warning_amber,
+              animationCurve: Curves.bounceIn,
+            ).show(context);
+          } else {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => StudentProfilePage(
+                          back: false,
+                        )),
+                (route) => false);
           }
-
           print('role : ' + role.toString());
         } else if (state is LoginError) {
           MotionToast(
@@ -178,7 +199,7 @@ class _LoginPageState extends State<LoginPage> {
             color: const Color(0xffE22426),
             child: InkWell(
               splashColor: Colors.grey,
-              onTap: () {
+              onTap: () async {
                 _loginBloc.add(
                   Login(
                     _usernameController.text,
