@@ -33,8 +33,6 @@ class DataProvider {
         'pwd': pass,
       });
 
-      print(codeDef.toString());
-
       if (codeDef == null) {
         final getCode = await dio.get(
             'https://njajal.sekolahmusik.co.id/api/resource/Point Reward/');
@@ -42,6 +40,8 @@ class DataProvider {
           for (var a = 0; a < getCode.data['data'].length; a++) {
             final getPoint = await dio.get(
                 'https://njajal.sekolahmusik.co.id/api/resource/Point Reward/${getCode.data['data'][a]['name']}');
+            listPoint.clear();
+
             listPoint
                 .add(double.parse(getPoint.data['data']['point'].toString()));
           }
@@ -60,9 +60,12 @@ class DataProvider {
       } else {
         final getCode = await dio.get(
             'https://njajal.sekolahmusik.co.id/api/resource/Point Reward?filters=[["student","=","${codeDef}"]]&fields=["*"]');
+
         for (var a = 0; a < getCode.data['data'].length; a++) {
           final getPoint = await dio.get(
               'https://njajal.sekolahmusik.co.id/api/resource/Point Reward/${getCode.data['data'][a]['name']}');
+          listPoint.clear();
+ 
           listPoint
               .add(double.parse(getPoint.data['data']['point'].toString()));
         }

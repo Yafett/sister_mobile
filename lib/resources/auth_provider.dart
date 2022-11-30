@@ -70,7 +70,6 @@ class AuthProvider {
 
           final getUser = await dio.get(
               'https://njajal.sekolahmusik.co.id/api/resource/User/${code}');
-
           for (var a = 0; a < getUser.data['data']['roles'].length; a++) {
             print(getUser.data['data']['roles'][a]['role'].toString());
 
