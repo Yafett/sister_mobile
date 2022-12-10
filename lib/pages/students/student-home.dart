@@ -13,8 +13,8 @@ import 'package:sister_mobile/bloc/get-point-reward-bloc/point_reward_bloc.dart'
 import 'package:sister_mobile/bloc/get-student-schedule/student_schedule_bloc.dart';
 import 'package:sister_mobile/model/Enrollment-model.dart';
 import 'package:sister_mobile/pages/auth/splash-page.dart';
-import 'package:sister_mobile/pages/students/payment/student-payment.dart';
-import 'package:sister_mobile/pages/students/profile/student-profile.dart';
+import 'package:sister_mobile/pages/students/payment/student-payment-history.dart';
+import 'package:sister_mobile/pages/auth/student-profile.dart';
 import 'package:sister_mobile/resources/profile-provider.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';

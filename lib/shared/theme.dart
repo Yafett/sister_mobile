@@ -24,8 +24,7 @@ TextStyle fTermsColorStyle =
     GoogleFonts.openSans(color: const Color(0xff616161));
 
 // ! second Section
-TextStyle sWhiteTextStyle =
-    GoogleFonts.openSans(color: const Color(0xffC9D1D9));
+TextStyle sWhiteTextStyle = GoogleFonts.openSans(color: Colors.white);
 TextStyle sBlackTextStyle =
     GoogleFonts.openSans(color: const Color(0xff0D1117));
 TextStyle sGreyTextStyle = GoogleFonts.openSans(color: const Color(0xff6B7178));

@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, unnecessary_new, prefer_collection_literals, unnecessary_this
 
 class KnowFrom {
   List<Data>? data;

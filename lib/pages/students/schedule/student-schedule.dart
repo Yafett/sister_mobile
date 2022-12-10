@@ -1,13 +1,11 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, sized_box_for_whitespace, unused_local_variable, prefer_typing_uninitialized_variables
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sister_mobile/bloc/get-profile-student-bloc/get_profile_student_bloc.dart';
 import 'package:sister_mobile/bloc/get-student-schedule/student_schedule_bloc.dart';
 import 'package:sister_mobile/pages/students/schedule/student-schedule-details.dart';
 import 'package:skeletons/skeletons.dart';
@@ -35,9 +33,7 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
   DateTime? start;
   DateTime? end;
 
-  CalendarController _controller = CalendarController();
-  String? _text = '', _titleText = '';
-  Color? _headerColor, _viewHeaderColor, _calendarColor;
+  final CalendarController _controller = CalendarController();
 
   bool isLoading = false;
 
@@ -50,10 +46,10 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
 
   @override
   Widget build(BuildContext context) {
-    return _buildSchedulePage();
+    return _pageScaffold();
   }
 
-  Widget _buildSchedulePage() {
+  Widget _pageScaffold() {
     return Scaffold(
         // backgroundColor: sBlackColor,
         appBar: AppBar(
@@ -96,34 +92,29 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
                 selectionBorderColor: sGreyColor,
                 viewHeaderDayTextStyle: sWhiteTextStyle.copyWith(
                   fontWeight: semiBold,
-                ), 
+                ),
               ),
               child: SfCalendar(
-                
                 controller: _controller,
                 onTap: calendarTapped,
                 headerHeight: 50,
                 todayHighlightColor: sRedColor,
-                
                 viewHeaderHeight: 50,
                 appointmentTextStyle: sWhiteTextStyle,
                 dataSource: MeetingDataSource(_getDataSource(schedule.message)),
                 allowAppointmentResize: true,
                 showNavigationArrow: true,
-                
                 view: CalendarView.month,
                 monthViewSettings: MonthViewSettings(
                   agendaViewHeight: 300,
                   agendaItemHeight: 50,
                   agendaStyle: AgendaStyle(
-
                     backgroundColor: sBlackColor,
                     appointmentTextStyle: sWhiteTextStyle,
                     dateTextStyle: sWhiteTextStyle,
                     dayTextStyle: sWhiteTextStyle,
                   ),
                   monthCellStyle: MonthCellStyle(
-                    
                     textStyle: sWhiteTextStyle,
                     leadingDatesTextStyle: sGreyTextStyle,
                     trailingDatesTextStyle: sGreyTextStyle,
@@ -153,6 +144,7 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
     );
   }
 
+  // ! FUNCTION
   void calendarTapped(CalendarTapDetails calendarTapDetails) {
     if (calendarTapDetails.targetElement == CalendarElement.appointment) {
       Meeting appointment = calendarTapDetails.appointments![0];
@@ -171,6 +163,7 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
     }
   }
 
+  // ! FETCH DATA
   _fetchScheduleList(codeDef) async {
     final dio = Dio();
     var cookieJar = CookieJar();
@@ -213,25 +206,6 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
         listSchedule.add(request.data['message'][a]);
       }
     }
-
-    // final getCode = await dio
-    //     .get("https://sister.sekolahmusik.co.id/api/resource/Course Schedule");
-
-    // if (getCode.statusCode == 200) {
-    //   for (var a = 0; a < getCode.data['data'].length; a++) {
-    //     var code = getCode.data['data'][a]['name'];
-    //     final request = await dio.get(
-    //         'https://sister.sekolahmusik.co.id/api/resource/Course Schedule/${code}');
-
-    //     if (mounted) {
-    //       setState(() {
-    //         listSchedule.add(request.data);
-    //       });
-    //     }
-    //   }
-
-    //   isLoading = false;
-    // }
   }
 
   _getDataSource(schedule) {

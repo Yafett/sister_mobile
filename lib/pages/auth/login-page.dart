@@ -1,17 +1,20 @@
+// ignore_for_file: unused_import, prefer_interpolation_to_compose_strings, avoid_print, file_names, unused_field, unused_local_variable, prefer_typing_uninitialized_variables, use_build_context_synchronously, unnecessary_null_comparison, unnecessary_brace_in_string_interps
+
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 import 'package:motion_toast/motion_toast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:sister_mobile/bloc/get-profile-user-bloc/get_profile_user_bloc.dart';
-import 'package:sister_mobile/pages/guardians/guardian-home.dart';
 import 'package:sister_mobile/pages/auth/register-page.dart';
-import 'package:sister_mobile/pages/students/profile/student-profile.dart';
+import 'package:sister_mobile/pages/auth/student-profile.dart';
+import 'package:sister_mobile/pages/guardians/guardian-home.dart';
 import 'package:sister_mobile/pages/students/student-home.dart';
-import 'package:http/http.dart' as http;
 import 'package:sister_mobile/shared/theme.dart';
 
 import '../../bloc/login-bloc/login_bloc.dart';
@@ -64,6 +67,42 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Widget _buildLoginHeader() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const CircleAvatar(
+          radius: 50,
+          backgroundImage: AssetImage('assets/images/smi-logo-white.png'),
+        ),
+        const SizedBox(height: 20),
+        RichText(
+          text: TextSpan(
+            children: <TextSpan>[
+              TextSpan(
+                text: 'Proceed with your\n',
+                style: GoogleFonts.openSans(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+              TextSpan(
+                text: 'Login',
+                style: GoogleFonts.openSans(
+                  color: Colors.black,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 120),
+      ],
+    );
+  }
+
   Widget _buildLoginBody() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -110,42 +149,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildLoginHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const CircleAvatar(
-          radius: 50,
-          backgroundImage: AssetImage('assets/images/smi-logo-white.png'),
-        ),
-        const SizedBox(height: 20),
-        RichText(
-          text: TextSpan(
-            children: <TextSpan>[
-              TextSpan(
-                text: 'Proceed with your\n',
-                style: GoogleFonts.openSans(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
-              TextSpan(
-                text: 'Login',
-                style: GoogleFonts.openSans(
-                  color: Colors.black,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 120),
-      ],
-    );
-  }
-
   Widget _buildLoginButton(context) {
     return BlocConsumer<LoginBloc, LoginState>(
       bloc: _loginBloc,
@@ -156,12 +159,14 @@ class _LoginPageState extends State<LoginPage> {
           if (role == 'Guardian') {
             Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => GuardianHomePage()),
+                MaterialPageRoute(
+                    builder: (context) => const GuardianHomePage()),
                 (route) => false);
           } else if (role == 'Student') {
             Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => StudentHomePage()),
+                MaterialPageRoute(
+                    builder: (context) => const StudentHomePage()),
                 (route) => false);
           } else if (role == 'Staff') {
             MotionToast(
@@ -371,12 +376,12 @@ class _LoginPageState extends State<LoginPage> {
       if (checking.data['data'].length > 0) {
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => GuardianHomePage()),
+            MaterialPageRoute(builder: (context) => const GuardianHomePage()),
             (route) => false);
       } else {
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => StudentHomePage()),
+            MaterialPageRoute(builder: (context) => const StudentHomePage()),
             (route) => false);
       }
     } else {
@@ -399,7 +404,7 @@ class _LoginPageState extends State<LoginPage> {
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
             topLeft: Radius.circular(4), topRight: Radius.circular(4)),
       ),
@@ -407,12 +412,12 @@ class _LoginPageState extends State<LoginPage> {
         return Padding(
           padding: MediaQuery.of(context).viewInsets,
           child: Container(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 TextFormField(
@@ -424,7 +429,7 @@ class _LoginPageState extends State<LoginPage> {
                     }
                     return null;
                   },
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: ' Enter your Email Here',
                   ),
@@ -504,7 +509,7 @@ class _LoginPageState extends State<LoginPage> {
                         }
                       }
 
-                      // ! textfield empty =   'Enter your Email First!' 
+                      // ! textfield empty =   'Enter your Email First!'
                       // ! not contain '@' and '.' = 'You put wrong Email Format!'
                       // ! user not found =  'Email not Found!'
                       // * user found = 'Check your Email for Reset your Password'

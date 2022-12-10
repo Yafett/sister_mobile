@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable
+// ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable, file_names, prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
@@ -91,6 +91,7 @@ class _StudentEnrollmentDetailPageState
                 ),
               ),
             ],
+            // ignore: avoid_print
             onSelected: (item) => {print(item)},
           ),
         ],

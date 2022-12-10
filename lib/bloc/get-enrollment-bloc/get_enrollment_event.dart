@@ -9,5 +9,5 @@ abstract class GetEnrollmentEvent extends Equatable {
 
 class GetEnrollmentList extends GetEnrollmentEvent {
   final String? code;
-  GetEnrollmentList({this.code});
+  const GetEnrollmentList({this.code});
 }

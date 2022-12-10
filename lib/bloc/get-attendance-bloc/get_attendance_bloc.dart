@@ -1,3 +1,5 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:sister_mobile/resources/data-provider.dart';
@@ -21,7 +23,7 @@ class GetAttendanceBloc extends Bloc<GetAttendanceEvent, GetAttendanceState> {
         }
       } on NetworkError {
         emit(
-            GetAttendanceError("Failed to fetch data. is your device online?"));
+            const GetAttendanceError("Failed to fetch data. is your device online?"));
       }
     });
   }

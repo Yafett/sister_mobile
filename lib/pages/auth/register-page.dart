@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, prefer_typing_uninitialized_variables, sized_box_for_whitespace, avoid_unnecessary_containers, unused_local_variable, unused_field, avoid_print, unused_element, use_build_context_synchronously
+// ignore_for_file: file_names, prefer_typing_uninitialized_variables, sized_box_for_whitespace, avoid_unnecessary_containers, unused_local_variable, unused_field, avoid_print, unused_element, use_build_context_synchronously, no_leading_underscores_for_local_identifiers
 
 import 'dart:convert';
 
@@ -8,15 +8,11 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:sister_mobile/model/KnowFrom-model.dart';
 import 'package:sister_mobile/resources/auth-provider.dart';
 import 'package:sister_mobile/shared/theme.dart';
-import 'package:sister_mobile/widget/course-information-card.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
-import 'package:sister_mobile/widget/parent_information_card.dart';
 import 'package:http/http.dart' as http;
 
-import '../../model/Unit-model.dart';
 import '../../resources/data-provider.dart';
 
 class RegisterPage extends StatefulWidget {

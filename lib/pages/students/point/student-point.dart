@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, prefer_const_constructors
+// ignore_for_file: file_names, prefer_const_constructors, prefer_typing_uninitialized_variables, unused_local_variable
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +21,7 @@ class _StudentPointPageState extends State<StudentPointPage> {
   var itemList = ['', ''];
 
   var pointTotal;
- 
+
   final qrKey = GlobalKey();
 
   final _pointBloc = PointRewardBloc();
@@ -79,7 +79,7 @@ class _StudentPointPageState extends State<StudentPointPage> {
       ),
     );
   }
-  
+
   Widget _buildPointTotal() {
     return BlocBuilder<PointRewardBloc, PointRewardState>(
       bloc: _pointBloc,

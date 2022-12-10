@@ -1,8 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable, unused_field, prefer_typing_uninitialized_variables, avoid_print, sized_box_for_whitespace
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
@@ -39,7 +37,7 @@ class _StudentScheduleDetailPageState extends State<StudentScheduleDetailPage> {
 
   String? _topModalData;
 
-  final CameraPosition initialPosition = CameraPosition(
+  final CameraPosition initialPosition = const CameraPosition(
       target: LatLng(-6.973245480531463, 110.39053279088024), zoom: 50);
   var typemap = MapType.normal;
   var cordinate1 = 'cordinate';
@@ -54,13 +52,13 @@ class _StudentScheduleDetailPageState extends State<StudentScheduleDetailPage> {
   ];
 
   final searchController = TextEditingController();
-  TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   var description;
 
   var duration;
 
-  var _currentItemSelected = MapType.normal;
+  final _currentItemSelected = MapType.normal;
 
   var listDuration = [15, 30, 45, 60, 120];
 
@@ -94,9 +92,6 @@ class _StudentScheduleDetailPageState extends State<StudentScheduleDetailPage> {
             style: sWhiteTextStyle.copyWith(fontWeight: semiBold)),
         actions: [
           GestureDetector(
-            // onTap: () => Add2Calendar.addEvent2Cal(
-            //   buildEvent(),
-            // ),
             onTap: () async {
               var value =
                   await showTopModalSheet<String?>(context, dummyModal());
@@ -148,8 +143,6 @@ class _StudentScheduleDetailPageState extends State<StudentScheduleDetailPage> {
           style: sGreyTextStyle.copyWith(fontWeight: semiBold, fontSize: 16)),
     ]);
   }
-
- 
 
   Widget _buildScheduleBody() {
     String formattedDate = DateFormat('EEEE, dd MMMM').format(widget.startDate);
@@ -384,7 +377,7 @@ class _StudentScheduleDetailPageState extends State<StudentScheduleDetailPage> {
 
   _showTopModal() {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 20),
+      padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -404,7 +397,7 @@ class _StudentScheduleDetailPageState extends State<StudentScheduleDetailPage> {
                       FlutterLogo(
                         size: MediaQuery.of(context).size.height * .15,
                       ),
-                      Padding(
+                      const Padding(
                         padding: EdgeInsets.symmetric(vertical: 2),
                         child: Text("CF Cruz Azul"),
                       )
@@ -424,7 +417,7 @@ class _StudentScheduleDetailPageState extends State<StudentScheduleDetailPage> {
                       FlutterLogo(
                         size: MediaQuery.of(context).size.height * .15,
                       ),
-                      Padding(
+                      const Padding(
                         padding: EdgeInsets.symmetric(vertical: 2),
                         child: Text("Monarcas FC"),
                       )
@@ -454,7 +447,7 @@ class _StudentScheduleDetailPageState extends State<StudentScheduleDetailPage> {
       iosParams: IOSParams(
         reminder: Duration(minutes: myInt),
       ),
-      androidParams: AndroidParams(
+      androidParams: const AndroidParams(
         emailInvites: [],
       ),
       recurrence: recurrence,

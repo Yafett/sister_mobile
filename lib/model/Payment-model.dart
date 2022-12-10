@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import, unnecessary_new, prefer_collection_literals, unnecessary_this
+
 import 'package:googleapis/cloudsearch/v1.dart';
 
 class Payment {

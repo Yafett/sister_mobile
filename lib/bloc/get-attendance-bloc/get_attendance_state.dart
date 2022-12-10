@@ -13,10 +13,10 @@ class GetAttendanceLoading extends GetAttendanceState {}
 
 class GetAttendanceLoaded extends GetAttendanceState {
   final Attendance attendanceModel;
-  GetAttendanceLoaded(this.attendanceModel);
+  const GetAttendanceLoaded(this.attendanceModel);
 }
 
 class GetAttendanceError extends GetAttendanceState {
   final String? message;
-  GetAttendanceError(this.message);
+  const GetAttendanceError(this.message);
 }

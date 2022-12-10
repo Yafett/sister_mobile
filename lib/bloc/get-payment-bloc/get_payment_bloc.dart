@@ -1,3 +1,5 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:sister_mobile/resources/data-provider.dart';
@@ -20,7 +22,7 @@ class GetPaymentBloc extends Bloc<GetPaymentEvent, GetPaymentState> {
           emit(GetPaymentError(pList.error));
         }
       } on NetworkError {
-        emit(GetPaymentError("Failed to fetch data. is your device online?"));
+        emit(const GetPaymentError("Failed to fetch data. is your device online?"));
       }
     });
   }

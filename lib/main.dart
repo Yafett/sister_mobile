@@ -12,11 +12,11 @@ import 'package:sister_mobile/pages/students/payment/student-payment-help.dart';
 import 'package:sister_mobile/pages/students/point/student-point-detail.dart';
 import 'package:sister_mobile/pages/students/point/student-point-help.dart';
 import 'package:sister_mobile/pages/students/point/student-point.dart';
-import 'package:sister_mobile/pages/students/profile/student-profile.dart';
+import 'package:sister_mobile/pages/auth/student-profile.dart';
 import 'package:sister_mobile/pages/students/schedule/student-schedule-help.dart';
 import 'package:sister_mobile/pages/students/schedule/student-schedule.dart';
 import 'package:sister_mobile/pages/students/student-home.dart';
-import 'package:sister_mobile/pages/students/payment/student-payment.dart';
+import 'package:sister_mobile/pages/students/payment/student-payment-history.dart';
 
 void main() {
   // add these lines

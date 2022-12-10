@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_typing_uninitialized_variables, sized_box_for_whitespace, avoid_unnecessary_containers
+
 import 'package:flutter/material.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
@@ -413,15 +415,12 @@ class _StudentEnrollmentAddPageState extends State<StudentEnrollmentAddPage> {
         typeVal = null;
       });
     }
-
-    print(courseList.toString());
   }
 
   removeCourseOnList(index) {
     setState(() {
       courseList.removeAt(index);
     });
-    print(courseList);
   }
 
   _checkIconCourse(major) {

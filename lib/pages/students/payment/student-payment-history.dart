@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, unused_local_variable, unnecessary_string_interpolations, prefer_const_constructors_in_immutables
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:money_formatter/money_formatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sister_mobile/pages/students/payment/student-payment-detail.dart';
-import 'package:sister_mobile/pages/students/student-home.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 
@@ -40,16 +39,16 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
 
   @override
   Widget build(BuildContext context) {
-    return _buildPaymentPage();
+    return _pageScaffold();
   }
 
-  Widget _buildPaymentPage() {
+  Widget _pageScaffold() {
     return Scaffold(
       backgroundColor: sBlackColor,
       appBar: AppBar(
         backgroundColor: sBlackColor,
         leading: const BackButton(color: Color(0xffC9D1D9)),
-        title: Text('Payment',
+        title: Text('Payment History',
             style: sWhiteTextStyle.copyWith(fontWeight: semiBold)),
         actions: [
           GestureDetector(
@@ -150,7 +149,8 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
                                       child: Text(
                                     '${item['data']['status']}',
                                     style: sWhiteTextStyle.copyWith(
-                                        fontWeight: semiBold),
+                                        fontWeight: semiBold,
+                                        color: Colors.white),
                                   )),
                                 ),
                               ),
@@ -193,6 +193,7 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
         ));
   }
 
+  // ! SET VALUES
   _setChipColor(item) {
     if (item == 'Unpaid') {
       return sOrangeColor;
@@ -205,6 +206,7 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
     }
   }
 
+  // ! FETCH DATA
   _fetchFeesList(codeDef) async {
     final dio = Dio();
     var cookieJar = CookieJar();
@@ -221,8 +223,6 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
 
     if (codeDef == null) {
       // ! guardian
-
-      print('guardian');
 
       final getCode =
           await dio.get("https://sister.sekolahmusik.co.id/api/resource/Fees");

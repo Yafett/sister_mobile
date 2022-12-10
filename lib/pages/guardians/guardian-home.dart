@@ -14,7 +14,7 @@ import 'package:sister_mobile/bloc/get-profile-user-bloc/get_profile_user_bloc.d
 import 'package:sister_mobile/model/ProfileGuardian-model.dart';
 import 'package:sister_mobile/pages/guardians/student-details.dart';
 import 'package:sister_mobile/pages/auth/splash-page.dart';
-import 'package:sister_mobile/pages/students/profile/student-profile.dart';
+import 'package:sister_mobile/pages/auth/student-profile.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:intl/intl.dart';

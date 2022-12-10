@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, unnecessary_new, unnecessary_this
+
 class ProfileUser {
   Data? data;
   String? error;

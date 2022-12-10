@@ -1,4 +1,4 @@
-// ignore_for_file: unused_field, prefer_const_constructors, use_build_context_synchronously
+// ignore_for_file: unused_field, prefer_const_constructors, use_build_context_synchronously, prefer_const_constructors_in_immutables, prefer_const_literals_to_create_immutables, prefer_typing_uninitialized_variables
 
 import 'package:dio/dio.dart';
 import 'package:expandable/expandable.dart';
@@ -8,13 +8,13 @@ import 'package:sister_mobile/model/ProfileGuardian-model.dart';
 import 'package:sister_mobile/pages/auth/splash-page.dart';
 import 'package:skeletons/skeletons.dart';
 
-import '../../../bloc/get-profile-guardian-bloc/get_profile_guardian_bloc.dart';
-import '../../../bloc/get-profile-student-bloc/get_profile_student_bloc.dart';
-import '../../../bloc/get-profile-user-bloc/get_profile_user_bloc.dart';
-import '../../../model/ProfileStudent-model.dart';
-import '../../../model/ProfileUser.dart';
-import '../../../shared/theme.dart';
-import '../../../widget/no_scroll_waves.dart';
+import '../../bloc/get-profile-guardian-bloc/get_profile_guardian_bloc.dart';
+import '../../bloc/get-profile-student-bloc/get_profile_student_bloc.dart';
+import '../../bloc/get-profile-user-bloc/get_profile_user_bloc.dart';
+import '../../model/ProfileStudent-model.dart';
+import '../../model/ProfileUser.dart';
+import '../../shared/theme.dart';
+import '../../widget/no_scroll_waves.dart';
 
 class StudentProfilePage extends StatefulWidget {
   final String? code;
@@ -580,7 +580,6 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
                         GetProfileGuardianState>(
                         bloc: _guardianBloc,
                         builder: (context, state) {
-                          print('guardian');
                           if (state is GetProfileGuardianLoaded) {
                             ProfileGuardian profile = state.guardianModel;
                             _setControllerGuardian(profile.data);

@@ -1,9 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable, avoid_print
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:sister_mobile/model/Attendance-model.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -61,7 +58,7 @@ class _StudentAttendanceDetailPageState
         behavior: NoScrollWaves(),
         child: SingleChildScrollView(
           child: Container(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -95,7 +92,7 @@ class _StudentAttendanceDetailPageState
                 borderRadius: BorderRadius.circular(4),
                 onTap: () {},
                 child: Container(
-                  margin: EdgeInsets.only(left: 5),
+                  margin: const EdgeInsets.only(left: 5),
                   height: 20,
                   width: 70,
                   decoration: BoxDecoration(
@@ -111,7 +108,7 @@ class _StudentAttendanceDetailPageState
               ),
             ),
           ]),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(widget.date.toString(), style: fTextColorStyle),
         ],
       ),
@@ -132,8 +129,8 @@ class _StudentAttendanceDetailPageState
             direction: Axis.horizontal,
             allowHalfRating: true,
             itemCount: 5,
-            itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-            itemBuilder: (context, _) => Icon(
+            itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+            itemBuilder: (context, _) => const Icon(
               Icons.star,
               color: Color.fromARGB(255, 151, 141, 27),
             ),

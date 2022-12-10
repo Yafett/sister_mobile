@@ -9,5 +9,5 @@ abstract class GetAttendanceEvent extends Equatable {
 
 class GetAttendanceList extends GetAttendanceEvent {
   final String? code;
-  GetAttendanceList({this.code});
+  const GetAttendanceList({this.code});
 }

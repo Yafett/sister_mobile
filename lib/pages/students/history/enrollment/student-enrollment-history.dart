@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors_in_immutables, unnecessary_brace_in_string_interps, avoid_print
+
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
@@ -102,20 +104,21 @@ class _StudentEnrollmentHistoryPageState
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 15),
         child: Row(children: [
           Wrap(
             spacing: 4,
             children: List.generate(_choicesList.length, (index) {
               return ChoiceChip(
-                labelPadding: EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+                labelPadding:
+                    const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
                 label: Text(
                   _choicesList[index],
                   style: sWhiteTextStyle,
                 ),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
-                    side: BorderSide(color: Color(0xff444C56))),
+                    side: const BorderSide(color: Color(0xff444C56))),
                 selected: defaultChoiceIndex == index,
                 selectedColor: const Color(0xff2D333B),
                 onSelected: (value) {
@@ -128,7 +131,7 @@ class _StudentEnrollmentHistoryPageState
                 },
                 backgroundColor: sBlackColor,
                 elevation: 1,
-                padding: EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
               );
             }),
           )
@@ -236,8 +239,8 @@ class _StudentEnrollmentHistoryPageState
                     borderRadius: BorderRadius.circular(4),
                     onTap: () {},
                     child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
                         color: _chipsColor(enrollment['status'].toString()),
                         borderRadius: BorderRadius.circular(4),
@@ -253,7 +256,7 @@ class _StudentEnrollmentHistoryPageState
               ],
             ),
             Text(
-              'Ahmad Mad - DR - Drum',
+              enrollment['course'],
               style: sGreyTextStyle.copyWith(
                 fontSize: 12,
                 fontWeight: semiBold,
@@ -294,7 +297,7 @@ class _StudentEnrollmentHistoryPageState
         .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
       'usr': user,
       'pwd': pass,
-    }); 
+    });
 
     if (codeDef == null) {
       final getCode = await dio.get(

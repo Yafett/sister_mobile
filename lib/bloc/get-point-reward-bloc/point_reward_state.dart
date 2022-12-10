@@ -13,10 +13,10 @@ class PointRewardLoading extends PointRewardState {}
 
 class PointRewardLoaded extends PointRewardState {
   final PointReward pointModel;
-  PointRewardLoaded(this.pointModel);
+  const PointRewardLoaded(this.pointModel);
 }
 
 class PointRewardError extends PointRewardState {
   final String? message;
-  PointRewardError(this.message);
+  const PointRewardError(this.message);
 }

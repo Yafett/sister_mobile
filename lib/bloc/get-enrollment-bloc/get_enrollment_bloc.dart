@@ -1,3 +1,5 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:sister_mobile/model/Enrollment-model.dart';
@@ -20,7 +22,7 @@ class GetEnrollmentBloc extends Bloc<GetEnrollmentEvent, GetEnrollmentState> {
         }
       } on NetworkError {
         emit(
-            GetEnrollmentError("Failed to fetch data. is your device online?"));
+            const GetEnrollmentError("Failed to fetch data. is your device online?"));
       }
     });
   }

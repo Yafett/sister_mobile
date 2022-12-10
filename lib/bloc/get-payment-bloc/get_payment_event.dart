@@ -9,5 +9,5 @@ abstract class GetPaymentEvent extends Equatable {
 
 class GetPaymentList extends GetPaymentEvent {
   final String? code;
-  GetPaymentList({this.code});
+  const GetPaymentList({this.code});
 }

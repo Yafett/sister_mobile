@@ -13,10 +13,10 @@ class GetPaymentLoading extends GetPaymentState {}
 
 class GetPaymentLoaded extends GetPaymentState {
   final Payment paymentModel;
-  GetPaymentLoaded(this.paymentModel);
+  const GetPaymentLoaded(this.paymentModel);
 }
 
 class GetPaymentError extends GetPaymentState {
   final String? message;
-  GetPaymentError(this.message);
+  const GetPaymentError(this.message);
 }

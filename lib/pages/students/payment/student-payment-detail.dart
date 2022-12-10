@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first, sized_box_for_whitespace, unused_element, unnecessary_brace_in_string_interps, prefer_typing_uninitialized_variables, must_be_immutable
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
@@ -221,32 +221,6 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
                         itemCount: compList.length,
                       ),
                     ),
-                    // Text('Payment',
-                    //     style: sWhiteTextStyle.copyWith(
-                    //         fontSize: 14, fontWeight: semiBold)),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //   children: [
-                    //     Container(
-                    //       margin: const EdgeInsets.only(
-                    //           left: 10, top: 5, bottom: 5),
-                    //       child: Column(
-                    //         crossAxisAlignment: CrossAxisAlignment.start,
-                    //         children: [
-                    //           Text('PE-220922-S-PA-00001',
-                    //               style: sGreyTextStyle.copyWith(
-                    //                   fontSize: 14, fontWeight: semiBold)),
-                    //           Text('\u2022 Transfer',
-                    //               style: sGreyTextStyle.copyWith(
-                    //                   fontSize: 14, fontWeight: semiBold)),
-                    //         ],
-                    //       ),
-                    //     ),
-                    //     Text('Rp. 500.000,00',
-                    //         style: sWhiteTextStyle.copyWith(
-                    //             fontSize: 14, fontWeight: semiBold)),
-                    //   ],
-                    // ),
                     Text('Status',
                         style: sWhiteTextStyle.copyWith(
                             fontSize: 14, fontWeight: semiBold)),
@@ -296,31 +270,6 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
             )
           ],
         ));
-  }
-
-  Widget _summaryTile(comp) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Container(
-          margin: const EdgeInsets.only(left: 10, bottom: 5, top: 5),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(comp['name'].toString(),
-                  style: sGreyTextStyle.copyWith(
-                      fontSize: 14, fontWeight: semiBold)),
-              Text('\u2022 None',
-                  style: sGreyTextStyle.copyWith(
-                      fontSize: 14, fontWeight: semiBold)),
-            ],
-          ),
-        ),
-        Text('Rp. 600.000,00',
-            style:
-                sWhiteTextStyle.copyWith(fontSize: 14, fontWeight: semiBold)),
-      ],
-    );
   }
 
   _setChipColor(item) {
