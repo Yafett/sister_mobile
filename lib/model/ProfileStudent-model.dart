@@ -47,6 +47,7 @@ class ProfileData {
   String? followUp;
   String? mgm;
   String? joiningDate;
+  String? image;
   String? reasonForLeaving;
   String? dateOfLeaving;
   String? dateOfBirth;
@@ -91,6 +92,7 @@ class ProfileData {
     this.followUp,
     this.mgm,
     this.joiningDate,
+    this.image,
     this.reasonForLeaving,
     this.dateOfLeaving,
     this.dateOfBirth,
@@ -132,6 +134,7 @@ class ProfileData {
     companyAbbr = json['company_abbr'];
     namingSeries = json['naming_series'];
     reasonJoining = json['reason_joining'];
+    image = json['image'];
     knowFrom = json['know_from'];
     followUp = json['follow_up'];
     mgm = json['mgm'];
@@ -183,6 +186,7 @@ class ProfileData {
     data['company_abbr'] = this.companyAbbr;
     data['naming_series'] = this.namingSeries;
     data['reason_joining'] = this.reasonJoining;
+    data['image'] = this.image;
     data['know_from'] = this.knowFrom;
     data['follow_up'] = this.followUp;
     data['mgm'] = this.mgm;

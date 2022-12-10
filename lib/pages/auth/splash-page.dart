@@ -56,7 +56,7 @@ class _SplashPageState extends State<SplashPage> {
     );
   }
 
-  Widget _buildSplashText() {
+  Widget _buildSplashText() { 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

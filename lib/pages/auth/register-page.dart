@@ -9,15 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:sister_mobile/model/KnowFrom-model.dart';
-import 'package:sister_mobile/resources/auth_provider.dart';
+import 'package:sister_mobile/resources/auth-provider.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/course-information-card.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:sister_mobile/widget/parent_information_card.dart';
 import 'package:http/http.dart' as http;
 
-import '../../../model/Unit-model.dart';
-import '../../../resources/data_provider.dart';
+import '../../model/Unit-model.dart';
+import '../../resources/data-provider.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);

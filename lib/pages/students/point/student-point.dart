@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sister_mobile/bloc/get-point-reward-bloc/point_reward_bloc.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
@@ -22,9 +21,7 @@ class _StudentPointPageState extends State<StudentPointPage> {
   var itemList = ['', ''];
 
   var pointTotal;
-
-  Barcode? result;
-  QRViewController? controller;
+ 
   final qrKey = GlobalKey();
 
   final _pointBloc = PointRewardBloc();
@@ -82,7 +79,7 @@ class _StudentPointPageState extends State<StudentPointPage> {
       ),
     );
   }
-
+  
   Widget _buildPointTotal() {
     return BlocBuilder<PointRewardBloc, PointRewardState>(
       bloc: _pointBloc,

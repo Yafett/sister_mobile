@@ -291,20 +291,20 @@ class _StudentEnrollmentHistoryPageState
 
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
-        .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
       'usr': user,
       'pwd': pass,
     }); 
 
     if (codeDef == null) {
       final getCode = await dio.get(
-          "https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/");
+          "https://sister.sekolahmusik.co.id/api/resource/Program Enrollment/");
 
       if (getCode.statusCode == 200) {
         for (var a = 0; a < getCode.data['data'].length; a++) {
           var code = getCode.data['data'][a]['name'];
           final request = await dio.get(
-              'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
+              'https://sister.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
 
           if (mounted) {
             setState(() {
@@ -316,12 +316,12 @@ class _StudentEnrollmentHistoryPageState
       }
     } else {
       final getCode = await dio.get(
-          'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment?filters=[["student","=","${codeDef}"]]&fields=["*"]');
+          'https://sister.sekolahmusik.co.id/api/resource/Program Enrollment?filters=[["student","=","${codeDef}"]]&fields=["*"]');
 
       for (var a = 0; a < getCode.data['data'].length; a++) {
         final code = getCode.data['data'][a]['name'];
         final request = await dio.get(
-            'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
+            'https://sister.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
 
         if (mounted) {
           setState(() {

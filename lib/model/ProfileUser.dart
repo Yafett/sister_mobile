@@ -38,6 +38,7 @@ class Data {
   String? referralCode;
   int? sendWelcomeEmail;
   int? unsubscribed;
+  String? userImage;
   String? deskTheme;
   int? muteSounds;
   String? mobileNo;
@@ -78,6 +79,7 @@ class Data {
       this.referralCode,
       this.sendWelcomeEmail,
       this.unsubscribed,
+      this.userImage,
       this.deskTheme,
       this.muteSounds,
       this.mobileNo,
@@ -118,6 +120,7 @@ class Data {
     referralCode = json['referral_code'];
     sendWelcomeEmail = json['send_welcome_email'];
     unsubscribed = json['unsubscribed'];
+    userImage = json['user_image'];
     deskTheme = json['desk_theme'];
     muteSounds = json['mute_sounds'];
     mobileNo = json['mobile_no'];
@@ -186,6 +189,7 @@ class Data {
     data['referral_code'] = this.referralCode;
     data['send_welcome_email'] = this.sendWelcomeEmail;
     data['unsubscribed'] = this.unsubscribed;
+    data['user_image'] = this.userImage;
     data['desk_theme'] = this.deskTheme;
     data['mute_sounds'] = this.muteSounds;
     data['mobile_no'] = this.mobileNo;

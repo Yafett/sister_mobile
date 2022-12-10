@@ -186,7 +186,7 @@ class _StudentPaymentDetailPageState extends State<StudentPaymentDetailPage> {
                         style: sWhiteTextStyle.copyWith(
                             fontSize: 14, fontWeight: semiBold)),
                     Container(
-                      height: 40 * compList.length.toDouble(),
+                      height: 50 * compList.length.toDouble(),
                       child: ListView.builder(
                         itemBuilder: (context, index) {
                           var comp = compList[index];

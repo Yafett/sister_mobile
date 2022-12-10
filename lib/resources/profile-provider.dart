@@ -14,7 +14,7 @@ class ProfileProvider {
   var cookieJar = CookieJar();
 
   final String urlGetProfile =
-      'https://njajal.sekolahmusik.co.id/api/resource/Student/';
+      'https://sister.sekolahmusik.co.id/api/resource/Student/';
 
   Future<Profile> fetchProfileStudent(codeDef) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -25,26 +25,26 @@ class ProfileProvider {
     try {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
-          .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+          .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
         'usr': user,
         'pwd': pass,
       });
 
       if (codeDef == null) {
         final getCode = await dio.get(
-            'https://njajal.sekolahmusik.co.id/api/resource/Student?filters=[["student_email_id","=","${email}"]]&fields=["*"]');
+            'https://sister.sekolahmusik.co.id/api/resource/Student?filters=[["student_email_id","=","${email}"]]&fields=["*"]');
 
         var code = getCode.data['data'][0]['name'];
 
         pref.setString('code', code);
 
         final request = await dio.get(
-            'https://njajal.sekolahmusik.co.id/api/resource/Student/${code}');
+            'https://sister.sekolahmusik.co.id/api/resource/Student/${code}');
 
         return Profile.fromJson(request.data);
       } else {
         final request = await dio.get(
-            'https://njajal.sekolahmusik.co.id/api/resource/Student/${codeDef}');
+            'https://sister.sekolahmusik.co.id/api/resource/Student/${codeDef}');
 
         return Profile.fromJson(request.data);
       }
@@ -59,27 +59,31 @@ class ProfileProvider {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
-    var email = pref.getString('guardian-email');
+    var email = pref.getString('user-email');
 
     try {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
-          .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+          .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
         'usr': user,
         'pwd': pass,
       });
 
       final gege = await dio.get(
-          'https://njajal.sekolahmusik.co.id/api/resource/Guardian?filters=[["user","=","${email}"]]&fields=["*"]');
+          'https://sister.sekolahmusik.co.id/api/resource/Guardian?filters=[["user","=","${email}"]]&fields=["*"]');
+
+      print('gege : ' + gege.data.toString());
 
       final code = gege.data['data'][0]['name'];
 
+      print('cde : ' + code.toString());
+
       final getCode = await dio
-          .get("https://njajal.sekolahmusik.co.id/api/resource/Guardian");
+          .get("https://sister.sekolahmusik.co.id/api/resource/Guardian");
 
       if (getCode.statusCode == 200) {
         final request = await dio.get(
-            'https://njajal.sekolahmusik.co.id/api/resource/Guardian/${codeDef == null ? code : codeDef}');
+            'https://sister.sekolahmusik.co.id/api/resource/Guardian/${codeDef == null ? code : codeDef}');
 
         return ProfileGuardian.fromJson(request.data);
       } else {
@@ -101,7 +105,7 @@ class ProfileProvider {
     try {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
-          .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+          .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
         'usr': user,
         'pwd': pass,
       });
@@ -110,26 +114,26 @@ class ProfileProvider {
 
       if (codeDef == null) {
         final getCode = await dio
-            .get("https://njajal.sekolahmusik.co.id/api/resource/User/");
+            .get("https://sister.sekolahmusik.co.id/api/resource/User/");
 
         final request = await dio.get(
-            "https://njajal.sekolahmusik.co.id/api/resource/User/${userEmail}");
+            "https://sister.sekolahmusik.co.id/api/resource/User/${userEmail}");
 
         return ProfileUser.fromJson(request.data);
         // for (var a = 0; a < getCode.data['data'].length; a++) {
         //   final code = getCode.data['data'][a]['name'];
         //   final request = await dio.get(
-        //       'https://njajal.sekolahmusik.co.id/api/resource/User/${code}');
+        //       'https://sister.sekolahmusik.co.id/api/resource/User/${code}');
         //   if (request.data['data']['user'] == userEmail) {
         //     userCode = request.data['data']['user'];
         //   }
         // }
       } else {
         final getCode = await dio
-            .get("https://njajal.sekolahmusik.co.id/api/resource/User/");
+            .get("https://sister.sekolahmusik.co.id/api/resource/User/");
 
         final request = await dio.get(
-            "https://njajal.sekolahmusik.co.id/api/resource/User/${codeDef}");
+            "https://sister.sekolahmusik.co.id/api/resource/User/${codeDef}");
 
         return ProfileUser.fromJson(request.data);
       }
@@ -141,7 +145,7 @@ class ProfileProvider {
       //         }
       //       } else {
       //         final request = await dio.get(
-      //             'https://njajal.sekolahmusik.co.id/api/resource/User/${codeDef}');
+      //             'https://sister.sekolahmusik.co.id/api/resource/User/${codeDef}');
       //       }
     } catch (error, stacktrace) {
       // ignore: avoid_print

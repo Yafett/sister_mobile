@@ -3,6 +3,8 @@
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
@@ -10,9 +12,10 @@ import 'package:sister_mobile/bloc/get-enrollment-bloc/get_enrollment_bloc.dart'
 import 'package:sister_mobile/bloc/get-point-reward-bloc/point_reward_bloc.dart';
 import 'package:sister_mobile/bloc/get-student-schedule/student_schedule_bloc.dart';
 import 'package:sister_mobile/model/Enrollment-model.dart';
-import 'package:sister_mobile/pages/students/auth/splash-page.dart';
+import 'package:sister_mobile/pages/auth/splash-page.dart';
+import 'package:sister_mobile/pages/students/payment/student-payment.dart';
 import 'package:sister_mobile/pages/students/profile/student-profile.dart';
-import 'package:sister_mobile/resources/profile_provider.dart';
+import 'package:sister_mobile/resources/profile-provider.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:intl/intl.dart';
@@ -45,16 +48,17 @@ class StudentHomePageState extends State<StudentHomePage> {
   var scheduleLength;
   var user;
   var pointTotal;
+  String _scanBarcode = 'Unknown';
 
   final _attendanceBloc = GetAttendanceBloc();
   final GlobalKey<SideMenuState> _endSideMenuKey = GlobalKey<SideMenuState>();
   final _enrollmentBloc = GetEnrollmentBloc();
+  final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
   final _paymentBloc = GetPaymentBloc();
   final _pointBloc = PointRewardBloc();
   final _profileAuth = ProfileProvider();
   final _profileBloc = GetProfileStudentBloc();
   final _scheduleBloc = StudentScheduleBloc();
-  final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
 
   @override
   void initState() {
@@ -65,6 +69,11 @@ class StudentHomePageState extends State<StudentHomePage> {
     _paymentBloc.add(GetPaymentList());
     _attendanceBloc.add(GetAttendanceList());
     _enrollmentBloc.add(GetEnrollmentList());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildHomePage();
   }
 
   Widget _buildHomePage() {
@@ -114,16 +123,21 @@ class StudentHomePageState extends State<StudentHomePage> {
                       icon: const Icon(Icons.menu),
                       onPressed: () => _toggleMenu(),
                     ),
-                    actions: const [
-                      Icon(Icons.qr_code_scanner,
-                          size: 30, color: Color(0xffC9D1D9)),
-                      SizedBox(width: 5),
-                      Icon(Icons.dark_mode_outlined,
-                          size: 30, color: Color(0xffC9D1D9)),
-                      SizedBox(width: 5),
-                      Icon(Icons.notifications_none,
-                          size: 30, color: Color(0xffC9D1D9)),
+                    actions: [
+                      GestureDetector(
+                        onTap: () async {
+                          barcodeScan();
+                        },
+                        child: Icon(Icons.qr_code_scanner,
+                            size: 30, color: Color(0xffC9D1D9)),
+                      ),
                       SizedBox(width: 20),
+                      // Icon(Icons.dark_mode_outlined,
+                      //     size: 30, color: Color(0xffC9D1D9)),
+                      // SizedBox(width: 5),
+                      // Icon(Icons.notifications_none,
+                      //     size: 30, color: Color(0xffC9D1D9)),
+                      // SizedBox(width: 20),
                     ],
                   ),
                   body: ScrollConfiguration(
@@ -160,7 +174,7 @@ class StudentHomePageState extends State<StudentHomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildHeaderProfile(),
+        _buildHeaderProfile(profile),
         _buildHeaderTitle(profile),
         _buildChipStatus(),
         const SizedBox(height: 30),
@@ -304,7 +318,14 @@ class StudentHomePageState extends State<StudentHomePage> {
     );
   }
 
-  Widget _buildHeaderProfile() {
+  Widget _buildHeaderProfile(profile) {
+    final image;
+    if (profile.image.toString()[0] == '/') {
+      image = 'https://sister.sekolahmusik.co.id${profile.image}';
+    } else {
+      image = profile.image.toString();
+    }
+
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, '/student-profile');
@@ -316,19 +337,36 @@ class StudentHomePageState extends State<StudentHomePage> {
             children: [
               InkWell(
                 onTap: () {
-                  Navigator.pushNamed(context, '/student-profile');
+                  // Navigator.pushNamed(context, '/student-profile');
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => StudentProfilePage(
+                              code: profile.name.toString())));
                 },
-                child: Container(
-                  height: 80,
-                  width: 80,
-                  decoration: BoxDecoration(
-                      color: Colors.red,
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/lord-shrek.jpg'),
-                        fit: BoxFit.fitHeight,
+                child: (profile.image == null)
+                    ? Container(
+                        height: 80,
+                        width: 80,
+                        decoration: BoxDecoration(
+                            color: Colors.red,
+                            image: const DecorationImage(
+                              image: AssetImage('assets/images/lord-shrek.jpg'),
+                              fit: BoxFit.fitHeight,
+                            ),
+                            borderRadius: BorderRadius.circular(8)),
+                      )
+                    : Container(
+                        height: 80,
+                        width: 80,
+                        decoration: BoxDecoration(
+                            color: Colors.red,
+                            image: DecorationImage(
+                              image: NetworkImage(image),
+                              fit: BoxFit.fitHeight,
+                            ),
+                            borderRadius: BorderRadius.circular(8)),
                       ),
-                      borderRadius: BorderRadius.circular(8)),
-                ),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -377,7 +415,6 @@ class StudentHomePageState extends State<StudentHomePage> {
   Widget _buildHeaderTitle(profile) {
     return GestureDetector(
       onTap: () {
-        print(profile.name.toString());
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -426,9 +463,19 @@ class StudentHomePageState extends State<StudentHomePage> {
               }
             },
           ),
-          _buildChip('${scheduleLength.toString()} Class', Icons.star),
-          _buildChip(
-              "${paymentLength.toString()} Payment Total", Icons.attach_money),
+          (scheduleLength.toString() == 'null')
+              ? _buildChip('No Class', Icons.star)
+              : _buildChip('${scheduleLength.toString()} Class', Icons.star),
+          (paymentLength.toString() == 'null')
+              ? _buildChip("No Payment History", Icons.attach_money)
+              : GestureDetector(
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => StudentPaymentPage())),
+                  child: _buildChip("${paymentLength.toString()} Payment Total",
+                      Icons.attach_money),
+                ),
         ],
       ),
     );
@@ -482,7 +529,9 @@ class StudentHomePageState extends State<StudentHomePage> {
                       borderRadius: BorderRadius.circular(8),
                       splashColor: sGreyColor,
                       onTap: () {
-                        Navigator.pushNamed(context, '/student-schedule');
+                        if (schedule.message!.length != 0) {
+                          Navigator.pushNamed(context, '/student-schedule');
+                        }
                       },
                       child: Container(
                         padding: const EdgeInsets.all(10),
@@ -501,8 +550,7 @@ class StudentHomePageState extends State<StudentHomePage> {
                                   ? Text("There's no Schedule avaliable",
                                       style:
                                           sGreyTextStyle.copyWith(fontSize: 22))
-                                  : Text(
-                                      '${schedule.message![0].course.toString()} - ${_setDatetimeSchedule(schedule.message![0].scheduleDate.toString())}',
+                                  : Text('${_getDate(schedule)}',
                                       style: sWhiteTextStyle.copyWith(
                                           fontSize: 22, fontWeight: semiBold)),
                               (schedule.message!.length == 0)
@@ -668,7 +716,67 @@ class StudentHomePageState extends State<StudentHomePage> {
             ],
           );
         } else {
-          return Container();
+          return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 5),
+                    child: Text(
+                      'Payment',
+                      style: sWhiteTextStyle,
+                    ),
+                  ),
+                  Material(
+                    color: sBlackColor,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(8),
+                      onTap: () {},
+                      splashColor: const Color(0xff30363D),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                              color: const Color(0xff30363D),
+                            ),
+                            borderRadius: BorderRadius.circular(8)),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('You have',
+                                  style: sWhiteTextStyle.copyWith(
+                                      fontSize: 16, fontWeight: semiBold)),
+                              Text("There's no Payment available",
+                                  style: sGreyTextStyle.copyWith(
+                                      fontSize: 22, fontWeight: semiBold)),
+                              const Divider(
+                                height: 20,
+                                thickness: 1,
+                                color: Color(0xff272C33),
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'See your Payment',
+                                    style: sWhiteTextStyle.copyWith(
+                                        fontSize: 14, fontWeight: semiBold),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: sWhiteColor,
+                                    size: 20,
+                                  )
+                                ],
+                              )
+                            ]),
+                      ),
+                    ),
+                  )
+                ],
+              ));
         }
       },
     );
@@ -756,10 +864,7 @@ class StudentHomePageState extends State<StudentHomePage> {
                               color: sBlackColor,
                               child: InkWell(
                                 borderRadius: BorderRadius.circular(8),
-                                onTap: () async {
-                                  Navigator.pushNamed(
-                                      context, '/student-history-attendance');
-                                },
+                                onTap: () async {},
                                 splashColor: sGreyColor,
                                 child: SizedBox(
                                   child: Column(
@@ -988,6 +1093,13 @@ class StudentHomePageState extends State<StudentHomePage> {
   }
 
   Widget _buildSidebar(profile) {
+    final image;
+    if (profile.image.toString()[0] == '/') {
+      image = 'https://sister.sekolahmusik.co.id${profile.image}';
+    } else {
+      image = profile.image.toString();
+    }
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(vertical: 50.0),
       child: Column(
@@ -999,11 +1111,18 @@ class StudentHomePageState extends State<StudentHomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  backgroundColor: Colors.white,
-                  radius: 22.0,
-                  backgroundImage: AssetImage('assets/images/lord-shrek.jpg'),
-                ),
+                (profile.image == null)
+                    ? CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 22.0,
+                        backgroundImage:
+                            AssetImage('assets/images/lord-shrek.jpg'),
+                      )
+                    : CircleAvatar(
+                        backgroundColor: Colors.white,
+                        radius: 22.0,
+                        backgroundImage: NetworkImage(image),
+                      ),
                 SizedBox(height: 16.0),
                 Text(
                   'Hello, ${profile.firstName.toString().toLowerCase()}',
@@ -1015,7 +1134,12 @@ class StudentHomePageState extends State<StudentHomePage> {
           ),
           ListTile(
             onTap: () {
-              Navigator.pushNamed(context, '/student-profile');
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => StudentProfilePage(
+                            code: profile.name,
+                          )));
             },
             leading: const Icon(Icons.person_outline,
                 size: 20.0, color: Colors.white),
@@ -1046,16 +1170,16 @@ class StudentHomePageState extends State<StudentHomePage> {
 
             // padding: EdgeInsets.zero,
           ),
-          ListTile(
-            onTap: () {},
-            leading: const Icon(Icons.watch_later_outlined,
-                size: 20.0, color: Colors.white),
-            title: const Text("History"),
-            textColor: Colors.white,
-            dense: true,
+          // ListTile(
+          //   onTap: () {},
+          //   leading: const Icon(Icons.watch_later_outlined,
+          //       size: 20.0, color: Colors.white),
+          //   title: const Text("History"),
+          //   textColor: Colors.white,
+          //   dense: true,
 
-            // padding: EdgeInsets.zero,
-          ),
+          //   // padding: EdgeInsets.zero,
+          // ),
           ListTile(
             onTap: () {
               Navigator.pushNamed(context, '/student-point');
@@ -1070,12 +1194,7 @@ class StudentHomePageState extends State<StudentHomePage> {
           ),
           ListTile(
             onTap: () async {
-              await dio
-                  .get('https://sister.sekolahmusik.co.id/api/method/logout');
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => SplashPage()),
-                  (route) => false);
+              showAlertDialog(context);
             },
             leading:
                 const Icon(Icons.exit_to_app, size: 20.0, color: Colors.white),
@@ -1119,6 +1238,122 @@ class StudentHomePageState extends State<StudentHomePage> {
     var formattedDate = DateFormat("EEE, d MMMM").format(DateTime.now());
 
     return formattedDate.toString();
+  }
+
+  _getDate(schedule) {
+    var listDate = [];
+
+    for (var a = 0; a < schedule.message.length; a++) {
+      var replacedFrom =
+          schedule.message[a].scheduleDate.toString().replaceAll('-', '');
+      DateTime now = DateTime.now();
+      String dateFromT = replacedFrom.substring(0, 8);
+      DateTime fromDateTime = DateTime.parse(dateFromT);
+
+      if (fromDateTime.isAfter(now) == true) {
+        var parsedDate = DateTime.parse(schedule.message[a].scheduleDate);
+        String formattedDate = DateFormat('dd MMMM yyyy').format(parsedDate);
+        listDate.add(schedule.message[a].course.toString() +
+            ' ' +
+            formattedDate.toString());
+      }
+    }
+
+    return listDate[0].toString();
+  }
+
+  Future<void> barcodeScan() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.QR);
+      print(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+    if (!mounted) return;
+    setState(() {
+      _scanBarcode = barcodeScanRes;
+    });
+  }
+
+  showAlertDialog(BuildContext context) {
+    // set up the button
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(height: 15),
+          Icon(
+            Icons.directions_run_outlined,
+            size: 50,
+          ),
+          const SizedBox(height: 15),
+          Text("Are you sure want to logout?"),
+        ],
+      ),
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context); 
+              },
+              child: Container(
+                width: 80,
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Center(
+                    child: Text(
+                  'Nah',
+                  style: sWhiteTextStyle.copyWith(
+                      fontWeight: semiBold, color: Colors.white),
+                )),
+              ),
+            ),
+            GestureDetector(
+              onTap: () async {
+                await dio
+                    .get('https://sister.sekolahmusik.co.id/api/method/logout');
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => SplashPage()),
+                    (route) => false);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Center(
+                    child: Text(
+                  'Sure',
+                  style: sRedTextStyle.copyWith(
+                    fontWeight: semiBold,
+                  ),
+                )),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 15),
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   // ! set Text
@@ -1174,10 +1409,5 @@ class StudentHomePageState extends State<StudentHomePage> {
     var parsedDate = DateTime.parse(schedule);
     String formattedDate = DateFormat('dd MMMM yyyy').format(parsedDate);
     return formattedDate;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _buildHomePage();
   }
 }

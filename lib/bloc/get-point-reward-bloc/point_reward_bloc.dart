@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:sister_mobile/model/PointReward-model.dart';
 
-import '../../resources/data_provider.dart';
+import '../../resources/data-provider.dart';
 
 part 'point_reward_event.dart';
 part 'point_reward_state.dart';

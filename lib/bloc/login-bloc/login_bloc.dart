@@ -7,7 +7,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../resources/auth_provider.dart';
+import '../../resources/auth-provider.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';

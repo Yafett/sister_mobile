@@ -114,6 +114,14 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
       builder: (context, state) {
         if (state is GetProfileLoaded) {
           Profile profile = state.profileModel;
+
+          final image;
+          if (profile.data!.image.toString()[0] == '/') {
+            image = 'https://sister.sekolahmusik.co.id${profile.data!.image}';
+          } else {
+            image = profile.data!.image.toString();
+          }
+
           return SizedBox(
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -145,18 +153,32 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
                           children: [
                             Row(
                               children: [
-                                Container(
-                                  height: 60,
-                                  width: 60,
-                                  decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      image: const DecorationImage(
-                                        image: AssetImage(
-                                            'assets/images/lord-shrek.jpg'),
-                                        fit: BoxFit.fitHeight,
+                                (profile.data!.image != null)
+                                    ? Container(
+                                        height: 60,
+                                        width: 60,
+                                        decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            image: DecorationImage(
+                                              image: NetworkImage(image),
+                                              fit: BoxFit.cover,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(8)),
+                                      )
+                                    : Container(
+                                        height: 60,
+                                        width: 60,
+                                        decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            image: DecorationImage(
+                                              image: AssetImage(
+                                                  'assets/images/lord-shrek.jpg'),
+                                              fit: BoxFit.fitHeight,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(8)),
                                       ),
-                                      borderRadius: BorderRadius.circular(8)),
-                                ),
                                 const SizedBox(width: 15),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -278,8 +300,7 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
                           (schedule.message!.length == 0)
                               ? Text("There's no Schedule avaliable",
                                   style: sGreyTextStyle.copyWith(fontSize: 22))
-                              : Text(
-                                  '${schedule.message![0].course.toString()} - ${_setDatetimeSchedule(schedule.message![0].scheduleDate.toString())}',
+                              : Text('${_getDate(schedule)}',
                                   style: sWhiteTextStyle.copyWith(
                                       fontSize: 22, fontWeight: semiBold)),
                           const Divider(
@@ -743,5 +764,27 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
     var parsedDate = DateTime.parse(schedule);
     String formattedDate = DateFormat('dd MMMM yyyy').format(parsedDate);
     return formattedDate;
+  }
+
+  _getDate(schedule) {
+    var listDate = [];
+
+    for (var a = 0; a < schedule.message.length; a++) {
+      var replacedFrom =
+          schedule.message[a].scheduleDate.toString().replaceAll('-', '');
+      DateTime now = DateTime.now();
+      String dateFromT = replacedFrom.substring(0, 8);
+      DateTime fromDateTime = DateTime.parse(dateFromT);
+
+      if (fromDateTime.isAfter(now) == true) {
+        var parsedDate = DateTime.parse(schedule.message[a].scheduleDate);
+        String formattedDate = DateFormat('dd MMMM yyyy').format(parsedDate);
+        listDate.add(schedule.message[a].course.toString() +
+            ' ' +
+            formattedDate.toString());
+      }
+    }
+
+    return listDate[0].toString();
   }
 }

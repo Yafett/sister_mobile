@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:sister_mobile/model/Enrollment-model.dart';
-import 'package:sister_mobile/resources/data_provider.dart';
+import 'package:sister_mobile/resources/data-provider.dart';
 
 part 'get_enrollment_event.dart';
 part 'get_enrollment_state.dart';

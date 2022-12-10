@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:sister_mobile/model/ProfileGuardian-model.dart';
-import 'package:sister_mobile/resources/profile_provider.dart';
+import 'package:sister_mobile/resources/profile-provider.dart';
 
 part 'get_profile_guardian_event.dart';
 part 'get_profile_guardian_state.dart';

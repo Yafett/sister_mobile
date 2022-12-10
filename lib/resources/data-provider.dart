@@ -14,11 +14,11 @@ class DataProvider {
   final dio = Dio();
   var cookieJar = CookieJar();
 
-  String urlLogin = "https://njajal.sekolahmusik.co.id/api/method/login";
+  String urlLogin = "https://sister.sekolahmusik.co.id/api/method/login";
   String urlPointReward =
-      "https://njajal.sekolahmusik.co.id/api/resource/Point Reward";
+      "https://sister.sekolahmusik.co.id/api/resource/Point Reward";
   String urlSchedule =
-      'https://njajal.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule';
+      'https://sister.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule';
 
   Future<PointReward> fetchPointReward(codeDef) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -34,24 +34,28 @@ class DataProvider {
       });
 
       if (codeDef == null) {
+        listPoint.clear();
         final getCode = await dio.get(
-            'https://njajal.sekolahmusik.co.id/api/resource/Point Reward/');
+            'https://sister.sekolahmusik.co.id/api/resource/Point Reward/');
         if (getCode.statusCode == 200) {
           for (var a = 0; a < getCode.data['data'].length; a++) {
             final getPoint = await dio.get(
-                'https://njajal.sekolahmusik.co.id/api/resource/Point Reward/${getCode.data['data'][a]['name']}');
-            listPoint.clear();
+                'https://sister.sekolahmusik.co.id/api/resource/Point Reward/${getCode.data['data'][a]['name']}');
 
             listPoint
                 .add(double.parse(getPoint.data['data']['point'].toString()));
           }
 
-          var sum = listPoint.reduce((a, b) => a + b);
+          if (listPoint.length > 0) {
+            var sum = listPoint.reduce((a, b) => a + b);
 
-          pref.setString('point-length', sum.toString());
+            pref.setString('point-length', sum.toString());
+          } else {
+            pref.setString('point-length', '0');
+          }
 
           final request = await dio.get(
-              'https://njajal.sekolahmusik.co.id/api/resource/Point Reward/${getCode.data['data'][0]['name']}');
+              'https://sister.sekolahmusik.co.id/api/resource/Point Reward/${getCode.data['data'][0]['name']}');
 
           return PointReward.fromJson(request.data);
         } else {
@@ -59,25 +63,29 @@ class DataProvider {
         }
       } else {
         final getCode = await dio.get(
-            'https://njajal.sekolahmusik.co.id/api/resource/Point Reward?filters=[["student","=","${codeDef}"]]&fields=["*"]');
+            'https://sister.sekolahmusik.co.id/api/resource/Point Reward?filters=[["student","=","${codeDef}"]]&fields=["*"]');
 
         for (var a = 0; a < getCode.data['data'].length; a++) {
           final getPoint = await dio.get(
-              'https://njajal.sekolahmusik.co.id/api/resource/Point Reward/${getCode.data['data'][a]['name']}');
+              'https://sister.sekolahmusik.co.id/api/resource/Point Reward/${getCode.data['data'][a]['name']}');
           listPoint.clear();
- 
+
           listPoint
               .add(double.parse(getPoint.data['data']['point'].toString()));
         }
 
-        var sum = listPoint.reduce((a, b) => a + b);
+        if (listPoint.length > 0) {
+          var sum = listPoint.reduce((a, b) => a + b);
 
-        pref.setString('point-length', sum.toString());
+          pref.setString('point-length', sum.toString());
+        } else {
+          pref.setString('point-length', '0');
+        }
 
         final code = getCode.data['data'][0]['name'];
 
         final request = await dio.get(
-            'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
+            'https://sister.sekol ahmusik.co.id/api/resource/Point Reward/${code}');
 
         return PointReward.fromJson(request.data);
       }
@@ -94,6 +102,7 @@ class DataProvider {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
+    var listSchedule = [];
 
     try {
       dio.interceptors.add(CookieManager(cookieJar));
@@ -104,7 +113,7 @@ class DataProvider {
 
       if (code == null) {
         final getCode = await dio
-            .get('https://njajal.sekolahmusik.co.id/api/resource/Student/');
+            .get('https://sister.sekolahmusik.co.id/api/resource/Student/');
 
         final code = getCode.data['data'][0]['name'];
 
@@ -114,6 +123,8 @@ class DataProvider {
 
         pref.setString(
             'schedule-length', request.data['message'].length.toString());
+
+        print('list : ' + listSchedule.toString());
 
         return Schedule.fromJson(request.data);
       } else {
@@ -149,7 +160,7 @@ class DataProvider {
     try {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
-          .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+          .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
         'usr': user,
         'pwd': pass,
       });
@@ -157,10 +168,10 @@ class DataProvider {
       if (codeDef == null) {
         print('student');
         final getCode = await dio
-            .get('https://njajal.sekolahmusik.co.id/api/resource/Student/');
+            .get('https://sister.sekolahmusik.co.id/api/resource/Student/');
 
         final request = await dio.get(
-            'https://njajal.sekolahmusik.co.id/api/resource/Student Attendance?filters=[["student","=","${getCode.data['data'][0]['name']}"]]&fields=["*"]');
+            'https://sister.sekolahmusik.co.id/api/resource/Student Attendance?filters=[["student","=","${getCode.data['data'][0]['name']}"]]&fields=["*"]');
 
         if (request.statusCode == 200) {
           return Attendance.fromJson(request.data);
@@ -170,12 +181,12 @@ class DataProvider {
       } else {
         print('guardian');
         final getCode = await dio.get(
-            'https://njajal.sekolahmusik.co.id/api/resource/Student Attendance?filters=[["student","=","${codeDef}"]]&fields=["*"]');
+            'https://sister.sekolahmusik.co.id/api/resource/Student Attendance?filters=[["student","=","${codeDef}"]]&fields=["*"]');
 
         final code = getCode.data['data'][0]['name'];
 
         final request = await dio.get(
-            'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
+            'https://sister.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
 
         return Attendance.fromJson(request.data);
       }
@@ -195,17 +206,17 @@ class DataProvider {
     try {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
-          .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+          .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
         'usr': user,
         'pwd': pass,
       });
 
       if (codeDef == null) {
         final getCode = await dio.get(
-            'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/');
+            'https://sister.sekolahmusik.co.id/api/resource/Program Enrollment/');
 
         final request = await dio.get(
-            'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/${getCode.data['data'][0]['name']}');
+            'https://sister.sekolahmusik.co.id/api/resource/Program Enrollment/${getCode.data['data'][0]['name']}');
 
         if (request.statusCode == 200) {
           return Enrollment.fromJson(request.data);
@@ -214,12 +225,12 @@ class DataProvider {
         }
       } else {
         final getCode = await dio.get(
-            'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment?filters=[["student","=","${codeDef}"]]&fields=["*"]');
+            'https://sister.sekolahmusik.co.id/api/resource/Program Enrollment?filters=[["student","=","${codeDef}"]]&fields=["*"]');
 
         final code = getCode.data['data'][0]['name'];
 
         final request = await dio.get(
-            'https://njajal.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
+            'https://sister.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
 
         return Enrollment.fromJson(request.data);
       }
@@ -241,24 +252,24 @@ class DataProvider {
     try {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
-          .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+          .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
         'usr': user,
         'pwd': pass,
       });
 
       if (codeDef.toString() == null.toString()) {
         final getCode = await dio
-            .get("https://njajal.sekolahmusik.co.id/api/resource/Fees");
+            .get("https://sister.sekolahmusik.co.id/api/resource/Fees");
 
         var code = getCode.data['data'][0]['name'];
 
         final request = await dio
-            .get('https://njajal.sekolahmusik.co.id/api/resource/Fees/${code}');
+            .get('https://sister.sekolahmusik.co.id/api/resource/Fees/${code}');
 
         for (var a = 0; a < getCode.data['data'].length; a++) {
           var code = getCode.data['data'][a]['name'];
           final request = await dio.get(
-              'https://njajal.sekolahmusik.co.id/api/resource/Fees/${code}');
+              'https://sister.sekolahmusik.co.id/api/resource/Fees/${code}');
           feesList.add(request.data['data']);
           if (request.data['data']['status'].toString() == 'Unpaid') {
             unpaidFeesList.add(request.data['data']);
@@ -270,7 +281,7 @@ class DataProvider {
         return Payment.fromJson(request.data);
       } else {
         final getCode = await dio.get(
-            'https://njajal.sekolahmusik.co.id/api/resource/Fees?filters=[["student","=","${codeDef}"]]&fields=["*"]');
+            'https://sister.sekolahmusik.co.id/api/resource/Fees?filters=[["student","=","${codeDef}"]]&fields=["*"]');
 
         for (var a = 0; a < getCode.data['data'].length; a++) {
           feesList.add(getCode.data['data']);
@@ -281,6 +292,8 @@ class DataProvider {
 
         pref.setString('payment-total', feesList.length.toString());
         pref.setString('payment-length', unpaidFeesList.length.toString());
+
+        print(getCode.data['data'].toString());
 
         return Payment.fromJson(getCode.data['data'][0]);
       }

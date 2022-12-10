@@ -4,6 +4,8 @@ import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shrink_sidemenu/shrink_sidemenu.dart';
@@ -11,7 +13,8 @@ import 'package:sister_mobile/bloc/get-profile-guardian-bloc/get_profile_guardia
 import 'package:sister_mobile/bloc/get-profile-user-bloc/get_profile_user_bloc.dart';
 import 'package:sister_mobile/model/ProfileGuardian-model.dart';
 import 'package:sister_mobile/pages/guardians/student-details.dart';
-import 'package:sister_mobile/pages/students/auth/splash-page.dart';
+import 'package:sister_mobile/pages/auth/splash-page.dart';
+import 'package:sister_mobile/pages/students/profile/student-profile.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:intl/intl.dart';
@@ -19,7 +22,7 @@ import 'package:skeletons/skeletons.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
 
 import '../../bloc/get-profile-student-bloc/get_profile_student_bloc.dart';
-import '../../resources/data_provider.dart';
+import '../../resources/data-provider.dart';
 
 class GuardianHomePage extends StatefulWidget {
   const GuardianHomePage({Key? key}) : super(key: key);
@@ -30,6 +33,7 @@ class GuardianHomePage extends StatefulWidget {
 
 class GuardianHomePageState extends State<GuardianHomePage> {
   bool isOpened = false;
+  String _scanBarcode = 'Unknown';
 
   var studentList = [];
   var paymentList = [];
@@ -48,6 +52,8 @@ class GuardianHomePageState extends State<GuardianHomePage> {
 
   var dio = Dio();
   var cookieJar = CookieJar();
+
+  var listPicture = [];
 
   final _profileBloc = GetProfileStudentBloc();
   final _userBloc = GetProfileUserBloc();
@@ -106,14 +112,14 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                 icon: const Icon(Icons.menu),
                 onPressed: () => _toggleMenu(),
               ),
-              actions: const [
-                Icon(Icons.qr_code_scanner, size: 30, color: Color(0xffC9D1D9)),
-                SizedBox(width: 5),
-                Icon(Icons.dark_mode_outlined,
-                    size: 30, color: Color(0xffC9D1D9)),
-                SizedBox(width: 5),
-                Icon(Icons.notifications_none,
-                    size: 30, color: Color(0xffC9D1D9)),
+              actions: [
+                GestureDetector(
+                  onTap: () async {
+                    barcodeScan();
+                  },
+                  child: Icon(Icons.qr_code_scanner,
+                      size: 30, color: Color(0xffC9D1D9)),
+                ),
                 SizedBox(width: 20),
               ],
             ),
@@ -131,6 +137,7 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                         if (state is GetProfileGuardianLoaded) {
                           ProfileGuardian guardian = state.guardianModel;
                           List<Students>? students = guardian.data?.students;
+
                           _fetchStudentProfile(students);
                         }
                       },
@@ -245,7 +252,7 @@ class GuardianHomePageState extends State<GuardianHomePage> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeaderProfile(),
+              _buildHeaderProfile(profile.data),
               _buildHeaderTitle(profile.data),
             ],
           );
@@ -394,10 +401,23 @@ class GuardianHomePageState extends State<GuardianHomePage> {
     );
   }
 
-  Widget _buildHeaderProfile() {
+  Widget _buildHeaderProfile(profile) {
+    final image;
+    if (profile.image.toString()[0] == '/') {
+      image = 'https://sister.sekolahmusik.co.id${profile.image}';
+    } else {
+      image = profile.image.toString();
+    }
+
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/student-profile');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => StudentProfilePage(
+                      code: profile.name,
+                      guardian: true,
+                    )));
       },
       child: Container(
           padding: const EdgeInsets.all(20),
@@ -406,19 +426,37 @@ class GuardianHomePageState extends State<GuardianHomePage> {
             children: [
               InkWell(
                 onTap: () {
-                  Navigator.pushNamed(context, '/student-profile');
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => StudentProfilePage(
+                                code: profile.name,
+                                guardian: true,
+                              )));
                 },
-                child: Container(
-                  height: 80,
-                  width: 80,
-                  decoration: BoxDecoration(
-                      color: Colors.red,
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/lord-shrek.jpg'),
-                        fit: BoxFit.fitHeight,
+                child: (profile.image == null)
+                    ? Container(
+                        height: 80,
+                        width: 80,
+                        decoration: BoxDecoration(
+                            color: Colors.red,
+                            image: const DecorationImage(
+                              image: AssetImage('assets/images/lord-shrek.jpg'),
+                              fit: BoxFit.fitHeight,
+                            ),
+                            borderRadius: BorderRadius.circular(8)),
+                      )
+                    : Container(
+                        height: 80,
+                        width: 80,
+                        decoration: BoxDecoration(
+                            color: Colors.red,
+                            image: DecorationImage(
+                              image: NetworkImage(image),
+                              fit: BoxFit.cover,
+                            ),
+                            borderRadius: BorderRadius.circular(8)),
                       ),
-                      borderRadius: BorderRadius.circular(8)),
-                ),
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -465,6 +503,14 @@ class GuardianHomePageState extends State<GuardianHomePage> {
   }
 
   Widget _buildStudentProfileCard(students, index) {
+    final image;
+    if (studentList[index]['data']['image'].toString()[0] == '/') {
+      image =
+          'https://sister.sekolahmusik.co.id${studentList[index]['data']['image']}';
+    } else {
+      image = studentList[index]['data']['image'].toString();
+    }
+
     return SizedBox(
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         const SizedBox(height: 5),
@@ -496,18 +542,30 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                     children: [
                       Row(
                         children: [
-                          Container(
-                            height: 60,
-                            width: 60,
-                            decoration: BoxDecoration(
-                                color: Colors.red,
-                                image: const DecorationImage(
-                                  image: AssetImage(
-                                      'assets/images/lord-shrek.jpg'),
-                                  fit: BoxFit.fitHeight,
+                          (studentList[index]['data']['image'] != null)
+                              ? Container(
+                                  height: 60,
+                                  width: 60,
+                                  decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      image: DecorationImage(
+                                        image: NetworkImage(image),
+                                        fit: BoxFit.cover,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8)),
+                                )
+                              : Container(
+                                  height: 60,
+                                  width: 60,
+                                  decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      image: DecorationImage(
+                                        image: AssetImage(
+                                            'assets/images/lord-shrek.jpg'),
+                                        fit: BoxFit.fitHeight,
+                                      ),
+                                      borderRadius: BorderRadius.circular(8)),
                                 ),
-                                borderRadius: BorderRadius.circular(8)),
-                          ),
                           const SizedBox(width: 5),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -589,6 +647,13 @@ class GuardianHomePageState extends State<GuardianHomePage> {
       builder: (context, state) {
         if (state is GetProfileGuardianLoaded) {
           ProfileGuardian guardian = state.guardianModel;
+          final image;
+          if (guardian.data!.image.toString()[0] == '/') {
+            image = 'https://sister.sekolahmusik.co.id${guardian.data!.image}';
+          } else {
+            image = guardian.data!.image.toString();
+          }
+
           return SingleChildScrollView(
             padding: const EdgeInsets.symmetric(vertical: 50.0),
             child: Column(
@@ -600,10 +665,18 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CircleAvatar(
-                        backgroundColor: Colors.white,
-                        radius: 22.0,
-                      ),
+                      (guardian.data!.image == null)
+                          ? CircleAvatar(
+                              backgroundColor: Colors.white,
+                              radius: 22.0,
+                              backgroundImage:
+                                  AssetImage('assets/images/lord-shrek.jpg'),
+                            )
+                          : CircleAvatar(
+                              backgroundColor: Colors.white,
+                              radius: 22.0,
+                              backgroundImage: NetworkImage(image),
+                            ),
                       SizedBox(height: 16.0),
                       Text(
                         "Hello, ${guardian.data!.guardianName.toString().toLowerCase()}!",
@@ -614,7 +687,15 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                   ),
                 ),
                 ListTile(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => StudentProfilePage(
+                                  code: guardian.data!.name,
+                                  guardian: true,
+                                )));
+                  },
                   leading: const Icon(Icons.person_outline,
                       size: 20.0, color: Colors.white),
                   title: const Text("Profile"),
@@ -623,12 +704,7 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                 ),
                 ListTile(
                   onTap: () async {
-                    await dio.get(
-                        'https://sister.sekolahmusik.co.id/api/method/logout');
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => SplashPage()),
-                        (route) => false);
+                    showAlertDialog(context);
                   },
                   leading: const Icon(Icons.exit_to_app,
                       size: 20.0, color: Colors.white),
@@ -646,6 +722,100 @@ class GuardianHomePageState extends State<GuardianHomePage> {
         }
       },
     );
+  }
+
+  showAlertDialog(BuildContext context) {
+    // set up the button
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const SizedBox(height: 15),
+          Icon(
+            Icons.directions_run_outlined,
+            size: 50,
+          ),
+          const SizedBox(height: 15),
+          Text("Are you sure want to logout?"),
+        ],
+      ),
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            GestureDetector(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Container(
+                width: 80,
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Center(
+                    child: Text(
+                  'Nah',
+                  style: sWhiteTextStyle.copyWith(
+                      fontWeight: semiBold, color: Colors.white),
+                )),
+              ),
+            ),
+            GestureDetector(
+              onTap: () async {
+                await dio
+                    .get('https://sister.sekolahmusik.co.id/api/method/logout');
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => SplashPage()),
+                    (route) => false);
+              },
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Center(
+                    child: Text(
+                  'Sure',
+                  style: sRedTextStyle.copyWith(
+                    fontWeight: semiBold,
+                  ),
+                )),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 15),
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  Future<void> barcodeScan() async {
+    String barcodeScanRes;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+          '#ff6666', 'Cancel', true, ScanMode.QR);
+      print(barcodeScanRes);
+    } on PlatformException {
+      barcodeScanRes = 'Failed to get platform version.';
+    }
+    if (!mounted) return;
+    setState(() {
+      _scanBarcode = barcodeScanRes;
+    });
   }
 
   _toggleMenu([bool end = false]) {
@@ -684,16 +854,18 @@ class GuardianHomePageState extends State<GuardianHomePage> {
     var user = pref.getString("username");
     var pass = pref.getString('password');
 
+    print('studets : ' + students[0].student.toString());
+
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
-        .post("https://njajal.sekolahmusik.co.id/api/method/login", data: {
+        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
       'usr': user,
       'pwd': pass,
     });
 
     for (var a = 0; a < students.length; a++) {
       final request = await dio.get(
-          'https://njajal.sekolahmusik.co.id/api/resource/Student/' +
+          'https://sister.sekolahmusik.co.id/api/resource/Student/' +
               students![a].student.toString());
 
       if (mounted) {
@@ -704,7 +876,6 @@ class GuardianHomePageState extends State<GuardianHomePage> {
       }
     }
 
-    print(studentList.length);
     _isLoading = false;
   }
 }

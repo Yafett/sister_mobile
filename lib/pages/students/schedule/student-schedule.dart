@@ -96,29 +96,34 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
                 selectionBorderColor: sGreyColor,
                 viewHeaderDayTextStyle: sWhiteTextStyle.copyWith(
                   fontWeight: semiBold,
-                ),
+                ), 
               ),
               child: SfCalendar(
+                
                 controller: _controller,
                 onTap: calendarTapped,
                 headerHeight: 50,
                 todayHighlightColor: sRedColor,
+                
                 viewHeaderHeight: 50,
                 appointmentTextStyle: sWhiteTextStyle,
                 dataSource: MeetingDataSource(_getDataSource(schedule.message)),
                 allowAppointmentResize: true,
                 showNavigationArrow: true,
+                
                 view: CalendarView.month,
                 monthViewSettings: MonthViewSettings(
                   agendaViewHeight: 300,
                   agendaItemHeight: 50,
                   agendaStyle: AgendaStyle(
+
                     backgroundColor: sBlackColor,
                     appointmentTextStyle: sWhiteTextStyle,
                     dateTextStyle: sWhiteTextStyle,
                     dayTextStyle: sWhiteTextStyle,
                   ),
                   monthCellStyle: MonthCellStyle(
+                    
                     textStyle: sWhiteTextStyle,
                     leadingDatesTextStyle: sGreyTextStyle,
                     trailingDatesTextStyle: sGreyTextStyle,
@@ -177,17 +182,17 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
 
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
-        .post('https://njajal.sekolahmusik.co.id/api/method/login', data: {
+        .post('https://sister.sekolahmusik.co.id/api/method/login', data: {
       'usr': user,
       'pwd': pass,
     });
 
     if (codeDef == null) {
       final getCode = await dio
-          .get('https://njajal.sekolahmusik.co.id/api/resource/Student');
+          .get('https://sister.sekolahmusik.co.id/api/resource/Student');
 
       final request = await dio.post(
-        'https://njajal.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule',
+        'https://sister.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule',
         data: {
           'stud': getCode.data['data'][0]['name'],
         },
@@ -198,7 +203,7 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
       }
     } else {
       final request = await dio.post(
-        'https://njajal.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule',
+        'https://sister.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule',
         data: {
           'stud': codeDef,
         },
@@ -284,7 +289,7 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
           '${element['title']}',
           dateTime,
           dateTimeEnd,
-          sGreyColor,
+          sGreenColor,
           false,
           element['instructor_name'],
           element['room'],

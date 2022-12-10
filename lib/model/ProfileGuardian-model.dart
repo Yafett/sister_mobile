@@ -1,15 +1,14 @@
 class ProfileGuardian {
   Data? data;
   String? error;
-
-  ProfileGuardian({this.data});
-
-  ProfileGuardian.withError(String errorMessage) {
-    error = errorMessage;
-  }
+  ProfileGuardian({this.data, this.error});
 
   ProfileGuardian.fromJson(Map<String, dynamic> json) {
     data = json['data'] != null ? new Data.fromJson(json['data']) : null;
+  }
+
+  ProfileGuardian.withError(String errorMessage) {
+    error = errorMessage;
   }
 
   Map<String, dynamic> toJson() {
@@ -37,8 +36,10 @@ class Data {
   int? acceptWa;
   String? occupation;
   String? igUser;
+  String? image;
   String? doctype;
   List<Students>? students;
+  // List<Null>? interests;
 
   Data({
     this.name,
@@ -56,8 +57,10 @@ class Data {
     this.acceptWa,
     this.occupation,
     this.igUser,
+    this.image,
     this.doctype,
     this.students,
+    // this.interests
   });
 
   Data.fromJson(Map<String, dynamic> json) {
@@ -76,6 +79,7 @@ class Data {
     acceptWa = json['accept_wa'];
     occupation = json['occupation'];
     igUser = json['ig_user'];
+    image = json['image'];
     doctype = json['doctype'];
     if (json['students'] != null) {
       students = <Students>[];
@@ -83,6 +87,12 @@ class Data {
         students!.add(new Students.fromJson(v));
       });
     }
+    // if (json['interests'] != null) {
+    //   interests = <Null>[];
+    //   json['interests'].forEach((v) {
+    //     interests!.add(new Null.fromJson(v));
+    //   });
+    // }
   }
 
   Map<String, dynamic> toJson() {
@@ -102,11 +112,14 @@ class Data {
     data['accept_wa'] = this.acceptWa;
     data['occupation'] = this.occupation;
     data['ig_user'] = this.igUser;
+    data['image'] = this.image;
     data['doctype'] = this.doctype;
     if (this.students != null) {
       data['students'] = this.students!.map((v) => v.toJson()).toList();
     }
-
+    // if (this.interests != null) {
+    //   data['interests'] = this.interests!.map((v) => v.toJson()).toList();
+    // }
     return data;
   }
 }
@@ -122,17 +135,16 @@ class Students {
   String? doctype;
   int? iIslocal;
 
-  Students({
-    this.parent,
-    this.parentfield,
-    this.parenttype,
-    this.idx,
-    this.docstatus,
-    this.student,
-    this.studentName,
-    this.doctype,
-    this.iIslocal,
-  });
+  Students(
+      {this.parent,
+      this.parentfield,
+      this.parenttype,
+      this.idx,
+      this.docstatus,
+      this.student,
+      this.studentName,
+      this.doctype,
+      this.iIslocal});
 
   Students.fromJson(Map<String, dynamic> json) {
     parent = json['parent'];

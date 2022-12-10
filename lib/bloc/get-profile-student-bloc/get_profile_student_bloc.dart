@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:sister_mobile/resources/profile_provider.dart';
+import 'package:sister_mobile/resources/profile-provider.dart';
 
 import '../../model/ProfileStudent-model.dart';
 

@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:sister_mobile/bloc/get-profile-student-bloc/get_profile_student_bloc.dart';
 import 'package:sister_mobile/model/Schedule-model.dart';
-import 'package:sister_mobile/resources/data_provider.dart';
+import 'package:sister_mobile/resources/data-provider.dart';
 
 part 'student_schedule_event.dart';
 part 'student_schedule_state.dart';

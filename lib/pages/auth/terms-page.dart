@@ -6,7 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:signature/signature.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
  
-import '../../../shared/theme.dart'; 
+import '../../shared/theme.dart'; 
 
 class TermPage extends StatefulWidget {
   const TermPage({Key? key}) : super(key: key);
