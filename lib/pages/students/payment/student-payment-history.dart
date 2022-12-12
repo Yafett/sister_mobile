@@ -67,6 +67,7 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
               child: Column(
             children: [
               _buildPaymentList(),
+              const SizedBox(height: 20,)
             ],
           )),
         ),
@@ -93,6 +94,7 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
     String formattedDate = DateFormat('EEEE, dd MMMM yyyy').format(dueDate);
 
     return Container(
+        margin: EdgeInsets.only(bottom: 5),
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -49,7 +49,7 @@ class _StudentPointPageState extends State<StudentPointPage> {
         ),
         actions: [
           GestureDetector(
-            onTap: () => Navigator.pushNamed(context, '/student-point-help'),
+            // onTap: () => Navigator.pushNamed(context, '/student-point-help'),
             child: Container(
                 margin: const EdgeInsets.only(right: 5),
                 child: const Icon(Icons.shopify,

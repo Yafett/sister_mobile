@@ -59,8 +59,9 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
               style: sWhiteTextStyle.copyWith(fontWeight: semiBold)),
           actions: [
             GestureDetector(
-              // onTap: () => _fetchScheduleList(),
-              // Navigator.pushNamed(context, '/student-schedule-help'),
+              onTap: () {
+                Navigator.pushNamed(context, '/student-schedule-help');
+              },
               child: Container(
                   margin: const EdgeInsets.only(right: 20),
                   child: const Icon(Icons.help_outline,
@@ -127,15 +128,13 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
             );
           } else if (state is StudentScheduleLoading) {
             return Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: SkeletonAvatar(
-                style: SkeletonAvatarStyle(
-                  width: MediaQuery.of(context).size.width / 4,
-                  height: MediaQuery.of(context).size.width / 2,
-                ),
-              ),
-            );
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Center(
+                    child: Text(
+                  'Loading your Schedule...',
+                  style: sWhiteTextStyle,
+                )));
           } else {
             return Container();
           }
@@ -263,7 +262,8 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
           '${element['title']}',
           dateTime,
           dateTimeEnd,
-          sGreenColor,
+          // sGreenColor,
+          sGreyColor,
           false,
           element['instructor_name'],
           element['room'],

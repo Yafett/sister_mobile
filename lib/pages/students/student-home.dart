@@ -328,7 +328,12 @@ class StudentHomePageState extends State<StudentHomePage> {
 
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/student-profile');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => StudentProfilePage(
+                      code: profile.name,
+                    )));
       },
       child: Container(
           padding: const EdgeInsets.all(20),
@@ -337,7 +342,6 @@ class StudentHomePageState extends State<StudentHomePage> {
             children: [
               InkWell(
                 onTap: () {
-                  // Navigator.pushNamed(context, '/student-profile');
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -1285,13 +1289,13 @@ class StudentHomePageState extends State<StudentHomePage> {
     AlertDialog alert = AlertDialog(
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const SizedBox(height: 15),
+        children: const [
+          SizedBox(height: 15),
           Icon(
             Icons.directions_run_outlined,
             size: 50,
           ),
-          const SizedBox(height: 15),
+          SizedBox(height: 15),
           Text("Are you sure want to logout?"),
         ],
       ),
@@ -1301,7 +1305,7 @@ class StudentHomePageState extends State<StudentHomePage> {
           children: [
             GestureDetector(
               onTap: () {
-                Navigator.pop(context); 
+                Navigator.pop(context);
               },
               child: Container(
                 width: 80,
