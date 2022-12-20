@@ -1,3 +1,5 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:sister_mobile/model/ProfileUser.dart';
@@ -20,6 +22,7 @@ class GetProfileUserBloc
           emit(GetProfileUserError(pList.error));
         }
       } on NetworkError {
+        // ignore: prefer_const_constructors
         emit(GetProfileUserError(
             "Failed to fetch data. is your device online?"));
       }

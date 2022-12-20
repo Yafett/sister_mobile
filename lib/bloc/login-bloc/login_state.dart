@@ -14,10 +14,10 @@ class LoginLoading extends LoginState {}
 
 class LoginSuccess extends LoginState {
   final String? role;
-  LoginSuccess(this.role);
+  const LoginSuccess(this.role);
 }
 
 class LoginError extends LoginState {
   final String? message;
-  LoginError(this.message);
+  const LoginError(this.message);
 }

@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable, avoid_print
+// ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable, avoid_print, file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:sister_mobile/shared/theme.dart';

@@ -13,10 +13,10 @@ class TestLoading extends TestState {}
 
 class TestLoaded extends TestState {
   final Testing? testModel;
-  TestLoaded({this.testModel});
+  const TestLoaded({this.testModel});
 }
 
 class TestError extends TestState {
   final String? message;
-  TestError({this.message});
+  const TestError({this.message});
 }

@@ -23,12 +23,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         final result = await _authRepository.login(event.email, event.password);
 
         if (result.toString() == 'error') {
-          emit(LoginError('Your Email or Password is incorrect!'));
+          emit(const LoginError('Your Email or Password is incorrect!'));
         } else {
           emit(LoginSuccess(result.toString()));
         }
       } on NetworkError {
-        emit(LoginError("Failed to fetch data. is your device online?"));
+        emit(const LoginError("Failed to fetch data. is your device online?"));
       }
     });
   }

@@ -10,5 +10,5 @@ abstract class GetProfileUserEvent extends Equatable {
 class GetProfileUserList extends GetProfileUserEvent {
   final String? code;
 
-  GetProfileUserList({this.code});
+  const GetProfileUserList({this.code});
 }

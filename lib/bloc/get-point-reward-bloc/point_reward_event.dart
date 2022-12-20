@@ -10,5 +10,5 @@ abstract class PointRewardEvent extends Equatable {
 class GetPointRewardList extends PointRewardEvent {
   final String? code;
 
-  GetPointRewardList({this.code});
+  const GetPointRewardList({this.code});
 }

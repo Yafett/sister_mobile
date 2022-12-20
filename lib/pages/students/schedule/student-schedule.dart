@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, sized_box_for_whitespace, unused_local_variable, prefer_typing_uninitialized_variables
+// ignore_for_file: file_names, sized_box_for_whitespace, unused_local_variable, prefer_typing_uninitialized_variables, prefer_interpolation_to_compose_strings
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';

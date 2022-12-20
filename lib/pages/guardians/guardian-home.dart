@@ -1,4 +1,4 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers, file_names, unnecessary_const, prefer_const_constructors, unused_local_variable, prefer_interpolation_to_compose_strings
+// ignore_for_file: no_leading_underscores_for_local_identifiers, file_names, unnecessary_const, prefer_const_constructors, unused_local_variable, prefer_interpolation_to_compose_strings, prefer_typing_uninitialized_variables
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
@@ -618,7 +618,13 @@ class GuardianHomePageState extends State<GuardianHomePage> {
   Widget _buildHeaderTitle(profile) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, '/student-profile');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => StudentProfilePage(
+                      code: profile.name,
+                      guardian: true,
+                    )));
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20),

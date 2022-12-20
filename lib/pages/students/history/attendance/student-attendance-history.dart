@@ -1,13 +1,16 @@
+// ignore_for_file: file_names, prefer_const_constructors_in_immutables, prefer_typing_uninitialized_variables, unused_local_variable, unnecessary_brace_in_string_interps, avoid_print
+
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:skeletons/skeletons.dart';
+
 import 'package:sister_mobile/pages/students/history/attendance/student-attendance-detail.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
-import 'package:skeletons/skeletons.dart';
 
 class StudentAttendanceHistoryPage extends StatefulWidget {
   final String? code;

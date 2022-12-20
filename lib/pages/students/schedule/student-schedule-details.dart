@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable, unused_field, prefer_typing_uninitialized_variables, avoid_print, sized_box_for_whitespace
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -282,98 +281,6 @@ class _StudentScheduleDetailPageState extends State<StudentScheduleDetailPage> {
   //   );
   // }
 
-  _showModalBottom() {
-    return showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return Container(
-            color: sBlackColor,
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text('Description', style: fTextColorStyle),
-                const SizedBox(height: 5),
-                TextFormField(
-                  style: sWhiteTextStyle,
-                  controller: _descriptionController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: sGreyColor,
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: sBlackColor),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: sBlackColor),
-                    ),
-                    hintText: 'e.x John Doe',
-                    hintStyle: fGreyTextStyle,
-                  ),
-                ),
-                const SizedBox(height: 15),
-
-                // ! Unit Field
-                Text('Duration', style: fTextColorStyle),
-                SingleChildScrollView(
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 5),
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 3, horizontal: 10),
-                    decoration: BoxDecoration(
-                      color: sGreyColor,
-                      border: Border.all(color: sBlackColor),
-                      borderRadius: const BorderRadius.all(Radius.circular(8)),
-                    ),
-                    width: MediaQuery.of(context).size.width,
-                    child: DropdownButton(
-                      dropdownColor: sGreyColor,
-                      style: sWhiteTextStyle,
-                      underline: const SizedBox(),
-                      isExpanded: true,
-                      hint: Text('e.x duration', style: fGreyTextStyle),
-                      items: listDuration.map((item) {
-                        return DropdownMenuItem(
-                          value: item.toString(),
-                          child: Text('${item.toString()} Minutes'),
-                        );
-                      }).toList(),
-                      onChanged: (newVal) {
-                        setState(() {
-                          duration = newVal;
-                        });
-                        Navigator.pop(context);
-                      },
-                      value: duration,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                GestureDetector(
-                  onTap: () => Add2Calendar.addEvent2Cal(
-                    buildEvent(),
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    decoration: BoxDecoration(
-                        color: sGreyColor,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: sBlackColor)),
-                    child: Center(
-                        child: Text(
-                      'Add to Calendar',
-                      style: sWhiteTextStyle,
-                    )),
-                  ),
-                ),
-              ],
-            ),
-          );
-        });
-  }
 
   _showTopModal() {
     return Padding(

@@ -13,10 +13,10 @@ class GetProfileUserLoading extends GetProfileUserState {}
 
 class GetProfileUserLoaded extends GetProfileUserState {
   final ProfileUser modelUser;
-  GetProfileUserLoaded(this.modelUser);
+  const GetProfileUserLoaded(this.modelUser);
 }
 
 class GetProfileUserError extends GetProfileUserState {
   final String? message;
-  GetProfileUserError(this.message);
+  const GetProfileUserError(this.message);
 }

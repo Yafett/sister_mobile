@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable, unused_catch_stack
+// ignore_for_file: unused_local_variable, unused_catch_stack, unnecessary_brace_in_string_interps, file_names, prefer_interpolation_to_compose_strings, avoid_print, prefer_if_null_operators, duplicate_ignore
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';

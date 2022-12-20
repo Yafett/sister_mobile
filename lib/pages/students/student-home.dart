@@ -1,4 +1,4 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers, file_names, unnecessary_const, prefer_const_constructors, unused_local_variable, unused_field, prefer_typing_uninitialized_variables
+// ignore_for_file: no_leading_underscores_for_local_identifiers, file_names, unnecessary_const, prefer_const_constructors, unused_local_variable, unused_field, prefer_typing_uninitialized_variables, prefer_is_empty, avoid_print, prefer_interpolation_to_compose_strings, use_build_context_synchronously, avoid_unnecessary_containers
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
@@ -422,8 +422,9 @@ class StudentHomePageState extends State<StudentHomePage> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    StudentProfilePage(code: profile.name.toString())));
+                builder: (context) => StudentProfilePage(
+                      code: profile.name.toString(),
+                    )));
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20),

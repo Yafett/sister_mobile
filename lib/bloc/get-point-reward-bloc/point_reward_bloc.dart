@@ -20,7 +20,7 @@ class PointRewardBloc extends Bloc<PointRewardEvent, PointRewardState> {
         emit(PointRewardLoaded(pList));
       
       } on NetworkError {
-        emit(PointRewardError("Failed to fetch data. is your device online?"));
+        emit(const PointRewardError("Failed to fetch data. is your device online?"));
       }
     });
   }

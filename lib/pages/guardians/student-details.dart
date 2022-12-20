@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_interpolation_to_compose_strings, unused_local_variable, prefer_typing_uninitialized_variables, must_be_immutable
+// ignore_for_file: prefer_interpolation_to_compose_strings, unused_local_variable, prefer_typing_uninitialized_variables, must_be_immutable, unused_import, avoid_unnecessary_containers, unused_field, prefer_final_fields, avoid_print, prefer_is_empty, unused_element
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
@@ -26,6 +26,7 @@ import 'package:sister_mobile/pages/students/schedule/student-schedule.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:skeletons/skeletons.dart';
+import 'package:string_extensions/string_extensions.dart';
 
 class StudentDetailPage extends StatefulWidget {
   String? code;
@@ -171,7 +172,7 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
                                         width: 60,
                                         decoration: BoxDecoration(
                                             color: Colors.red,
-                                            image: DecorationImage(
+                                            image: const DecorationImage(
                                               image: AssetImage(
                                                   'assets/images/lord-shrek.jpg'),
                                               fit: BoxFit.fitHeight,
@@ -229,7 +230,7 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
               SkeletonParagraph(
                 style: SkeletonParagraphStyle(
                     lines: 1,
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     spacing: 6,
                     lineStyle: SkeletonLineStyle(
                       randomLength: true,
@@ -335,7 +336,7 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
               SkeletonParagraph(
                 style: SkeletonParagraphStyle(
                     lines: 1,
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     spacing: 6,
                     lineStyle: SkeletonLineStyle(
                       randomLength: true,
@@ -440,7 +441,7 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
               SkeletonParagraph(
                 style: SkeletonParagraphStyle(
                     lines: 1,
-                    padding: EdgeInsets.symmetric(vertical: 10),
+                    padding: const EdgeInsets.symmetric(vertical: 10),
                     spacing: 6,
                     lineStyle: SkeletonLineStyle(
                       randomLength: true,
@@ -477,8 +478,8 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
           style: sWhiteTextStyle,
         ),
         Container(
-          padding: EdgeInsets.all(10),
-          margin: EdgeInsets.only(top: 5),
+          padding: const EdgeInsets.all(10),
+          margin: const EdgeInsets.only(top: 5),
           decoration: BoxDecoration(
               border: Border.all(
                 color: const Color(0xff30363D),
@@ -671,7 +672,7 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Reward',
+                'Point  Reward',
                 style: sWhiteTextStyle,
               ),
               const SizedBox(height: 5),

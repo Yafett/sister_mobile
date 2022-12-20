@@ -10,5 +10,5 @@ abstract class GetProfileGuardianEvent extends Equatable {
 class GetProfileGuardianList extends GetProfileGuardianEvent {
   final String? code;
 
-  GetProfileGuardianList({this.code});
+  const GetProfileGuardianList({this.code});
 }

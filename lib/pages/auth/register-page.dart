@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 import 'package:sister_mobile/resources/auth-provider.dart';
 import 'package:sister_mobile/shared/theme.dart';
 import 'package:sister_mobile/widget/no_scroll_waves.dart';
+import 'package:string_extensions/string_extensions.dart';
 import 'package:http/http.dart' as http;
 
 import '../../resources/data-provider.dart';
@@ -1720,9 +1721,11 @@ class _RegisterPageState extends State<RegisterPage> {
     var data = request.data['data'];
 
     for (var a = 0; a < data.length; a++) {
-      setState(() {
-        listJoiningReason.add(request.data['data'][a]['name']);
-      });
+      if (mounted) {
+        setState(() {
+          listJoiningReason.add(request.data['data'][a]['name'].toString().capitalize!);
+        });
+      }
     }
   }
 
@@ -1739,7 +1742,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     for (var a = 0; a < data.length; a++) {
       setState(() {
-        listKnowFrom.add(request.data['data'][a]['name']);
+        listKnowFrom.add(request.data['data'][a]['name'].toString().capitalize!);
       });
     }
   }

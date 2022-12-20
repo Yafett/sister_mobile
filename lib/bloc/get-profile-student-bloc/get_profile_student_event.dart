@@ -10,5 +10,5 @@ abstract class GetProfileStudentEvent extends Equatable {
 class GetProfileList extends GetProfileStudentEvent {
   final String? code;
 
-  GetProfileList({this.code});
+  const GetProfileList({this.code});
 }

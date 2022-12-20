@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, unused_local_variable, unnecessary_string_interpolations, prefer_const_constructors_in_immutables
+// ignore_for_file: file_names, unused_local_variable, unnecessary_string_interpolations, prefer_const_constructors_in_immutables, unnecessary_brace_in_string_interps, avoid_print
 
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio/dio.dart';
