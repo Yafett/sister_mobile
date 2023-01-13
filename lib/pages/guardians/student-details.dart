@@ -263,6 +263,7 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
       builder: (context, state) {
         if (state is StudentScheduleLoaded) {
           Schedule schedule = state.scheduleModel;
+          // _getDate(schedule);
           return Container(
               child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -298,12 +299,71 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
                           Text('Upcoming Class',
                               style: sWhiteTextStyle.copyWith(
                                   fontSize: 16, fontWeight: semiBold)),
-                          (schedule.message!.length == 0)
-                              ? Text("There's no Schedule avaliable",
-                                  style: sGreyTextStyle.copyWith(fontSize: 22))
-                              : Text('${_getDate(schedule)}',
-                                  style: sWhiteTextStyle.copyWith(
-                                      fontSize: 22, fontWeight: semiBold)),
+                          _getDate(schedule),
+                          const Divider(
+                            height: 20,
+                            thickness: 1,
+                            color: Color(0xff272C33),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'See your Schedule',
+                                style: sWhiteTextStyle.copyWith(
+                                    fontSize: 14, fontWeight: semiBold),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                color: sWhiteColor,
+                                size: 20,
+                              )
+                            ],
+                          )
+                        ]),
+                  ),
+                ),
+              )
+            ],
+          ));
+        } else if (state is StudentScheduleError) {
+          return Container(
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Schedule',
+                style: sWhiteTextStyle,
+              ),
+              const SizedBox(height: 5),
+              Material(
+                color: sBlackColor,
+                borderRadius: BorderRadius.circular(8),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  splashColor: sGreyColor,
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                StudentSchedulePage(codeDef: widget.code)));
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: const Color(0xff30363D),
+                        ),
+                        borderRadius: BorderRadius.circular(8)),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Upcoming Class',
+                              style: sWhiteTextStyle.copyWith(
+                                  fontSize: 16, fontWeight: semiBold)),
+                          Text("There's no Schedule avaliable",
+                              style: sGreyTextStyle.copyWith(fontSize: 22)),
                           const Divider(
                             height: 20,
                             thickness: 1,
@@ -408,6 +468,63 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
                                   fontSize: 16, fontWeight: semiBold)),
                           Text('${paymentLength.toString()} Unpaid Payment',
                               style: sRedTextStyle.copyWith(
+                                  fontSize: 22, fontWeight: semiBold)),
+                          const Divider(
+                            height: 20,
+                            thickness: 1,
+                            color: Color(0xff272C33),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'See your Payment',
+                                style: sWhiteTextStyle.copyWith(
+                                    fontSize: 14, fontWeight: semiBold),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                color: sWhiteColor,
+                                size: 20,
+                              )
+                            ],
+                          )
+                        ]),
+                  ),
+                ),
+              )
+            ],
+          ));
+        } else if (state is GetPaymentError) {
+          return Container(
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(bottom: 5),
+                child: Text(
+                  'Payment',
+                  style: sWhiteTextStyle,
+                ),
+              ),
+              Material(
+                color: sBlackColor,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: () {},
+                  splashColor: const Color(0xff30363D),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: const Color(0xff30363D),
+                        ),
+                        borderRadius: BorderRadius.circular(8)),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("There's no Payment History",
+                              style: sGreyTextStyle.copyWith(
                                   fontSize: 22, fontWeight: semiBold)),
                           const Divider(
                             height: 20,
@@ -733,6 +850,97 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
               )
             ],
           ));
+        } else if (state is PointRewardError) {
+          return Container(
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Point  Reward',
+                style: sWhiteTextStyle,
+              ),
+              const SizedBox(height: 5),
+              Material(
+                color: sBlackColor,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: () {},
+                  splashColor: const Color(0xff30363D),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: const Color(0xff30363D),
+                        ),
+                        borderRadius: BorderRadius.circular(8)),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Current Point',
+                              style: sWhiteTextStyle.copyWith(
+                                  fontSize: 16, fontWeight: semiBold)),
+                          Row(
+                            children: [
+                              const Icon(Icons.favorite,
+                                  color: Color(0xffD15151)),
+                              const SizedBox(width: 10),
+                              Text('0 POINT',
+                                  style: sWhiteTextStyle.copyWith(
+                                      fontSize: 22, fontWeight: semiBold)),
+                            ],
+                          ),
+                          const Divider(
+                            height: 20,
+                            thickness: 1,
+                            color: Color(0xff272C33),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'See your reward point',
+                                style: sWhiteTextStyle.copyWith(
+                                    fontSize: 14, fontWeight: semiBold),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                color: sWhiteColor,
+                                size: 20,
+                              )
+                            ],
+                          )
+                        ]),
+                  ),
+                ),
+              )
+            ],
+          )); 
+        } else if (state is PointRewardLoading) {
+          return Column(
+            children: [
+              SkeletonParagraph(
+                style: SkeletonParagraphStyle(
+                    lines: 1,
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    spacing: 6,
+                    lineStyle: SkeletonLineStyle(
+                      randomLength: true,
+                      height: 10,
+                      borderRadius: BorderRadius.circular(8),
+                      minLength: MediaQuery.of(context).size.width / 6,
+                      maxLength: MediaQuery.of(context).size.width / 3,
+                    )),
+              ),
+              SkeletonAvatar(
+                style: SkeletonAvatarStyle(
+                  width: double.infinity,
+                  minHeight: MediaQuery.of(context).size.height / 8,
+                  maxHeight: MediaQuery.of(context).size.height / 6,
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          );
         } else {
           return Container();
         }
@@ -770,22 +978,33 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
   _getDate(schedule) {
     var listDate = [];
 
-    for (var a = 0; a < schedule.message.length; a++) {
-      var replacedFrom =
-          schedule.message[a].scheduleDate.toString().replaceAll('-', '');
-      DateTime now = DateTime.now();
-      String dateFromT = replacedFrom.substring(0, 8);
-      DateTime fromDateTime = DateTime.parse(dateFromT);
+    if (schedule.message!.length == 0) {
+      return Text("There's no Schedule avaliable",
+          style: sGreyTextStyle.copyWith(fontSize: 22));
+    } else {
+      for (var a = 0; a < schedule.message.length; a++) {
+        var replacedFrom =
+            schedule.message[a].scheduleDate.toString().replaceAll('-', '');
+        DateTime now = DateTime.now();
+        String dateFromT = replacedFrom.substring(0, 8);
+        DateTime fromDateTime = DateTime.parse(dateFromT);
 
-      if (fromDateTime.isAfter(now) == true) {
-        var parsedDate = DateTime.parse(schedule.message[a].scheduleDate);
-        String formattedDate = DateFormat('dd MMMM yyyy').format(parsedDate);
-        listDate.add(schedule.message[a].course.toString() +
-            ' ' +
-            formattedDate.toString());
+        if (fromDateTime.isAfter(now) == true) {
+          var parsedDate = DateTime.parse(schedule.message[a].scheduleDate);
+          String formattedDate = DateFormat('dd MMMM yyyy').format(parsedDate);
+          listDate.add(schedule.message[a].course.toString() +
+              ' ' +
+              formattedDate.toString());
+        }
+      }
+
+      if (listDate.length == 0) {
+        return Text("There's no Schedule avaliable",
+            style: sGreyTextStyle.copyWith(fontSize: 22));
+      } else {
+        return Text(listDate[0].toString(),
+            style: sWhiteTextStyle.copyWith(fontSize: 22));
       }
     }
-
-    return listDate[0].toString();
   }
 }

@@ -85,7 +85,7 @@ class DataProvider {
         final code = getCode.data['data'][0]['name'];
 
         final request = await dio.get(
-            'https://sister.sekol ahmusik.co.id/api/resource/Point Reward/${code}');
+            'https://sister.sekolahmusik.co.id/api/resource/Point Reward/${code}');
 
         return PointReward.fromJson(request.data);
       }
@@ -112,10 +112,13 @@ class DataProvider {
       });
 
       if (code == null) {
+        print('asasa');
         final getCode = await dio
             .get('https://sister.sekolahmusik.co.id/api/resource/Student/');
 
         final code = getCode.data['data'][0]['name'];
+
+        print('asasa 2');
 
         final request = await dio.post(urlSchedule, data: {
           'stud': code,
@@ -128,6 +131,7 @@ class DataProvider {
 
         return Schedule.fromJson(request.data);
       } else {
+        print('ababba');
         final request = await dio.post(
           urlSchedule,
           data: {
@@ -146,7 +150,7 @@ class DataProvider {
       }
     } catch (error, stacktrace) {
       // ignore: avoid_print
-      // print('Schedule Data Exception Occured: $error stackTrace: $stacktrace');
+      print('Schedule Data Exception Occured: $error stackTrace: $stacktrace');
 
       return Schedule.withError('Data not found / Connection Issues');
     }
@@ -166,6 +170,7 @@ class DataProvider {
       });
 
       if (codeDef == null) {
+        print('witho ');
         print('student');
         final getCode = await dio
             .get('https://sister.sekolahmusik.co.id/api/resource/Student/');
@@ -202,6 +207,8 @@ class DataProvider {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
+
+    print(codeDef.toString());
 
     try {
       dio.interceptors.add(CookieManager(cookieJar));

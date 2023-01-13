@@ -551,19 +551,7 @@ class StudentHomePageState extends State<StudentHomePage> {
                               Text('Upcoming Class',
                                   style: sWhiteTextStyle.copyWith(
                                       fontSize: 16, fontWeight: semiBold)),
-                              (schedule.message!.length == 0)
-                                  ? Text("There's no Schedule avaliable",
-                                      style:
-                                          sGreyTextStyle.copyWith(fontSize: 22))
-                                  : Text('${_getDate(schedule)}',
-                                      style: sWhiteTextStyle.copyWith(
-                                          fontSize: 22, fontWeight: semiBold)),
-                              (schedule.message!.length == 0)
-                                  ? SizedBox()
-                                  : Text(
-                                      '${schedule.message![0].fromTime.toString()} - ${_setDatetimeSchedule(schedule.message![0].scheduleDate.toString())}',
-                                      style: sGreyTextStyle.copyWith(
-                                          fontSize: 14, fontWeight: semiBold)),
+                              _getDate(schedule),
                               const Divider(
                                 height: 20,
                                 thickness: 1,
@@ -1090,6 +1078,98 @@ class StudentHomePageState extends State<StudentHomePage> {
                   )
                 ],
               ));
+        } else if (state is PointRewardError) {
+          return Container(
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Point  Reward',
+                style: sWhiteTextStyle,
+              ),
+              const SizedBox(height: 5),
+              Material(
+                color: sBlackColor,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(8),
+                  onTap: () {},
+                  splashColor: const Color(0xff30363D),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                        border: Border.all(
+                          color: const Color(0xff30363D),
+                        ),
+                        borderRadius: BorderRadius.circular(8)),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Current Point',
+                              style: sWhiteTextStyle.copyWith(
+                                  fontSize: 16, fontWeight: semiBold)),
+                          Row(
+                            children: [
+                              const Icon(Icons.favorite,
+                                  color: Color(0xffD15151)),
+                              const SizedBox(width: 10),
+                              Text('0 POINT',
+                                  style: sWhiteTextStyle.copyWith(
+                                      fontSize: 22, fontWeight: semiBold)),
+                            ],
+                          ),
+                          const Divider(
+                            height: 20,
+                            thickness: 1,
+                            color: Color(0xff272C33),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                'See your reward point',
+                                style: sWhiteTextStyle.copyWith(
+                                    fontSize: 14, fontWeight: semiBold),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                color: sWhiteColor,
+                                size: 20,
+                              )
+                            ],
+                          )
+                        ]),
+                  ),
+                ),
+              )
+            ],
+          ));
+          ;
+        } else if (state is PointRewardLoading) {
+          return Column(
+            children: [
+              SkeletonParagraph(
+                style: SkeletonParagraphStyle(
+                    lines: 1,
+                    padding: const EdgeInsets.symmetric(vertical: 10),
+                    spacing: 6,
+                    lineStyle: SkeletonLineStyle(
+                      randomLength: true,
+                      height: 10,
+                      borderRadius: BorderRadius.circular(8),
+                      minLength: MediaQuery.of(context).size.width / 6,
+                      maxLength: MediaQuery.of(context).size.width / 3,
+                    )),
+              ),
+              SkeletonAvatar(
+                style: SkeletonAvatarStyle(
+                  width: double.infinity,
+                  minHeight: MediaQuery.of(context).size.height / 8,
+                  maxHeight: MediaQuery.of(context).size.height / 6,
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          );
         } else {
           return Container();
         }
@@ -1247,24 +1327,54 @@ class StudentHomePageState extends State<StudentHomePage> {
 
   _getDate(schedule) {
     var listDate = [];
+    var listTime = [];
+    var listSchedule = [];
 
-    for (var a = 0; a < schedule.message.length; a++) {
-      var replacedFrom =
-          schedule.message[a].scheduleDate.toString().replaceAll('-', '');
-      DateTime now = DateTime.now();
-      String dateFromT = replacedFrom.substring(0, 8);
-      DateTime fromDateTime = DateTime.parse(dateFromT);
+    // (schedule.message!.length == 0)
+    //     ? SizedBox()
+    //     : Text(
+    //         '${schedule.message![0].fromTime.toString()} - ${_setDatetimeSchedule(schedule.message![0].scheduleDate.toString())}',
+    //         style: sGreyTextStyle.copyWith(fontSize: 14, fontWeight: semiBold));
 
-      if (fromDateTime.isAfter(now) == true) {
-        var parsedDate = DateTime.parse(schedule.message[a].scheduleDate);
+    if (schedule.message!.length == 0) {
+      return Text("There's no Schedule avaliable",
+          style: sGreyTextStyle.copyWith(fontSize: 22));
+    } else {
+      for (var a = 0; a < schedule.message.length; a++) {
+        var replacedFrom =
+            schedule.message[a].scheduleDate.toString().replaceAll('-', '');
+        DateTime now = DateTime.now();
+        String dateFromT = replacedFrom.substring(0, 8);
+        DateTime fromDateTime = DateTime.parse(dateFromT);
+
+        if (fromDateTime.isAfter(now) == true) {
+          var parsedDate = DateTime.parse(schedule.message[a].scheduleDate);
+          String formattedDate = DateFormat('dd MMMM yyyy').format(parsedDate);
+          listDate.add(schedule.message[a].course.toString() +
+              ' ' +
+              formattedDate.toString());
+          listTime.add(schedule.message[a].fromTime.toString());
+          listSchedule.add(schedule.message[a].scheduleDate.toString());
+        }
+      }
+
+      if (listDate.length == 0) {
+        return Text("There's no Schedule avaliable",
+            style: sGreyTextStyle.copyWith(fontSize: 22));
+      } else {
+        var parsedDate = DateTime.parse(listSchedule[0]);
         String formattedDate = DateFormat('dd MMMM yyyy').format(parsedDate);
-        listDate.add(schedule.message[a].course.toString() +
-            ' ' +
-            formattedDate.toString());
+
+        return Column(
+          children: [
+            Text(listDate[0].toString(),
+                style: sWhiteTextStyle.copyWith(fontSize: 22)),
+            Text(listDate[0]['schedule_date'].toString(),
+                style: sWhiteTextStyle.copyWith(fontSize: 22)),
+          ],
+        );
       }
     }
-
-    return listDate[0].toString();
   }
 
   Future<void> barcodeScan() async {
