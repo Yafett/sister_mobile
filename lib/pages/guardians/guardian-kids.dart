@@ -123,7 +123,7 @@ class GuardianKidsPageState extends State<GuardianKidsPage> {
                   decoration: BoxDecoration(
                       color: Colors.red,
                       image: const DecorationImage(
-                        image: AssetImage('assets/images/lord-shrek.jpg'),
+                        image: AssetImage('assets/images/user.png'),
                         fit: BoxFit.fitHeight,
                       ),
                       borderRadius: BorderRadius.circular(8)),
@@ -389,7 +389,7 @@ class GuardianKidsPageState extends State<GuardianKidsPage> {
                                     color: Colors.red,
                                     image: const DecorationImage(
                                       image: AssetImage(
-                                          'assets/images/lord-shrek.jpg'),
+                                          'assets/images/user.png'),
                                       fit: BoxFit.fitHeight,
                                     ),
                                     borderRadius: BorderRadius.circular(8)),

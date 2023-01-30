@@ -23,8 +23,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         final result = await _authRepository.login(event.email, event.password);
 
         if (result.toString() == 'error') {
+          print('ass : ' + result.toString());
           emit(const LoginError('Your Email or Password is incorrect!'));
         } else {
+          print('a : ' + result.toString());
           emit(LoginSuccess(result.toString()));
         }
       } on NetworkError {

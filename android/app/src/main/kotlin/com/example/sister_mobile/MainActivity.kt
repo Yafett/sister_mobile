@@ -1,4 +1,4 @@
-package com.example.sister_mobile
+package com.sister_mobile.customer
 
 import io.flutter.embedding.android.FlutterActivity
 

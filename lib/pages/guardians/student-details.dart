@@ -134,11 +134,14 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
                     borderRadius: BorderRadius.circular(8),
                     splashColor: sGreyColor,
                     onTap: () {
+                      print(profile.data!.studentEmailId);
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => StudentProfilePage(
+                                    email: profile.data!.studentEmailId,
                                     code: widget.code,
+                                    student: true,
                                   )));
                     },
                     child: Container(
@@ -174,7 +177,7 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
                                             color: Colors.red,
                                             image: const DecorationImage(
                                               image: AssetImage(
-                                                  'assets/images/lord-shrek.jpg'),
+                                                  'assets/images/user.png'),
                                               fit: BoxFit.fitHeight,
                                             ),
                                             borderRadius:
@@ -914,7 +917,7 @@ class _StudentDetailPageState extends State<StudentDetailPage> {
                 ),
               )
             ],
-          )); 
+          ));
         } else if (state is PointRewardLoading) {
           return Column(
             children: [

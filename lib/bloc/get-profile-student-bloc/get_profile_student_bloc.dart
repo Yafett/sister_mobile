@@ -17,7 +17,7 @@ class GetProfileStudentBloc
     on<GetProfileList>((event, emit) async {
       try {
         emit(GetProfileLoading());
-        final pList = await _profileProvider.fetchProfileStudent( event.code);
+        final pList = await _profileProvider.fetchProfileStudent(event.code);
         emit(GetProfileLoaded(pList));
         print(pList.error);
         if (pList.error != null) {

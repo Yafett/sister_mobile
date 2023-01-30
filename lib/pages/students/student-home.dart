@@ -333,6 +333,7 @@ class StudentHomePageState extends State<StudentHomePage> {
             MaterialPageRoute(
                 builder: (context) => StudentProfilePage(
                       code: profile.name,
+                      student: true,
                     )));
       },
       child: Container(
@@ -346,7 +347,7 @@ class StudentHomePageState extends State<StudentHomePage> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => StudentProfilePage(
-                              code: profile.name.toString())));
+                              student: true, code: profile.name.toString())));
                 },
                 child: (profile.image == null)
                     ? Container(
@@ -423,6 +424,7 @@ class StudentHomePageState extends State<StudentHomePage> {
             context,
             MaterialPageRoute(
                 builder: (context) => StudentProfilePage(
+                      student: true,
                       code: profile.name.toString(),
                     )));
       },
@@ -1223,6 +1225,7 @@ class StudentHomePageState extends State<StudentHomePage> {
                   context,
                   MaterialPageRoute(
                       builder: (context) => StudentProfilePage(
+                            student: true,
                             code: profile.name,
                           )));
             },
@@ -1328,6 +1331,7 @@ class StudentHomePageState extends State<StudentHomePage> {
   _getDate(schedule) {
     var listDate = [];
     var listTime = [];
+    var listToTime = [];
     var listSchedule = [];
 
     // (schedule.message!.length == 0)
@@ -1354,6 +1358,7 @@ class StudentHomePageState extends State<StudentHomePage> {
               ' ' +
               formattedDate.toString());
           listTime.add(schedule.message[a].fromTime.toString());
+          listToTime.add(schedule.message[a].toTime.toString());
           listSchedule.add(schedule.message[a].scheduleDate.toString());
         }
       }
@@ -1366,11 +1371,24 @@ class StudentHomePageState extends State<StudentHomePage> {
         String formattedDate = DateFormat('dd MMMM yyyy').format(parsedDate);
 
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(listDate[0].toString(),
                 style: sWhiteTextStyle.copyWith(fontSize: 22)),
-            Text(listDate[0]['schedule_date'].toString(),
-                style: sWhiteTextStyle.copyWith(fontSize: 22)),
+            Row(
+              children: [
+                Text(
+                    DateFormat.jm()
+                        .format(DateFormat("hh:mm:ss").parse(listTime[0])) + ' - '  
+                        .toString(),
+                    style: sGreyTextStyle.copyWith(fontSize: 18)),
+                Text(
+                    DateFormat.jm()
+                        .format(DateFormat("hh:mm:ss").parse(listToTime[0]))
+                        .toString(),
+                    style: sGreyTextStyle.copyWith(fontSize: 18)),
+              ],
+            ),
           ],
         );
       }
@@ -1435,6 +1453,10 @@ class StudentHomePageState extends State<StudentHomePage> {
             ),
             GestureDetector(
               onTap: () async {
+                final prefs = await SharedPreferences.getInstance();
+                prefs.clear();
+                prefs.remove('username');
+                prefs.remove('password');
                 await dio
                     .get('https://sister.sekolahmusik.co.id/api/method/logout');
                 Navigator.pushAndRemoveUntil(

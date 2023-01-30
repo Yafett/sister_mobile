@@ -71,11 +71,18 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const CircleAvatar(
-          radius: 50,
-          backgroundImage: AssetImage('assets/images/smi-logo-white.png'),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Image(
+              fit: BoxFit.cover,
+              width: 210,
+              height: 110,
+              image: AssetImage('assets/images/title.png'), 
+            ),
+          ],
         ),
-        const SizedBox(height: 20),
         RichText(
           text: TextSpan(
             children: <TextSpan>[
@@ -155,32 +162,27 @@ class _LoginPageState extends State<LoginPage> {
       listener: (context, state) {
         if (state is LoginSuccess) {
           final role = state.role.toString();
-
-          if (role == 'Guardian') {
+          print('room : ' + role.toString());
+          if (role == 'Guardian Student') {
             Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => const GuardianHomePage()),
+                    builder: (context) => GuardianHomePage(
+                          isStudent: true,
+                        )),
+                (route) => false);
+          } else if (role == 'Guardian') {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => GuardianHomePage()),
                 (route) => false);
           } else if (role == 'Student') {
             Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => const StudentHomePage()),
+                MaterialPageRoute(builder: (context) => StudentHomePage()),
                 (route) => false);
           } else if (role == 'Staff') {
-            MotionToast(
-              height: 50,
-              width: 300,
-              primaryColor: sRedColor,
-              description: Text(
-                'errr',
-                style: sRedTextStyle.copyWith(fontWeight: semiBold),
-              ),
-              icon: Icons.warning_amber,
-              animationCurve: Curves.bounceIn,
-            ).show(context);
-          } else {
+            print('btoom');
             Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
@@ -188,8 +190,19 @@ class _LoginPageState extends State<LoginPage> {
                           back: false,
                         )),
                 (route) => false);
+          } else {
+            MotionToast(
+              height: 50,
+              width: 300,
+              primaryColor: sRedColor,
+              description: Text(
+                'Wrong Credentials',
+                style: sRedTextStyle.copyWith(fontWeight: semiBold),
+              ),
+              icon: Icons.warning_amber,
+              animationCurve: Curves.bounceIn,
+            ).show(context);
           }
-          print('role : ' + role.toString());
         } else if (state is LoginError) {
           MotionToast(
             height: 50,
@@ -228,12 +241,27 @@ class _LoginPageState extends State<LoginPage> {
             child: InkWell(
               splashColor: Colors.grey,
               onTap: () async {
-                _loginBloc.add(
-                  Login(
-                    _usernameController.text,
-                    _passwordController.text,
-                  ),
-                );
+                if (_usernameController.text.length == 0 ||
+                    _passwordController.text.length == 0) {
+                  MotionToast(
+                    height: 70,
+                    width: 300,
+                    primaryColor: sRedColor,
+                    description: Text(
+                      "Field Musn't be empty",
+                      style: sRedTextStyle.copyWith(fontWeight: semiBold),
+                    ),
+                    icon: Icons.warning_amber,
+                    animationCurve: Curves.bounceIn,
+                  ).show(context);
+                } else {
+                  _loginBloc.add(
+                    Login(
+                      _usernameController.text,
+                      _passwordController.text,
+                    ),
+                  );
+                }
               },
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
@@ -376,12 +404,12 @@ class _LoginPageState extends State<LoginPage> {
       if (checking.data['data'].length > 0) {
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const GuardianHomePage()),
+            MaterialPageRoute(builder: (context) => GuardianHomePage()),
             (route) => false);
       } else {
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const StudentHomePage()),
+            MaterialPageRoute(builder: (context) => StudentHomePage()),
             (route) => false);
       }
     } else {
@@ -431,7 +459,7 @@ class _LoginPageState extends State<LoginPage> {
                   },
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: ' Enter your Email Here',
+                    labelText: 'Enter your Email Here',
                   ),
                 ),
                 const SizedBox(height: 20),

@@ -81,7 +81,6 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
         builder: (context, state) {
           if (state is StudentScheduleLoaded) {
             Schedule schedule = state.scheduleModel;
-
             return SfCalendarTheme(
               data: SfCalendarThemeData(
                 todayTextStyle: sWhiteTextStyle,

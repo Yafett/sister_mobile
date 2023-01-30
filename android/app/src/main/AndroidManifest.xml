@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.sister_mobile">
+    package="com.sister_mobile.customer">
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />    
@@ -12,7 +12,7 @@
         android:icon="@mipmap/ic_launcher">
         <meta-data android:name="com.google.android.geo.API_KEY"
                     android:value="AIzaSyApES5nwl9QvI983ow6rT_bYenbRQ1dtbg"/>
-        <activity
+        <activity   
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"

@@ -1723,7 +1723,8 @@ class _RegisterPageState extends State<RegisterPage> {
     for (var a = 0; a < data.length; a++) {
       if (mounted) {
         setState(() {
-          listJoiningReason.add(request.data['data'][a]['name'].toString().capitalize!);
+          listJoiningReason
+              .add(request.data['data'][a]['name'].toString().capitalize!);
         });
       }
     }
@@ -1742,7 +1743,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
     for (var a = 0; a < data.length; a++) {
       setState(() {
-        listKnowFrom.add(request.data['data'][a]['name'].toString().capitalize!);
+        listKnowFrom
+            .add(request.data['data'][a]['name'].toString().capitalize!);
       });
     }
   }

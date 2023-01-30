@@ -43,6 +43,7 @@ class ProfileProvider {
 
         return Profile.fromJson(request.data);
       } else {
+        print('codedef : ' + codeDef.toString());
         final request = await dio.get(
             'https://sister.sekolahmusik.co.id/api/resource/Student/${codeDef}');
 
@@ -106,51 +107,27 @@ class ProfileProvider {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
           .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
-        'usr': user,
-        'pwd': pass,
+        'usr': 'administrator',
+        'pwd': 'admin',
       });
 
       var userEmail = pref.getString('user-email');
 
-      if (codeDef == null) {
-        final getCode = await dio
-            .get("https://sister.sekolahmusik.co.id/api/resource/User/");
+      final getCode =
+          await dio.get("https://sister.sekolahmusik.co.id/api/resource/User/");
 
-        final request = await dio.get(
-            "https://sister.sekolahmusik.co.id/api/resource/User/${userEmail}");
-
-        return ProfileUser.fromJson(request.data);
-        // for (var a = 0; a < getCode.data['data'].length; a++) {
-        //   final code = getCode.data['data'][a]['name'];
-        //   final request = await dio.get(
-        //       'https://sister.sekolahmusik.co.id/api/resource/User/${code}');
-        //   if (request.data['data']['user'] == userEmail) {
-        //     userCode = request.data['data']['user'];
-        //   }
-        // }
-      } else {
-        final getCode = await dio
-            .get("https://sister.sekolahmusik.co.id/api/resource/User/");
-
-        final request = await dio.get(
-            "https://sister.sekolahmusik.co.id/api/resource/User/${codeDef}");
-
-        return ProfileUser.fromJson(request.data);
+      print(codeDef);
+      final request = await dio.get(
+          "https://sister.sekolahmusik.co.id/api/resource/User/${(codeDef == null) ? userEmail : codeDef}");
+      if (request.data.toString().contains('user_image') == false) {
+        Profile.fromJson({'image': ''});
       }
-      //         if (getCode.statusCode == 200) {
-
-      //           }
-      //         } else {
-      //           return ProfileUser.withError('Data not found / Connection Issues');
-      //         }
-      //       } else {
-      //         final request = await dio.get(
-      //             'https://sister.sekolahmusik.co.id/api/resource/User/${codeDef}');
-      //       }
+      print(request.data.toString());
+      return ProfileUser.fromJson(request.data);
     } catch (error, stacktrace) {
       // ignore: avoid_print
       return ProfileUser.withError('Data not found / Connection Issues');
-    }
+    } 
   }
 }
 

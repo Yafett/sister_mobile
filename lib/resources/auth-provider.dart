@@ -22,6 +22,9 @@ class AuthProvider {
     var listEmail = [];
     var listUser = [];
 
+    var isStudent = false;
+    var isGuardian = false;
+
     var user = username;
     var pass = password;
 
@@ -41,7 +44,11 @@ class AuthProvider {
           'pwd': pass,
         });
 
+    print('resesa : ' + verify.body.toString());
+    print('resesa : ' + verify.statusCode.toString());
+
     if (verify.statusCode == 200) {
+      print('adajda');
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio.post(
         'https://sister.sekolahmusik.co.id/api/method/login',
@@ -51,11 +58,14 @@ class AuthProvider {
         },
       );
 
+      print('rese : ' + response.data.toString());
+
       prefs.setString('username', user);
       prefs.setString('password', pass);
 
       if (response.statusCode == 200) {
         if (user.toString().contains('@')) {
+          // ! startfunc
           final getCode = await dio.get(
               'https://sister.sekolahmusik.co.id/api/resource/User?filters=[["email","=","${user}"]]&fields=["*"]');
 
@@ -87,59 +97,95 @@ class AuthProvider {
             listUser.add(getUser.data['data']['roles'][a]['role'].toString());
           }
         }
-
         prefs.setString('user-email', user);
 
-        if (listUser.contains('Student Guardian')) {
-          print('lily');
-          final getGuardianCode = await dio
-              .get('https://sister.sekolahmusik.co.id/api/resource/Guardian/');
+        // if (listUser.contains('Student Guardian') &&
+        //     listUser.contains('Student')) {
+          // final getGuardianCode = await dio
+          //     .get('https://sister.sekolahmusik.co.id/api/resource/Guardian/');
 
-          for (var a = 0; a < getGuardianCode.data['data'].length; a++) {
-            final getGuardian = await dio.get(
-                'https://sister.sekolahmusik.co.id/api/resource/Guardian/${getGuardianCode.data['data'][a]['name'].toString()}');
+          // final getStudentCode = await dio
+          //     .get('https://sister.sekolahmusik.co.id/api/resource/Student/');
 
-            if (getGuardian.data['data']['user'].toString() == user) {
-              print('im Guardian');
-              return 'Guardian';
+          // for (var a = 0; a < getStudentCode.data['data'].length; a++) {
+          //   final getStudent = await dio.get(
+          //       'https://sister.sekolahmusik.co.id/api/resource/Student/${getStudentCode.data['data'][a]['name'].toString()}');
+
+          //   if (getStudent.data['data']['user'].toString() == user) {
+          //     isStudent = true;
+          //   }
+          // }
+
+          // for (var a = 0; a < getGuardianCode.data['data'].length; a++) {
+          //   final getGuardian = await dio.get(
+          //       'https://sister.sekolahmusik.co.id/api/resource/Guardian/${getGuardianCode.data['data'][a]['name'].toString()}');
+
+          //   if (getGuardian.data['data']['user'].toString() == user) {
+          //     isGuardian = true;
+          //   }
+          // }
+
+          // if (isStudent == true && isGuardian == true)
+          if (listUser.contains('Student Guardian') &&
+              listUser.contains('Student'))  {
+
+
+
+            return 'Guardian Student';
+          } else if (listUser.contains('Student Guardian')) {
+            final getGuardianCode = await dio.get(
+                'https://sister.sekolahmusik.co.id/api/resource/Guardian/');
+
+            for (var a = 0; a < getGuardianCode.data['data'].length; a++) {
+              print('tumblr : ' +
+                  getGuardianCode.data['data'][a]['name'].toString());
+              final getGuardian = await dio.get(
+                  'https://sister.sekolahmusik.co.id/api/resource/Guardian/${getGuardianCode.data['data'][a]['name'].toString()}');
+
+              if (getGuardian.data['data']['user'].toString() == user) {
+                print('im Guardian');
+                return 'Guardian';
+              }
+            }
+          } else if (listUser.contains('Student')) {
+            print('eve');
+            final getStudentCode = await dio
+                .get('https://sister.sekolahmusik.co.id/api/resource/Student/');
+
+            for (var a = 0; a < getStudentCode.data['data'].length; a++) {
+              final getStudent = await dio.get(
+                  'https://sister.sekolahmusik.co.id/api/resource/Student/${getStudentCode.data['data'][a]['name'].toString()}');
+
+              if (getStudent.data['data']['user'].toString() == user) {
+                print('im Student');
+                return 'Student';
+              }
             }
           }
-        } else if (listUser.contains('Student')) {
-          print('eve');
-          final getStudentCode = await dio
-              .get('https://sister.sekolahmusik.co.id/api/resource/Student/');
+          if (listUser.contains('Instructor') ||
+              listUser.contains('Employee')) {
+            print('im Staff');
+            return 'Staff';
+          } else {
+            print('ursus');
+            final getUserCode = await dio
+                .get('https://sister.sekolahmusik.co.id/api/resource/User/');
 
-          for (var a = 0; a < getStudentCode.data['data'].length; a++) {
-            final getStudent = await dio.get(
-                'https://sister.sekolahmusik.co.id/api/resource/Student/${getStudentCode.data['data'][a]['name'].toString()}');
+            for (var a = 0; a < getUserCode.data['data'].length; a++) {
+              final getUser = await dio.get(
+                  'https://sister.sekolahmusik.co.id/api/resource/User/${getUserCode.data['data'][a]['name'].toString()}');
 
-            if (getStudent.data['data']['user'].toString() == user) {
-              print('im Student');
-              return 'Student';
+              print(user.toString());
+              if (getUser.data['data']['user'].toString() == user) {
+                return 'Customer';
+              }
             }
           }
-        }
-        if (listUser.contains('Instructor') || listUser.contains('Employee')) {
-          print('im Staff');
-          return 'Staff';
-        } else {
-          print('ursus');
-          final getUserCode = await dio
-              .get('https://sister.sekolahmusik.co.id/api/resource/User/');
-
-          for (var a = 0; a < getUserCode.data['data'].length; a++) {
-            final getUser = await dio.get(
-                'https://sister.sekolahmusik.co.id/api/resource/User/${getUserCode.data['data'][a]['name'].toString()}');
-
-            print(user.toString());
-            if (getUser.data['data']['user'].toString() == user) {
-              return 'Customer';
-            }
-          }
-        }
+      
+      } else {
+        print('asdia');
+        return 'error';
       }
-    } else {
-      return 'error';
     }
   }
 

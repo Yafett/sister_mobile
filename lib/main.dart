@@ -62,8 +62,8 @@ class _MyAppState extends State<MyApp> {
             StudentEnrollmentHistoryPage(),
 
         // ! Guardian Section
-        '/guardian-home': (context) => const GuardianHomePage(),
-        '/guardian-kids': (context) => const GuardianKidsPage(),
+        '/guardian-home': (context) => GuardianHomePage(),
+        '/guardian-kids': (context) => GuardianKidsPage(),
       },
     );
   }

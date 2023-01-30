@@ -20,12 +20,15 @@ import 'package:sister_mobile/widget/no_scroll_waves.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletons/skeletons.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
+import 'package:string_extensions/string_extensions.dart';
 
 import '../../bloc/get-profile-student-bloc/get_profile_student_bloc.dart';
 import '../../resources/data-provider.dart';
 
 class GuardianHomePage extends StatefulWidget {
-  const GuardianHomePage({Key? key}) : super(key: key);
+  var isStudent;
+
+  GuardianHomePage({Key? key, this.isStudent}) : super(key: key);
 
   @override
   State<GuardianHomePage> createState() => GuardianHomePageState();
@@ -58,6 +61,7 @@ class GuardianHomePageState extends State<GuardianHomePage> {
   final _profileBloc = GetProfileStudentBloc();
   final _userBloc = GetProfileUserBloc();
   final _guardianBloc = GetProfileGuardianBloc();
+  final _studentBloc = GetProfileStudentBloc();
 
   final GlobalKey<SideMenuState> _sideMenuKey = GlobalKey<SideMenuState>();
   final GlobalKey<SideMenuState> _endSideMenuKey = GlobalKey<SideMenuState>();
@@ -69,6 +73,9 @@ class GuardianHomePageState extends State<GuardianHomePage> {
     _profileBloc.add(GetProfileList());
     _userBloc.add(GetProfileUserList());
     _guardianBloc.add(GetProfileGuardianList());
+    if (widget.isStudent == true) {
+      _studentBloc.add(GetProfileList());
+    }
     super.initState();
   }
 
@@ -137,8 +144,8 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                         if (state is GetProfileGuardianLoaded) {
                           ProfileGuardian guardian = state.guardianModel;
                           List<Students>? students = guardian.data?.students;
-
-                          _fetchStudentProfile(students);
+                          print('accorn : ' + students.toString());
+                          _fetchStudentProfile(students, guardian);
                         }
                       },
                       builder: (context, state) {
@@ -190,43 +197,144 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                                     ],
                                   ),
                                 )
-                              : SingleChildScrollView(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: <Widget>[
-                                      Container(
-                                        height:
-                                            MediaQuery.of(context).size.height /
-                                                1.4,
-                                        margin: EdgeInsets.only(
-                                            bottom: 20, top: 15),
-                                        padding: const EdgeInsets.symmetric(
+                              : Column(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(left: 20),
+                                      child: Text(
+                                          'Students ',
+                                          style: sWhiteTextStyle.copyWith(
+                                              fontSize: 20,
+                                              fontWeight: semiBold)),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Container(
+                                        height: 150,
+                                        margin: EdgeInsets.symmetric(
                                             horizontal: 20),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text('Student',
-                                                style: sWhiteTextStyle.copyWith(
-                                                    fontSize: 20,
-                                                    fontWeight: semiBold)),
-                                            const SizedBox(height: 10),
-                                            ListView.builder(
-                                              shrinkWrap: true,
-                                              itemCount: studentList.length,
-                                              primary: false,
-                                              itemBuilder: (context, index) {
-                                                return _buildStudentProfileCard(
-                                                    student, index);
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            border: Border.all(
+                                                color: Color(0xff30363D))),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 20, vertical: 15),
+                                        child: ListView.builder(
+                                          scrollDirection: Axis.horizontal,
+                                          itemBuilder: (context, index) {
+                                            return GestureDetector(
+                                              onTap: () => Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          StudentDetailPage(
+                                                            code: studentList[
+                                                                        index]
+                                                                    ['data']
+                                                                ['name'],
+                                                            index: index,
+                                                          ))),
+                                              child: Container(
+                                                margin:
+                                                    EdgeInsets.only(right: 20),
+                                                child: Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  children: [
+                                                    _buildStudentPicture(index),
+                                                    SizedBox(height: 5),
+                                                    Container(
+                                                      width: 80,
+                                                      child: Center(
+                                                        child: Text(
+                                                            _setStudentName(
+                                                                index),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            style: sWhiteTextStyle
+                                                                .copyWith(
+                                                                    fontSize:
+                                                                        16)),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          itemCount: studentList.length,
+                                        )),
+                                  ],
                                 );
+                          // SingleChildScrollView(
+                          //     child: Column(
+                          //       crossAxisAlignment:
+                          //           CrossAxisAlignment.start,
+                          //       children: <Widget>[
+                          //         Container(
+                          //           decoration: BoxDecoration(
+                          //               border: Border.all(
+                          //                   color: Color(0xff30363D))),
+                          //           padding: const EdgeInsets.symmetric(
+                          //               horizontal: 20),
+                          //           height: 100,
+                          //           child: ListView(
+                          //             scrollDirection: Axis.horizontal,
+                          //             children: [
+                          //               Container(
+                          //                 padding: const EdgeInsets.all(25),
+                          //                 height: 50,
+                          //                 width: 50,
+                          //                 decoration: BoxDecoration(
+                          //                     color: Colors.red,
+                          //                     image: DecorationImage(
+                          //                       image: AssetImage(
+                          //                           'assets/images/user.png'),
+                          //                       fit: BoxFit.cover,
+                          //                     ),
+                          //                     borderRadius:
+                          //                         BorderRadius.circular(8)),
+                          //               ),
+                          //             ],
+                          //           ),
+                          //         ),
+                          //         Container(
+                          //           height:
+                          //               MediaQuery.of(context).size.height /
+                          //                   1.4,
+                          //           margin: EdgeInsets.only(
+                          //               bottom: 20, top: 15),
+                          //           padding: const EdgeInsets.symmetric(
+                          //               horizontal: 20),
+                          //           child: Column(
+                          //             crossAxisAlignment:
+                          //                 CrossAxisAlignment.start,
+                          //             children: [
+                          //               _buildStudentSection(),
+                          //               Text('Student',
+                          //                   style: sWhiteTextStyle.copyWith(
+                          //                       fontSize: 20,
+                          //                       fontWeight: semiBold)),
+                          //               const SizedBox(height: 10),
+                          //               ListView.builder(
+                          //                 scrollDirection: Axis.vertical,
+                          //                 shrinkWrap: true,
+                          //                 itemCount: studentList.length,
+                          //                 primary: false,
+                          //                 itemBuilder: (context, index) {
+                          //                   return _buildStudentProfileCard(
+                          //                       student, index);
+                          //                 },
+                          //               ),
+                          //             ],
+                          //           ),
+                          //         ),
+                          //       ],
+                          //     ),
+                          //   );
                         } else {
                           return Container();
                         }
@@ -441,7 +549,7 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                         decoration: BoxDecoration(
                             color: Colors.red,
                             image: const DecorationImage(
-                              image: AssetImage('assets/images/lord-shrek.jpg'),
+                              image: AssetImage('assets/images/user.png'),
                               fit: BoxFit.fitHeight,
                             ),
                             borderRadius: BorderRadius.circular(8)),
@@ -561,7 +669,7 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                                       color: Colors.red,
                                       image: DecorationImage(
                                         image: AssetImage(
-                                            'assets/images/lord-shrek.jpg'),
+                                            'assets/images/user.png'),
                                         fit: BoxFit.fitHeight,
                                       ),
                                       borderRadius: BorderRadius.circular(8)),
@@ -638,12 +746,31 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                   sWhiteTextStyle.copyWith(fontSize: 32, fontWeight: semiBold),
             ),
             Text(
+              '${profile.name.toString()}',
+              style:
+                  sGreyTextStyle.copyWith(fontSize: 20, fontWeight: semiBold),
+            ),
+            SizedBox(height: 5),
+            Text(
               'welcome and happy learning',
               style: sWhiteTextStyle.copyWith(fontSize: 18, fontWeight: semi),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildStudentSection() {
+    return BlocBuilder<GetProfileStudentBloc, GetProfileStudentState>(
+      bloc: _studentBloc,
+      builder: (context, state) {
+        if (state is GetProfileLoaded) {
+          return Text('OO', style: sWhiteTextStyle);
+        } else {
+          return Text('empty');
+        }
+      },
     );
   }
 
@@ -676,7 +803,7 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                               backgroundColor: Colors.white,
                               radius: 22.0,
                               backgroundImage:
-                                  AssetImage('assets/images/lord-shrek.jpg'),
+                                  AssetImage('assets/images/user.png'),
                             )
                           : CircleAvatar(
                               backgroundColor: Colors.white,
@@ -728,6 +855,40 @@ class GuardianHomePageState extends State<GuardianHomePage> {
         }
       },
     );
+  }
+
+  Widget _buildStudentPicture(index) {
+    final image;
+    if (studentList[index]['data']['image'].toString()[0] == '/') {
+      image =
+          'https://sister.sekolahmusik.co.id${studentList[index]['data']['image']}';
+    } else {
+      image = studentList[index]['data']['image'].toString();
+    }
+
+    return (studentList[index]['data']['image'] != null)
+        ? Container(
+            height: 80,
+            width: 80,
+            decoration: BoxDecoration(
+                color: Colors.red,
+                image: DecorationImage(
+                  image: NetworkImage(image),
+                  fit: BoxFit.cover,
+                ),
+                borderRadius: BorderRadius.circular(8)),
+          )
+        : Container(
+            height: 80,
+            width: 80,
+            decoration: BoxDecoration(
+                color: Colors.red,
+                image: DecorationImage(
+                  image: AssetImage('assets/images/user.png'),
+                  fit: BoxFit.fitHeight,
+                ),
+                borderRadius: BorderRadius.circular(8)),
+          );
   }
 
   showAlertDialog(BuildContext context) {
@@ -808,6 +969,16 @@ class GuardianHomePageState extends State<GuardianHomePage> {
     );
   }
 
+  _setStudentName(index) {
+//Removes everything after first '.'
+    String result = studentList[index]['data']['first_name']
+        .toString()
+        .substring(0,
+            studentList[index]['data']['first_name'].toString().indexOf(' '));
+    print(result);
+    return result.toString().capitalize;
+  }
+
   Future<void> barcodeScan() async {
     String barcodeScanRes;
     // Platform messages may fail, so we use a try/catch PlatformException.
@@ -855,7 +1026,7 @@ class GuardianHomePageState extends State<GuardianHomePage> {
     return formattedDate.toString();
   }
 
-  _fetchStudentProfile(students) async {
+  _fetchStudentProfile(students, guardian) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
@@ -869,6 +1040,33 @@ class GuardianHomePageState extends State<GuardianHomePage> {
       'pwd': pass,
     });
 
+    if (widget.isStudent == true) {
+      final getCode = await dio
+          .get('https://sister.sekolahmusik.co.id/api/resource/Guardian/');
+
+      final code = getCode.data['data'][0]['name'];
+
+      final getEmail = await dio.get(
+          'https://sister.sekolahmusik.co.id/api/resource/Guardian/' + code);
+
+      // print('call parents email : ' + guardian.data.emailAddress.toString());
+      // print(
+      //     'call parents : ' + request.data['data']['email_address'].toString());
+
+      final getStudent = await dio
+          .get('https://sister.sekolahmusik.co.id/api/resource/Student/');
+      for (var a = 0; a < getStudent.data['data'].length; a++) {
+        final request = await dio.get(
+            'https://sister.sekolahmusik.co.id/api/resource/Student/' +
+                getStudent.data['data'][a]['name'].toString());
+        print('beep : ' + request.data['data']['student_email_id'].toString());
+        if (request.data['data']['student_email_id'].toString() ==
+            getEmail.data['data']['email_address'].toString()) {
+          studentList.add(request.data);
+        }
+      }
+    }
+
     for (var a = 0; a < students.length; a++) {
       final request = await dio.get(
           'https://sister.sekolahmusik.co.id/api/resource/Student/' +
@@ -880,6 +1078,7 @@ class GuardianHomePageState extends State<GuardianHomePage> {
           profileLength = students.length;
         });
       }
+      print('trident : ' + students![a].student.toString());
     }
 
     _isLoading = false;

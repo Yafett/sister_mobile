@@ -169,8 +169,7 @@ class DataProvider {
         'pwd': pass,
       });
 
-      if (codeDef == null) {
-        print('witho ');
+      if (codeDef == null) { 
         print('student');
         final getCode = await dio
             .get('https://sister.sekolahmusik.co.id/api/resource/Student/');
