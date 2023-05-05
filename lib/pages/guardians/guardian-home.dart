@@ -203,8 +203,7 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                                   children: [
                                     Container(
                                       margin: EdgeInsets.only(left: 20),
-                                      child: Text(
-                                          'Students ',
+                                      child: Text('Students ',
                                           style: sWhiteTextStyle.copyWith(
                                               fontSize: 20,
                                               fontWeight: semiBold)),
@@ -570,39 +569,39 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  DigitalClock(
-                    areaHeight: 0,
-                    areaDecoration: const BoxDecoration(
-                      color: const Color(0xff0D1117),
-                    ),
-                    hourMinuteDigitDecoration: BoxDecoration(
-                        border: Border.all(color: const Color(0xff0D1117))),
-                    areaWidth: 0,
-                    digitAnimationStyle: Curves.elasticOut,
-                    showSecondsDigit: false,
-                    hourMinuteDigitTextStyle: const TextStyle(
-                      color: Color(0xff0D1117),
-                      fontSize: 0,
-                    ),
-                  ),
+                  // DigitalClock(
+                  //   areaHeight: 0,
+                  //   areaDecoration: const BoxDecoration(
+                  //     color: const Color(0xff0D1117),
+                  //   ),
+                  //   minuteDigitDecoration: BoxDecoration(
+                  //       border: Border.all(color: const Color(0xff0D1117))),
+                  //   areaWidth: 0,
+                  //   digitAnimationStyle: Curves.elasticOut,
+                  //   showSecondsDigit: false,
+                  //   hourMinuteDigitTextStyle: const TextStyle(
+                  //     color: Color(0xff0D1117),
+                  //     fontSize: 0,
+                  //   ),
+                  // ),
 
-                  // ! real clock
-                  Container(
-                    // margin: EdgeInsets.only(right: 10),
-                    child: DigitalClock(
-                        areaDecoration: const BoxDecoration(
-                          color: const Color(0xff0D1117),
-                        ),
-                        // areaWidth: 95,
-                        areaWidth: 115,
-                        showSecondsDigit: false,
-                        hourMinuteDigitDecoration: BoxDecoration(
-                            border: Border.all(color: const Color(0xff0D1117))),
-                        hourMinuteDigitTextStyle: sWhiteTextStyle.copyWith(
-                          fontSize: 40,
-                        )),
-                  ),
-                  Text(_getCurrentDate(), style: sWhiteTextStyle),
+                  // // ! real clock
+                  // Container(
+                  //   // margin: EdgeInsets.only(right: 10),
+                  //   child: DigitalClock(
+                  //       areaDecoration: const BoxDecoration(
+                  //         color: const Color(0xff0D1117),
+                  //       ),
+                  //       // areaWidth: 95,
+                  //       areaWidth: 115,
+                  //       showSecondsDigit: false,
+                  //       minuteDigitDecoration: BoxDecoration(
+                  //           border: Border.all(color: const Color(0xff0D1117))),
+                  //       hourMinuteDigitTextStyle: sWhiteTextStyle.copyWith(
+                  //         fontSize: 40,
+                  //       )),
+                  // ),
+                  // Text(_getCurrentDate(), style: sWhiteTextStyle),
                 ],
               ),
             ],
@@ -819,22 +818,7 @@ class GuardianHomePageState extends State<GuardianHomePage> {
                     ],
                   ),
                 ),
-                ListTile(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => StudentProfilePage(
-                                  code: guardian.data!.name,
-                                  guardian: true,
-                                )));
-                  },
-                  leading: const Icon(Icons.person_outline,
-                      size: 20.0, color: Colors.white),
-                  title: const Text("Profile"),
-                  textColor: Colors.white,
-                  dense: true,
-                ),
+        
                 ListTile(
                   onTap: () async {
                     showAlertDialog(context);
@@ -933,8 +917,8 @@ class GuardianHomePageState extends State<GuardianHomePage> {
             ),
             GestureDetector(
               onTap: () async {
-                await dio
-                    .get('https://sister.sekolahmusik.co.id/api/method/logout');
+                await dio.get(
+                    'https://${baseUrl}.sekolahmusik.co.id/api/method/logout');
                 Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => SplashPage()),
@@ -1035,29 +1019,30 @@ class GuardianHomePageState extends State<GuardianHomePage> {
 
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
-        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+        .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
       'usr': user,
       'pwd': pass,
     });
 
     if (widget.isStudent == true) {
       final getCode = await dio
-          .get('https://sister.sekolahmusik.co.id/api/resource/Guardian/');
+          .get('https://${baseUrl}.sekolahmusik.co.id/api/resource/Guardian/');
 
       final code = getCode.data['data'][0]['name'];
 
       final getEmail = await dio.get(
-          'https://sister.sekolahmusik.co.id/api/resource/Guardian/' + code);
+          'https://${baseUrl}.sekolahmusik.co.id/api/resource/Guardian/' +
+              code);
 
       // print('call parents email : ' + guardian.data.emailAddress.toString());
       // print(
       //     'call parents : ' + request.data['data']['email_address'].toString());
 
       final getStudent = await dio
-          .get('https://sister.sekolahmusik.co.id/api/resource/Student/');
+          .get('https://${baseUrl}.sekolahmusik.co.id/api/resource/Student/');
       for (var a = 0; a < getStudent.data['data'].length; a++) {
         final request = await dio.get(
-            'https://sister.sekolahmusik.co.id/api/resource/Student/' +
+            'https://${baseUrl}.sekolahmusik.co.id/api/resource/Student/' +
                 getStudent.data['data'][a]['name'].toString());
         print('beep : ' + request.data['data']['student_email_id'].toString());
         if (request.data['data']['student_email_id'].toString() ==
@@ -1069,7 +1054,7 @@ class GuardianHomePageState extends State<GuardianHomePage> {
 
     for (var a = 0; a < students.length; a++) {
       final request = await dio.get(
-          'https://sister.sekolahmusik.co.id/api/resource/Student/' +
+          'https://${baseUrl}.sekolahmusik.co.id/api/resource/Student/' +
               students![a].student.toString());
 
       if (mounted) {

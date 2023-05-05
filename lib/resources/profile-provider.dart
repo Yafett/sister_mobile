@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sister_mobile/model/ProfileGuardian-model.dart';
+import 'package:sister_mobile/shared/theme.dart';
 
 import '../model/ProfileStudent-model.dart';
 import '../model/ProfileUser.dart';
@@ -14,7 +15,7 @@ class ProfileProvider {
   var cookieJar = CookieJar();
 
   final String urlGetProfile =
-      'https://sister.sekolahmusik.co.id/api/resource/Student/';
+      'https://${baseUrl}.sekolahmusik.co.id/api/resource/Student/';
 
   Future<Profile> fetchProfileStudent(codeDef) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -25,27 +26,27 @@ class ProfileProvider {
     try {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
-          .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+          .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
         'usr': user,
         'pwd': pass,
       });
 
       if (codeDef == null) {
         final getCode = await dio.get(
-            'https://sister.sekolahmusik.co.id/api/resource/Student?filters=[["student_email_id","=","${email}"]]&fields=["*"]');
+            'https://${baseUrl}.sekolahmusik.co.id/api/resource/Student?filters=[["student_email_id","=","${email}"]]&fields=["*"]');
 
         var code = getCode.data['data'][0]['name'];
 
         pref.setString('code', code);
 
         final request = await dio.get(
-            'https://sister.sekolahmusik.co.id/api/resource/Student/${code}');
+            'https://${baseUrl}.sekolahmusik.co.id/api/resource/Student/${code}');
 
         return Profile.fromJson(request.data);
       } else {
         print('codedef : ' + codeDef.toString());
         final request = await dio.get(
-            'https://sister.sekolahmusik.co.id/api/resource/Student/${codeDef}');
+            'https://${baseUrl}.sekolahmusik.co.id/api/resource/Student/${codeDef}');
 
         return Profile.fromJson(request.data);
       }
@@ -65,13 +66,13 @@ class ProfileProvider {
     try {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
-          .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+          .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
         'usr': user,
         'pwd': pass,
       });
 
       final gege = await dio.get(
-          'https://sister.sekolahmusik.co.id/api/resource/Guardian?filters=[["user","=","${email}"]]&fields=["*"]');
+          'https://${baseUrl}.sekolahmusik.co.id/api/resource/Guardian?filters=[["user","=","${email}"]]&fields=["*"]');
 
       print('gege : ' + gege.data.toString());
 
@@ -80,11 +81,11 @@ class ProfileProvider {
       print('cde : ' + code.toString());
 
       final getCode = await dio
-          .get("https://sister.sekolahmusik.co.id/api/resource/Guardian");
+          .get("https://${baseUrl}.sekolahmusik.co.id/api/resource/Guardian");
 
       if (getCode.statusCode == 200) {
         final request = await dio.get(
-            'https://sister.sekolahmusik.co.id/api/resource/Guardian/${codeDef == null ? code : codeDef}');
+            'https://${baseUrl}.sekolahmusik.co.id/api/resource/Guardian/${codeDef == null ? code : codeDef}');
 
         return ProfileGuardian.fromJson(request.data);
       } else {
@@ -106,7 +107,7 @@ class ProfileProvider {
     try {
       dio.interceptors.add(CookieManager(cookieJar));
       final response = await dio
-          .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+          .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
         'usr': 'administrator',
         'pwd': 'admin',
       });
@@ -114,11 +115,11 @@ class ProfileProvider {
       var userEmail = pref.getString('user-email');
 
       final getCode =
-          await dio.get("https://sister.sekolahmusik.co.id/api/resource/User/");
+          await dio.get("https://${baseUrl}.sekolahmusik.co.id/api/resource/User/");
 
       print(codeDef);
       final request = await dio.get(
-          "https://sister.sekolahmusik.co.id/api/resource/User/${(codeDef == null) ? userEmail : codeDef}");
+          "https://${baseUrl}.sekolahmusik.co.id/api/resource/User/${(codeDef == null) ? userEmail : codeDef}");
       if (request.data.toString().contains('user_image') == false) {
         Profile.fromJson({'image': ''});
       }

@@ -112,7 +112,7 @@ class _StudentProfilePageState extends State<StudentProfilePage> {
             : GestureDetector(
                 onTap: () async {
                   await dio.get(
-                      'https://sister.sekolahmusik.co.id/api/method/logout');
+                      'https://${baseUrl}.sekolahmusik.co.id/api/method/logout');
                   Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(

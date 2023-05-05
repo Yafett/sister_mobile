@@ -67,7 +67,9 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
               child: Column(
             children: [
               _buildPaymentList(),
-              const SizedBox(height: 20,)
+              const SizedBox(
+                height: 20,
+              )
             ],
           )),
         ),
@@ -218,7 +220,7 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
 
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
-        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+        .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
       'usr': user,
       'pwd': pass,
     });
@@ -226,14 +228,14 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
     if (codeDef == null) {
       // ! guardian
 
-      final getCode =
-          await dio.get("https://sister.sekolahmusik.co.id/api/resource/Fees");
+      final getCode = await dio
+          .get("https://${baseUrl}.sekolahmusik.co.id/api/resource/Fees");
 
       if (getCode.statusCode == 200) {
         for (var a = 0; a < getCode.data['data'].length; a++) {
           var code = getCode.data['data'][a]['name'];
           final request = await dio.get(
-              'https://sister.sekolahmusik.co.id/api/resource/Fees/${code}');
+              'https://${baseUrl}.sekolahmusik.co.id/api/resource/Fees/${code}');
 
           if (mounted) {
             setState(() => feesList.add(request.data));
@@ -248,7 +250,7 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
       print('student');
 
       final getCode = await dio.get(
-          'https://sister.sekolahmusik.co.id/api/resource/Fees?filters=[["student","=","${codeDef}"]]&fields=["*"]');
+          'https://${baseUrl}.sekolahmusik.co.id/api/resource/Fees?filters=[["student","=","${codeDef}"]]&fields=["*"]');
 
       for (var a = 0; a < getCode.data['data'].length; a++) {
         studList.add(getCode.data['data'][a]['name']);
@@ -256,8 +258,8 @@ class _StudentPaymentPageState extends State<StudentPaymentPage> {
 
       for (var a = 0; a < studList.length; a++) {
         var code = studList[a];
-        final request = await dio
-            .get('https://sister.sekolahmusik.co.id/api/resource/Fees/${code}');
+        final request = await dio.get(
+            'https://${baseUrl}.sekolahmusik.co.id/api/resource/Fees/${code}');
 
         if (mounted) {
           setState(() => feesList.add(request.data));

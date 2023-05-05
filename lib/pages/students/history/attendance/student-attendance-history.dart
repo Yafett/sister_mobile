@@ -238,18 +238,18 @@ class _StudentAttendanceHistoryPageState
   _fetchCourseStudent(attendance) async {
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
-        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+        .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
       'usr': 'administrator',
       'pwd': 'admin',
     });
-    final getCode = await dio
-        .get("https://sister.sekolahmusik.co.id/api/resource/Course Schedule/");
+    final getCode = await dio.get(
+        "https://${baseUrl}.sekolahmusik.co.id/api/resource/Course Schedule/");
 
     if (getCode.statusCode == 200) {
       for (var a = 0; a < getCode.data['data'].length; a++) {
         var code = getCode.data['data'][a]['name'];
         final request = await dio.get(
-            'https://sister.sekolahmusik.co.id/api/resource/Course Schedule/${code}');
+            'https://${baseUrl}.sekolahmusik.co.id/api/resource/Course Schedule/${code}');
 
         if (mounted) {
           setState(() {
@@ -268,21 +268,21 @@ class _StudentAttendanceHistoryPageState
 
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
-        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+        .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
       'usr': user,
       'pwd': pass,
     });
 
     if (codeDef == null) {
       final getCode = await dio.get(
-          "https://sister.sekolahmusik.co.id/api/resource/Student Attendance/");
+          "https://${baseUrl}.sekolahmusik.co.id/api/resource/Student Attendance/");
 
       if (getCode.statusCode == 200) {
         for (var a = 0; a < getCode.data['data'].length; a++) {
           var code = getCode.data['data'][a]['name'];
 
           final request = await dio.get(
-              'https://sister.sekolahmusik.co.id/api/resource/Student Attendance/${code}');
+              'https://${baseUrl}.sekolahmusik.co.id/api/resource/Student Attendance/${code}');
 
           if (mounted) {
             setState(() {
@@ -296,12 +296,12 @@ class _StudentAttendanceHistoryPageState
       print('this is code ${codeDef}');
 
       final getCode = await dio.get(
-          'https://sister.sekolahmusik.co.id/api/resource/StudentAttendance?filters=[["student","=","${codeDef}"]]&fields=["*"]');
+          'https://${baseUrl}.sekolahmusik.co.id/api/resource/StudentAttendance?filters=[["student","=","${codeDef}"]]&fields=["*"]');
 
       for (var a = 0; a < getCode.data['data'].length; a++) {
         final code = getCode.data['data'][a]['name'];
         final request = await dio.get(
-            'https://sister.sekolahmusik.co.id/api/resource/Student Attendance/${code}');
+            'https://${baseUrl}.sekolahmusik.co.id/api/resource/Student Attendance/${code}');
 
         if (mounted) {
           setState(() {

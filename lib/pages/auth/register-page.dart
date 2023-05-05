@@ -1653,7 +1653,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
     final response = await http.post(
         Uri.parse(
-            'https://sister.sekolahmusik.co.id/api/method/smi.api.registrasi_student'),
+            'https://${baseUrl}.sekolahmusik.co.id/api/method/smi.api.registrasi_student'),
         headers: {
           'content-type': 'application/json',
           'Authorization': "token ee4b62270c9f599:88a96322d318005",
@@ -1712,12 +1712,12 @@ class _RegisterPageState extends State<RegisterPage> {
   _fetchJoiningReason() async {
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
-        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+        .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
       'usr': 'administrator',
       'pwd': 'admin',
     });
     final request = await dio.get(
-        "https://sister.sekolahmusik.co.id/api/resource/Reason For Joining");
+        "https://${baseUrl}.sekolahmusik.co.id/api/resource/Reason For Joining");
     var data = request.data['data'];
 
     for (var a = 0; a < data.length; a++) {
@@ -1733,12 +1733,12 @@ class _RegisterPageState extends State<RegisterPage> {
   _fetchKnowFrom() async {
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
-        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+        .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
       'usr': 'administrator',
       'pwd': 'admin',
     });
     final request = await dio
-        .get("https://sister.sekolahmusik.co.id/api/resource/Know From");
+        .get("https://${baseUrl}.sekolahmusik.co.id/api/resource/Know From");
     var data = request.data['data'];
 
     for (var a = 0; a < data.length; a++) {
@@ -1752,12 +1752,12 @@ class _RegisterPageState extends State<RegisterPage> {
   _fetchUnit() async {
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
-        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+        .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
       'usr': 'administrator',
       'pwd': 'admin',
     });
-    final request =
-        await dio.get("https://sister.sekolahmusik.co.id/api/resource/Company");
+    final request = await dio
+        .get("https://${baseUrl}.sekolahmusik.co.id/api/resource/Company");
     var data = request.data['data'];
 
     for (var a = 0; a < data.length; a++) {
@@ -1770,12 +1770,12 @@ class _RegisterPageState extends State<RegisterPage> {
   _fetchGender() async {
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
-        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+        .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
       'usr': 'administrator',
       'pwd': 'admin',
     });
-    final request =
-        await dio.get("https://sister.sekolahmusik.co.id/api/resource/Gender");
+    final request = await dio
+        .get("https://${baseUrl}.sekolahmusik.co.id/api/resource/Gender");
     var data = request.data['data'];
 
     for (var a = 0; a < data.length; a++) {

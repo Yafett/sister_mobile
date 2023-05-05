@@ -377,39 +377,39 @@ class StudentHomePageState extends State<StudentHomePage> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  DigitalClock(
-                    areaHeight: 0,
-                    areaDecoration: const BoxDecoration(
-                      color: const Color(0xff0D1117),
-                    ),
-                    hourMinuteDigitDecoration: BoxDecoration(
-                        border: Border.all(color: const Color(0xff0D1117))),
-                    areaWidth: 0,
-                    digitAnimationStyle: Curves.elasticOut,
-                    showSecondsDigit: false,
-                    hourMinuteDigitTextStyle: const TextStyle(
-                      color: Color(0xff0D1117),
-                      fontSize: 0,
-                    ),
-                  ),
+                  // DigitalClock(
+                  //   areaHeight: 0,
+                  //   areaDecoration: const BoxDecoration(
+                  //     color: const Color(0xff0D1117),
+                  //   ),
+                  //   minuteDigitDecoration: BoxDecoration(
+                  //       border: Border.all(color: const Color(0xff0D1117))),
+                  //   areaWidth: 0,
+                  //   digitAnimationStyle: Curves.elasticOut,
+                  //   showSecondsDigit: false,
+                  //   hourMinuteDigitTextStyle: const TextStyle(
+                  //     color: Color(0xff0D1117),
+                  //     fontSize: 0,
+                  //   ),
+                  // ),
 
                   // ! real clock
-                  Container(
-                    // margin: EdgeInsets.only(right: 10),
-                    child: DigitalClock(
-                        areaDecoration: const BoxDecoration(
-                          color: const Color(0xff0D1117),
-                        ),
-                        // areaWidth: 95,
-                        areaWidth: 115,
-                        showSecondsDigit: false,
-                        hourMinuteDigitDecoration: BoxDecoration(
-                            border: Border.all(color: const Color(0xff0D1117))),
-                        hourMinuteDigitTextStyle: sWhiteTextStyle.copyWith(
-                          fontSize: 40,
-                        )),
-                  ),
-                  Text(_getCurrentDate(), style: sWhiteTextStyle),
+                  // Container(
+                  //   // margin: EdgeInsets.only(right: 10),
+                  //   child: DigitalClock(
+                  //       areaDecoration: const BoxDecoration(
+                  //         color: const Color(0xff0D1117),
+                  //       ),
+                  //       // areaWidth: 95,
+                  //       areaWidth: 115,
+                  //       showSecondsDigit: false,
+                  //       minuteDigitDecoration: BoxDecoration(
+                  //           border: Border.all(color: const Color(0xff0D1117))),
+                  //       hourMinuteDigitTextStyle: sWhiteTextStyle.copyWith(
+                  //         fontSize: 40,
+                  //       )),
+                  // ),
+                  // Text(_getCurrentDate(), style: sWhiteTextStyle),
                 ],
               ),
             ],
@@ -1219,22 +1219,7 @@ class StudentHomePageState extends State<StudentHomePage> {
               ],
             ),
           ),
-          ListTile(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => StudentProfilePage(
-                            student: true,
-                            code: profile.name,
-                          )));
-            },
-            leading: const Icon(Icons.person_outline,
-                size: 20.0, color: Colors.white),
-            title: const Text("Profile"),
-            textColor: Colors.white,
-            dense: true,
-          ),
+
           ListTile(
             onTap: () {
               Navigator.pushNamed(context, '/student-schedule');
@@ -1379,8 +1364,8 @@ class StudentHomePageState extends State<StudentHomePage> {
               children: [
                 Text(
                     DateFormat.jm()
-                        .format(DateFormat("hh:mm:ss").parse(listTime[0])) + ' - '  
-                        .toString(),
+                            .format(DateFormat("hh:mm:ss").parse(listTime[0])) +
+                        ' - '.toString(),
                     style: sGreyTextStyle.copyWith(fontSize: 18)),
                 Text(
                     DateFormat.jm()
@@ -1457,8 +1442,8 @@ class StudentHomePageState extends State<StudentHomePage> {
                 prefs.clear();
                 prefs.remove('username');
                 prefs.remove('password');
-                await dio
-                    .get('https://sister.sekolahmusik.co.id/api/method/logout');
+                await dio.get(
+                    'https://${baseUrl}.sekolahmusik.co.id/api/method/logout');
                 Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => SplashPage()),

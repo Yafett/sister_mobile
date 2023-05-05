@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+  import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 Color kBlueColor = const Color(0xff1F98A8);
@@ -41,4 +41,4 @@ FontWeight semi = FontWeight.w500;
 FontWeight semiBold = FontWeight.bold;
 
 // ! URL
-String baseUrl = 'https://sister.sekolahmusik.co.id/api';
+String baseUrl = 'sister';

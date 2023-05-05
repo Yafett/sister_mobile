@@ -138,7 +138,7 @@ class GuardianKidsPageState extends State<GuardianKidsPage> {
                     areaDecoration: const BoxDecoration(
                       color: const Color(0xff0D1117),
                     ),
-                    hourMinuteDigitDecoration: BoxDecoration(
+                    minuteDigitDecoration: BoxDecoration(
                         border: Border.all(color: const Color(0xff0D1117))),
                     areaWidth: 0,
                     digitAnimationStyle: Curves.elasticOut,
@@ -156,7 +156,7 @@ class GuardianKidsPageState extends State<GuardianKidsPage> {
                       ),
                       areaWidth: 95,
                       showSecondsDigit: false,
-                      hourMinuteDigitDecoration: BoxDecoration(
+                      minuteDigitDecoration: BoxDecoration(
                           border: Border.all(color: const Color(0xff0D1117))),
                       hourMinuteDigitTextStyle: sWhiteTextStyle.copyWith(
                         fontSize: 40,
@@ -707,14 +707,7 @@ class GuardianKidsPageState extends State<GuardianKidsPage> {
               ],
             ),
           ),
-          ListTile(
-            onTap: () {},
-            leading: const Icon(Icons.person_outline,
-                size: 20.0, color: Colors.white),
-            title: const Text("Profile"),
-            textColor: Colors.white,
-            dense: true,
-          ),
+         
           ListTile(
             onTap: () {},
             leading:

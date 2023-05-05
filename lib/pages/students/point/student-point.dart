@@ -48,13 +48,13 @@ class _StudentPointPageState extends State<StudentPointPage> {
           style: sWhiteTextStyle.copyWith(fontWeight: semiBold),
         ),
         actions: [
-          GestureDetector(
-            // onTap: () => Navigator.pushNamed(context, '/student-point-help'),
-            child: Container(
-                margin: const EdgeInsets.only(right: 5),
-                child: const Icon(Icons.shopify,
-                    size: 30, color: Color(0xffC9D1D9))),
-          ),
+          // GestureDetector(
+          //   // onTap: () => Navigator.pushNamed(context, '/student-point-help'),
+          //   child: Container(
+          //       margin: const EdgeInsets.only(right: 5),
+          //       child: const Icon(Icons.shopify,
+          //           size: 30, color: Color(0xffC9D1D9))),
+          // ),
           GestureDetector(
             onTap: () => Navigator.pushNamed(context, '/student-point-help'),
             child: Container(

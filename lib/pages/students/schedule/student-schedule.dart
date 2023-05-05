@@ -173,17 +173,17 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
 
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
-        .post('https://sister.sekolahmusik.co.id/api/method/login', data: {
+        .post('https://${baseUrl}.sekolahmusik.co.id/api/method/login', data: {
       'usr': user,
       'pwd': pass,
     });
 
     if (codeDef == null) {
       final getCode = await dio
-          .get('https://sister.sekolahmusik.co.id/api/resource/Student');
+          .get('https://${baseUrl}.sekolahmusik.co.id/api/resource/Student');
 
       final request = await dio.post(
-        'https://sister.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule',
+        'https://${baseUrl}.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule',
         data: {
           'stud': getCode.data['data'][0]['name'],
         },
@@ -194,7 +194,7 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
       }
     } else {
       final request = await dio.post(
-        'https://sister.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule',
+        'https://${baseUrl}.sekolahmusik.co.id/api/method/smi.api.get_student_course_schedule',
         data: {
           'stud': codeDef,
         },

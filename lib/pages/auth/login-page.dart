@@ -71,41 +71,28 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Image(
-              fit: BoxFit.cover,
-              width: 210,
-              height: 110,
-              image: AssetImage('assets/images/title.png'), 
-            ),
-          ],
+        const SizedBox(height: 10),
+        Image(
+          fit: BoxFit.cover,
+          height: 70,
+          image: AssetImage('assets/images/title.png'),
         ),
+        const SizedBox(height: 10),
         RichText(
           text: TextSpan(
-            children: <TextSpan>[
+            children: [
               TextSpan(
-                text: 'Proceed with your\n',
-                style: GoogleFonts.openSans(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w300,
-                ),
-              ),
+                  text: 'Proceed with your\n',
+                  style: sBlackTextStyle.copyWith(
+                      fontSize: 20, fontWeight: light)),
               TextSpan(
-                text: 'Login',
-                style: GoogleFonts.openSans(
-                  color: Colors.black,
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+                  text: 'Login ',
+                  style: sBlackTextStyle.copyWith(
+                      fontSize: 30, fontWeight: semiBold)),
             ],
           ),
         ),
-        const SizedBox(height: 120),
+        const SizedBox(height: 120)
       ],
     );
   }
@@ -181,8 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                 context,
                 MaterialPageRoute(builder: (context) => StudentHomePage()),
                 (route) => false);
-          } else if (role == 'Staff') {
-            print('btoom');
+          } else if (role == 'Staff') { 
             Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
@@ -365,7 +351,7 @@ class _LoginPageState extends State<LoginPage> {
 
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
-        .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+        .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
       'usr': 'administrator',
       'pwd': 'admin',
     });
@@ -374,14 +360,14 @@ class _LoginPageState extends State<LoginPage> {
 
     if (response.statusCode == 200) {
       final getCode =
-          await dio.get("https://sister.sekolahmusik.co.id/api/resource/User");
+          await dio.get("https://${baseUrl}.sekolahmusik.co.id/api/resource/User");
 
       print('get code : ' + getCode.data.toString());
 
       var code = getCode.data['data'][0]['name'];
 
       final request = await dio
-          .get('https://sister.sekolahmusik.co.id/api/resource/User/${code}');
+          .get('https://${baseUrl}.sekolahmusik.co.id/api/resource/User/${code}');
 
       if (mounted) {
         setState(() {
@@ -391,13 +377,13 @@ class _LoginPageState extends State<LoginPage> {
 
       dio.interceptors.add(CookieManager(cookieJar));
       final identity = await dio
-          .post("https://sister.sekolahmusik.co.id/api/method/login", data: {
+          .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
         'usr': 'administrator',
         'pwd': 'admin',
       });
 
       final checking = await dio.get(
-          'https://sister.sekolahmusik.co.id/api/resource/Guardian?filters=[["email_address","=","${emailId}"]]');
+          'https://${baseUrl}.sekolahmusik.co.id/api/resource/Guardian?filters=[["email_address","=","${emailId}"]]');
 
       print(checking.data['data'].length);
 
@@ -502,7 +488,7 @@ class _LoginPageState extends State<LoginPage> {
                         _emailController.text = '';
                       } else {
                         final response = await dio.get(
-                          'https://sister.sekolahmusik.co.id/api/method/frappe.core.doctype.user.user.reset_password?user=${_emailController.text}',
+                          'https://${baseUrl}.sekolahmusik.co.id/api/method/frappe.core.doctype.user.user.reset_password?user=${_emailController.text}',
                         );
 
                         if (response.data['message'] == null) {

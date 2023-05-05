@@ -3,10 +3,11 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:sister_mobile/shared/theme.dart';
 
 getKnowFrom() async {
   final response = await http.get(
-      Uri.parse('https://sister.sekolahmusik.co.id/api/resource/Know From'));
+      Uri.parse('https://${baseUrl}.sekolahmusik.co.id/api/resource/Know From'));
 
   final data = await json.decode(response.body);
 
