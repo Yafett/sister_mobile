@@ -28,6 +28,9 @@ class AuthProvider {
     var user = username;
     var pass = password;
 
+    // var user = 'radinka_rahman';
+    // var pass = 'admin';
+
     // var user = 'tatata@smi.com';
     // var pass = 'demo';
 
@@ -44,9 +47,6 @@ class AuthProvider {
           'pwd': pass,
         });
 
-    print('resesa : ' + verify.body.toString());
-    print('resesa : ' + verify.statusCode.toString());
-
     if (verify.statusCode == 200) {
       print('adajda');
       dio.interceptors.add(CookieManager(cookieJar));
@@ -57,8 +57,6 @@ class AuthProvider {
           'pwd': pass,
         },
       );
-
-      print('rese : ' + response.data.toString());
 
       prefs.setString('username', user);
       prefs.setString('password', pass);

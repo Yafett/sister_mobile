@@ -168,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                 context,
                 MaterialPageRoute(builder: (context) => StudentHomePage()),
                 (route) => false);
-          } else if (role == 'Staff') { 
+          } else if (role == 'Staff') {
             Navigator.pushAndRemoveUntil(
                 context,
                 MaterialPageRoute(
@@ -359,15 +359,15 @@ class _LoginPageState extends State<LoginPage> {
     print('reponse : ' + response.data.toString());
 
     if (response.statusCode == 200) {
-      final getCode =
-          await dio.get("https://${baseUrl}.sekolahmusik.co.id/api/resource/User");
+      final getCode = await dio
+          .get("https://${baseUrl}.sekolahmusik.co.id/api/resource/User");
 
       print('get code : ' + getCode.data.toString());
 
       var code = getCode.data['data'][0]['name'];
 
-      final request = await dio
-          .get('https://${baseUrl}.sekolahmusik.co.id/api/resource/User/${code}');
+      final request = await dio.get(
+          'https://${baseUrl}.sekolahmusik.co.id/api/resource/User/${code}');
 
       if (mounted) {
         setState(() {
@@ -376,11 +376,12 @@ class _LoginPageState extends State<LoginPage> {
       }
 
       dio.interceptors.add(CookieManager(cookieJar));
-      final identity = await dio
-          .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
-        'usr': 'administrator',
-        'pwd': 'admin',
-      });
+      final identity = await dio.post(
+          "https://${baseUrl}.sekolahmusik.co.id/api/method/login",
+          data: {
+            'usr': 'administrator',
+            'pwd': 'admin',
+          });
 
       final checking = await dio.get(
           'https://${baseUrl}.sekolahmusik.co.id/api/resource/Guardian?filters=[["email_address","=","${emailId}"]]');

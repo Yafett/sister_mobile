@@ -36,7 +36,7 @@ class _StudentSchedulePageState extends State<StudentSchedulePage> {
   final CalendarController _controller = CalendarController();
 
   bool isLoading = false;
-
+  
   @override
   void initState() {
     super.initState();

@@ -777,6 +777,8 @@ class StudentHomePageState extends State<StudentHomePage> {
     );
   }
 
+  // https://{{site}}.sekolahmusik.co.id/api/resource/Comment?filters=[["reference_doctype","=","Student Attendance"]]&fields=[""]
+
   Widget _buildHistorySection() {
     return Container(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -803,12 +805,12 @@ class StudentHomePageState extends State<StudentHomePage> {
                         builder: (context, state) {
                           if (state is GetAttendanceLoaded) {
                             Attendance attendance = state.attendanceModel;
-                            var dueDate = DateTime.parse(
-                                "${attendance.data!.date} 11:47:00");
+                            // var dueDate = DateTime.parse(
+                            //     "${attendance.data!.date} 11:47:00");
 
-                            String formattedDate =
-                                DateFormat('EEEE, dd MMMM yyyy')
-                                    .format(dueDate);
+                            // String formattedDate =
+                            //     DateFormat('EEEE, dd MMMM yyyy')
+                            //         .format(dueDate);
                             return Material(
                               color: sBlackColor,
                               child: InkWell(
@@ -823,14 +825,14 @@ class StudentHomePageState extends State<StudentHomePage> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(attendance.data!.name.toString(),
+                                      Text(attendance.data.toString(),
                                           style: sWhiteTextStyle.copyWith(
                                               fontSize: 20,
                                               fontWeight: semiBold)),
-                                      Text(formattedDate.toString(),
-                                          style: sGreyTextStyle.copyWith(
-                                              fontSize: 14,
-                                              fontWeight: semiBold)),
+                                      // Text(formattedDate.toString(),
+                                      //     style: sGreyTextStyle.copyWith(
+                                      //         fontSize: 14,
+                                      //         fontWeight: semiBold)),
                                       const SizedBox(height: 20),
                                       Row(
                                         mainAxisAlignment:

@@ -18,12 +18,13 @@ class GetAttendanceBloc extends Bloc<GetAttendanceEvent, GetAttendanceState> {
         emit(GetAttendanceLoading());
         final pList = await _attendanceProvider.fetchAttendance(event.code);
         emit(GetAttendanceLoaded(pList));
+        print('zoku ' + pList.data.toString());
         if (pList.error != null) {
           emit(GetAttendanceError(pList.error));
         }
       } on NetworkError {
-        emit(
-            const GetAttendanceError("Failed to fetch data. is your device online?"));
+        emit(const GetAttendanceError(
+            "Failed to fetch data. is your device online?"));
       }
     });
   }

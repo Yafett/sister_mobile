@@ -388,8 +388,8 @@ class GuardianKidsPageState extends State<GuardianKidsPage> {
                                 decoration: BoxDecoration(
                                     color: Colors.red,
                                     image: const DecorationImage(
-                                      image: AssetImage(
-                                          'assets/images/user.png'),
+                                      image:
+                                          AssetImage('assets/images/user.png'),
                                       fit: BoxFit.fitHeight,
                                     ),
                                     borderRadius: BorderRadius.circular(8)),
@@ -707,7 +707,6 @@ class GuardianKidsPageState extends State<GuardianKidsPage> {
               ],
             ),
           ),
-         
           ListTile(
             onTap: () {},
             leading:
@@ -715,8 +714,6 @@ class GuardianKidsPageState extends State<GuardianKidsPage> {
             title: const Text("Schedule"),
             textColor: Colors.white,
             dense: true,
-
-            // padding: EdgeInsets.zero,
           ),
           ListTile(
             onTap: () {},
@@ -724,8 +721,6 @@ class GuardianKidsPageState extends State<GuardianKidsPage> {
             title: const Text("Payment"),
             textColor: Colors.white,
             dense: true,
-
-            // padding: EdgeInsets.zero,
           ),
           ListTile(
             onTap: () {},

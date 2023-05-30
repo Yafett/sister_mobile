@@ -25,15 +25,16 @@ class ProfileProvider {
 
     try {
       dio.interceptors.add(CookieManager(cookieJar));
-      final response = await dio
-          .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
-        'usr': user,
-        'pwd': pass,
-      });
+      final response = await dio.post(
+          "https://${baseUrl}.sekolahmusik.co.id/api/method/login",
+          data: {
+            'usr': user,
+            'pwd': pass,
+          });
 
       if (codeDef == null) {
-        final getCode = await dio.get(
-            'https://${baseUrl}.sekolahmusik.co.id/api/resource/Student?filters=[["student_email_id","=","${email}"]]&fields=["*"]');
+        final getCode = await dio
+            .get('https://${baseUrl}.sekolahmusik.co.id/api/resource/Student');
 
         var code = getCode.data['data'][0]['name'];
 
@@ -41,6 +42,8 @@ class ProfileProvider {
 
         final request = await dio.get(
             'https://${baseUrl}.sekolahmusik.co.id/api/resource/Student/${code}');
+
+        pref.setString('student-name', request.data['data']['name']);
 
         return Profile.fromJson(request.data);
       } else {
@@ -65,11 +68,12 @@ class ProfileProvider {
 
     try {
       dio.interceptors.add(CookieManager(cookieJar));
-      final response = await dio
-          .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
-        'usr': user,
-        'pwd': pass,
-      });
+      final response = await dio.post(
+          "https://${baseUrl}.sekolahmusik.co.id/api/method/login",
+          data: {
+            'usr': user,
+            'pwd': pass,
+          });
 
       final gege = await dio.get(
           'https://${baseUrl}.sekolahmusik.co.id/api/resource/Guardian?filters=[["user","=","${email}"]]&fields=["*"]');
@@ -106,16 +110,17 @@ class ProfileProvider {
 
     try {
       dio.interceptors.add(CookieManager(cookieJar));
-      final response = await dio
-          .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
-        'usr': 'administrator',
-        'pwd': 'admin',
-      });
+      final response = await dio.post(
+          "https://${baseUrl}.sekolahmusik.co.id/api/method/login",
+          data: {
+            'usr': 'administrator',
+            'pwd': 'admin',
+          });
 
       var userEmail = pref.getString('user-email');
 
-      final getCode =
-          await dio.get("https://${baseUrl}.sekolahmusik.co.id/api/resource/User/");
+      final getCode = await dio
+          .get("https://${baseUrl}.sekolahmusik.co.id/api/resource/User/");
 
       print(codeDef);
       final request = await dio.get(
@@ -128,7 +133,7 @@ class ProfileProvider {
     } catch (error, stacktrace) {
       // ignore: avoid_print
       return ProfileUser.withError('Data not found / Connection Issues');
-    } 
+    }
   }
 }
 

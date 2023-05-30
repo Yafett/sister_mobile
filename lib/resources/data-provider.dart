@@ -172,27 +172,25 @@ class DataProvider {
           });
 
       if (codeDef == null) {
-        print('student');
         final getCode = await dio
             .get('https://${baseUrl}.sekolahmusik.co.id/api/resource/Student/');
 
         final request = await dio.get(
             'https://${baseUrl}.sekolahmusik.co.id/api/resource/Student Attendance?filters=[["student","=","${getCode.data['data'][0]['name']}"]]&fields=["*"]');
 
-        if (request.statusCode == 200) {
-          return Attendance.fromJson(request.data);
-        } else {
-          return Attendance.withError('Data not found / Connection Issues');
-        }
+        print('attendance : ${request.data['data'][0].toString()}');
+
+        return Attendance.fromJson(request.data['data'][0]);
       } else {
-        print('guardian');
+        print('baa : ${codeDef}');
+
         final getCode = await dio.get(
             'https://${baseUrl}.sekolahmusik.co.id/api/resource/Student Attendance?filters=[["student","=","${codeDef}"]]&fields=["*"]');
 
         final code = getCode.data['data'][0]['name'];
 
         final request = await dio.get(
-            'https://${baseUrl}.sekolahmusik.co.id/api/resource/Program Enrollment/${code}');
+            'https://${baseUrl}.sekolahmusik.co.id/api/resource/Student Attendance/${code}');
 
         return Attendance.fromJson(request.data);
       }

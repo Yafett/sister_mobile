@@ -6,6 +6,7 @@ import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sister_mobile/pages/students/history/attendance/comment-page.dart';
 import 'package:skeletons/skeletons.dart';
 
 import 'package:sister_mobile/pages/students/history/attendance/student-attendance-detail.dart';
@@ -182,13 +183,13 @@ class _StudentAttendanceHistoryPageState
             context,
             MaterialPageRoute(
                 builder: ((context) => StudentAttendanceDetailPage(
-                      name: attendance['name'],
-                      comment: attendance['comment'],
+                      name: attendance['name'].toString(),
+                      comment: attendance['comment'].toString(),
                       date: formattedDate,
                       growthPoint: attendance['growth_point'].toString(),
-                      lesson: attendance['lesson'],
-                      videoUrl: attendance['video_url'],
-                      status: attendance['status'],
+                      lesson: attendance['lesson'].toString(),
+                      videoUrl: attendance['video_url'].toString(),
+                      status: attendance['status'].toString(),
                     ))));
       },
       child: Container(
@@ -214,10 +215,11 @@ class _StudentAttendanceHistoryPageState
                 ),
               ],
             ),
+            SizedBox(height: 5),
             Text(
               attendance['instructor'],
               style: sGreyTextStyle.copyWith(
-                fontSize: 12,
+                fontSize: 14,
                 fontWeight: semiBold,
               ),
             ),
@@ -225,7 +227,7 @@ class _StudentAttendanceHistoryPageState
             Text(
               formattedDate,
               style: sGreyTextStyle.copyWith(
-                fontSize: 12,
+                fontSize: 14,
                 fontWeight: semiBold,
               ),
             ),
@@ -265,7 +267,6 @@ class _StudentAttendanceHistoryPageState
     SharedPreferences pref = await SharedPreferences.getInstance();
     var user = pref.getString("username");
     var pass = pref.getString('password');
-
     dio.interceptors.add(CookieManager(cookieJar));
     final response = await dio
         .post("https://${baseUrl}.sekolahmusik.co.id/api/method/login", data: {
